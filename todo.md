@@ -232,3 +232,8 @@
 - [x] Add a consolidated local-state hydration recovery path
 - [x] Improve retry behavior and feedback for monetization state operations
 - [x] Keep recovery states accessible and preserve safe Free-plan behavior
+
+- [x] Inspect current build, runtime, and memory-pressure failures after the latest checkpoint
+- [x] Add a one-tap retry path for local monetization hydration warnings
+- [x] Harden catalog retry timers and entitlement restore state transitions
+- [x] Keep all error states accessible and preserve the safe Free-plan fallback
