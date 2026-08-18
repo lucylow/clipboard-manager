@@ -322,3 +322,9 @@
 - [x] Add a cohesive History summary panel around counts and Paste
 - [x] Fix History card content overflow on narrow mobile layouts
 - [x] Re-run TypeScript, lint, tests, and mobile preview verification
+
+- [x] Audit the latest core screens for another high-impact interface refinement
+- [x] Improve visual consistency, content hierarchy, and mobile interaction polish without changing behavior
+- [x] Verify the refined interface at mobile portrait sizes and rerun project checks
+- [x] Add a compact Favorites summary row with the current saved count
+- [x] Re-run TypeScript, lint, tests, and mobile preview verification
