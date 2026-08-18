@@ -122,3 +122,8 @@
 - [x] Show premium feature benefits and free-tier availability clearly
 - [x] Add a recoverable restore-entitlement action placeholder
 - [x] Keep export gating feedback linked to the upgrade journey
+
+- [x] Add a clear Free versus Clipboard Pro comparison section
+- [x] Show which features remain available on the free plan
+- [x] Add restore-purchase preparation copy and loading-safe feedback
+- [x] Keep upgrade and restore actions explicitly non-transactional until billing is integrated
