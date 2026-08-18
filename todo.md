@@ -334,3 +334,9 @@
 - [x] Verify the refined interface at mobile portrait sizes and rerun project checks
 - [x] Add a compact Settings local-preview status badge matching the other core headers
 - [x] Re-run TypeScript, lint, tests, and mobile preview verification
+
+- [x] Audit the latest core screens for another high-impact interface refinement
+- [x] Improve visual hierarchy, consistency, and mobile interaction polish without changing behavior
+- [x] Verify the refined interface at mobile portrait sizes and rerun project checks
+- [x] Add pressed-state feedback to the Settings destructive action
+- [x] Re-run TypeScript, lint, and tests after the UI pass
