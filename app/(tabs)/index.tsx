@@ -5,6 +5,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Image, Modal, Platform, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenContainer } from '@/components/screen-container';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -70,6 +71,7 @@ export default function HistoryScreen() {
   const [isExporting, setIsExporting] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const ocrMutation = trpc.ocr.extract.useMutation();
   useEffect(() => { AsyncStorage.getItem(PREMIUM_KEY).then((saved) => setIsPremium(saved === 'true')); }, []);
 
@@ -261,7 +263,7 @@ export default function HistoryScreen() {
           <Text style={styles.eyebrow}>YOUR COLLECTION</Text>
           <Text style={styles.title}>Clipboard</Text>
         </View>
-        <Pressable accessibilityRole="button" accessibilityLabel="Open Settings tab" accessibilityHint="Shows where app preferences are located" style={({ pressed }) => [styles.settingsButton, pressed && styles.iconPressed]} onPress={() => showNotice('Settings are available in the Settings tab')}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Open Settings tab" accessibilityHint="Shows where app preferences are located" style={({ pressed }) => [styles.settingsButton, pressed && styles.iconPressed]} onPress={() => router.push('/settings')}>
           <IconSymbol name="gearshape.fill" size={21} color="#56616B" />
         </Pressable>
       </View>

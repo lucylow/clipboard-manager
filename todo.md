@@ -363,3 +363,9 @@
 - [ ] Audit status and discovery flows for the next highest-impact UX improvement
 - [ ] Improve status clarity and mobile flow smoothness without changing the privacy model
 - [ ] Verify core flows at mobile portrait sizes and rerun project checks
+
+- [x] Audit discovery and feedback flows for the next highest-impact UX improvement
+- [x] Improve discoverability and flow feedback without changing the privacy model
+- [x] Verify core flows at mobile portrait sizes and rerun project checks
+- [x] Make the History header Settings shortcut navigate to the Settings screen
+- [x] Re-run TypeScript, lint, tests, and mobile preview verification
