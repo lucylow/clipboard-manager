@@ -289,3 +289,7 @@
 - [x] Audit and reduce Metro memory-pressure causes in the development build process
 - [x] Replace temporary pointerEvents usage with the standard React Native interaction pattern
 - [x] Re-run tests, TypeScript, lint, and mobile preview verification
+
+- [x] Audit History, Favorites, and Settings layouts for the highest-impact interface improvements
+- [x] Improve visual hierarchy, spacing, and interaction feedback across the primary mobile screens
+- [x] Verify the refined interface at mobile portrait sizes and rerun project checks
