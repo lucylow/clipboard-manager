@@ -51,3 +51,8 @@
 - [x] Add a clear explanation for the current appearance mode
 - [x] Add haptic feedback for preference toggles
 - [x] Make clear-history feedback resilient across repeated settings visits
+
+- [x] Detect and save image clipboard content when available
+- [x] Preserve image metadata for media-aware cards and details
+- [x] Add image-specific copy feedback and safe fallback behavior
+- [x] Keep image entries searchable and compatible with existing filters

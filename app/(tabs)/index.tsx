@@ -9,7 +9,7 @@ import { haptic } from '@/lib/haptics';
 
 type Filter = 'All' | 'Text' | 'Images' | 'Favorites' | 'Work' | 'Personal';
 type Category = 'Work' | 'Personal';
-type Item = { id: string; type: 'text' | 'image'; content: string; timestamp: number; favorite: boolean; category?: Category; source?: string };
+type Item = { id: string; type: 'text' | 'image'; content: string; imageData?: string; imageSize?: { width: number; height: number }; timestamp: number; favorite: boolean; category?: Category; source?: string };
 
 const STORAGE_KEY = 'clipboard-manager-items';
 const initialItems: Item[] = [
@@ -54,7 +54,7 @@ export default function HistoryScreen() {
   };
 
   const visibleItems = useMemo(() => items.filter((item) => {
-    const searchableText = [item.content, item.source, item.category].filter(Boolean).join(' ').toLowerCase();
+    const searchableText = [item.content, item.source, item.category, item.type === 'image' ? 'image' : 'text'].filter(Boolean).join(' ').toLowerCase();
     const matchesQuery = searchableText.includes(query.trim().toLowerCase());
     const matchesFilter = filter === 'All' || (filter === 'Text' && item.type === 'text') || (filter === 'Images' && item.type === 'image') || (filter === 'Favorites' && item.favorite) || (filter === 'Work' && item.category === 'Work') || (filter === 'Personal' && item.category === 'Personal');
     return matchesQuery && matchesFilter;
@@ -67,6 +67,16 @@ export default function HistoryScreen() {
 
   const pasteClipboard = async () => {
     try {
+      const hasImage = await Clipboard.hasImageAsync();
+      if (hasImage) {
+        const image = await Clipboard.getImageAsync({ format: 'png' });
+        if (image?.data) {
+          const imageData = image.data.replace(/^data:image\/\w+;base64,/, '');
+          if (items.some((item) => item.type === 'image' && item.imageData === imageData)) return showNotice('That image is already in your history');
+          const next: Item = { id: `${Date.now()}`, type: 'image', content: 'Image from clipboard', imageData, imageSize: image.size, timestamp: Date.now(), favorite: false, category: 'Personal', source: 'Clipboard' };
+          persist([next, ...items]); haptic.success(); showNotice('Image saved to your clipboard history'); return;
+        }
+      }
       const text = await Clipboard.getStringAsync();
       if (!text.trim()) return showNotice('Your clipboard is empty');
       const normalized = text.trim();
@@ -84,7 +94,9 @@ export default function HistoryScreen() {
   const copyItem = async (item: Item) => {
     try {
       if (item.type === 'text') { await Clipboard.setStringAsync(item.content); haptic.success(); }
-      showNotice('Copied to clipboard');
+      else if (item.imageData) { await Clipboard.setImageAsync(item.imageData); haptic.success(); }
+      else return showNotice('This image is no longer available');
+      showNotice(item.type === 'image' ? 'Image copied to clipboard' : 'Copied to clipboard');
     } catch { haptic.error(); showNotice('Could not copy this item'); }
   };
 
