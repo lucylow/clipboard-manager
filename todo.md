@@ -56,3 +56,9 @@
 - [x] Preserve image metadata for media-aware cards and details
 - [x] Add image-specific copy feedback and safe fallback behavior
 - [x] Keep image entries searchable and compatible with existing filters
+
+- [x] Add OCR text extraction metadata for saved images
+- [x] Include OCR text in image search and item details
+- [x] Add full-screen image lightbox for History and Favorites
+- [x] Add desktop drag-and-drop image ingestion with mobile-safe fallback
+- [x] Validate OCR failure, preview dismissal, and unsupported-drop states at the implementation and preview level
