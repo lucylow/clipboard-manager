@@ -197,3 +197,8 @@
 - [x] Add a persistent Settings privacy shortcut for revisiting policy details
 - [x] Make privacy acknowledgment status visible without implying legal consent
 - [x] Keep all readiness and privacy actions local, reversible, accessible, and non-transactional
+
+- [x] Add a store-integration readiness checklist with product, receipt, and management states
+- [x] Clarify which future product metadata is required before prices can be shown
+- [x] Add a safe configuration-status summary without exposing invented billing details
+- [x] Keep all store-readiness actions local, reversible, accessible, and non-transactional
