@@ -62,3 +62,8 @@
 - [x] Add full-screen image lightbox for History and Favorites
 - [x] Add desktop drag-and-drop image ingestion with mobile-safe fallback
 - [x] Validate OCR failure, preview dismissal, and unsupported-drop states at the implementation and preview level
+
+- [x] Prevent overlapping OCR requests and show an in-progress state
+- [x] Add retry OCR action when extraction fails
+- [x] Keep lightbox controls safe around the mobile bottom and top insets
+- [x] Avoid retaining oversized image payloads when a save fails

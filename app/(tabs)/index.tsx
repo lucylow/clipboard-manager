@@ -3,6 +3,7 @@ import * as Clipboard from 'expo-clipboard';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Image, Modal, Platform, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenContainer } from '@/components/screen-container';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { haptic } from '@/lib/haptics';
@@ -41,6 +42,7 @@ export default function HistoryScreen() {
   const [notice, setNotice] = useState('');
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [lightboxItem, setLightboxItem] = useState<Item | null>(null);
+  const insets = useSafeAreaInsets();
   const ocrMutation = trpc.ocr.extract.useMutation();
 
   const loadItems = useCallback(async () => {
@@ -53,7 +55,7 @@ export default function HistoryScreen() {
 
   const persist = (next: Item[]) => {
     setItems(next);
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    return AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   };
 
   const visibleItems = useMemo(() => items.filter((item) => {
@@ -69,15 +71,29 @@ export default function HistoryScreen() {
   };
 
   const saveImageWithOcr = async (imageData: string, imageSize?: { width: number; height: number }, source = 'Clipboard') => {
+    if (ocrMutation.isPending) return showNotice('Text extraction is already in progress');
     if (items.some((item) => item.type === 'image' && item.imageData === imageData)) return showNotice('That image is already in your history');
     const next: Item = { id: `${Date.now()}`, type: 'image', content: 'Image from clipboard', imageData, imageSize, timestamp: Date.now(), favorite: false, category: 'Personal', source };
-    persist([next, ...items]); haptic.success(); showNotice('Image saved · extracting text');
+    try { await persist([next, ...items]); } catch { setItems(items); return showNotice('Could not save this image'); }
+    haptic.success(); showNotice('Image saved · extracting text');
     try {
       const result = await ocrMutation.mutateAsync({ imageData });
       const updated = { ...next, ocrText: result.text || undefined };
       persist([updated, ...items]);
       showNotice(result.text ? 'Image saved · text extracted' : 'Image saved · no text found');
     } catch { showNotice('Image saved · text extraction unavailable'); }
+  };
+
+  const retryOcr = async (item: Item) => {
+    if (!item.imageData || ocrMutation.isPending) return;
+    showNotice('Extracting text…');
+    try {
+      const result = await ocrMutation.mutateAsync({ imageData: item.imageData });
+      const updated = items.map((candidate) => candidate.id === item.id ? { ...candidate, ocrText: result.text || undefined } : candidate);
+      await persist(updated);
+      setLightboxItem(updated.find((candidate) => candidate.id === item.id) ?? item);
+      showNotice(result.text ? 'Text extracted' : 'No readable text found');
+    } catch { showNotice('Text extraction failed · try again'); }
   };
 
   const handleDrop = (event: any) => {
@@ -179,7 +195,7 @@ export default function HistoryScreen() {
         </View></View>
       </Modal>
       <Modal visible={lightboxItem !== null} animationType="fade" transparent onRequestClose={() => setLightboxItem(null)}>
-        <View style={styles.lightboxBackdrop}><Pressable accessibilityRole="button" accessibilityLabel="Close image preview" style={styles.lightboxClose} onPress={() => setLightboxItem(null)}><Text style={styles.lightboxCloseText}>Close</Text></Pressable>{lightboxItem?.imageData ? <Image resizeMode="contain" style={styles.lightboxImage} source={{ uri: `data:image/png;base64,${lightboxItem.imageData}` }} /> : <ActivityIndicator color="#FFFFFF" />}</View>
+        <View style={styles.lightboxBackdrop}><Pressable accessibilityRole="button" accessibilityLabel="Close image preview" style={[styles.lightboxClose, { top: insets.top + 12 }]} onPress={() => setLightboxItem(null)}><Text style={styles.lightboxCloseText}>Close</Text></Pressable>{lightboxItem?.imageData ? <Image resizeMode="contain" style={styles.lightboxImage} source={{ uri: `data:image/png;base64,${lightboxItem.imageData}` }} /> : <ActivityIndicator color="#FFFFFF" />}{lightboxItem && !lightboxItem.ocrText ? <Pressable accessibilityRole="button" style={[styles.ocrRetryButton, { bottom: insets.bottom + 18 }]} onPress={() => void retryOcr(lightboxItem)}><Text style={styles.ocrRetryText}>{ocrMutation.isPending ? 'Extracting text…' : 'Extract text'}</Text></Pressable> : null}</View>
       </Modal>
     </ScreenContainer>
   );
@@ -198,6 +214,6 @@ const styles = StyleSheet.create({
   notice: { backgroundColor: '#DDF3E4', borderRadius: 12, paddingVertical: 10, paddingHorizontal: 13, flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 12 }, noticeText: { color: '#287A4B', fontSize: 13, fontWeight: '700' },
   listHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 9 }, listHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: 12 }, clearText: { color: '#C9553B', fontSize: 12, fontWeight: '800' }, sectionTitle: { color: '#1F2933', fontSize: 18, fontWeight: '800' }, countText: { color: '#98A1A7', fontSize: 12, fontWeight: '600' }, listContent: { paddingBottom: 32, gap: 10 },
   card: { backgroundColor: '#FFFFFF', borderRadius: 18, padding: 15, flexDirection: 'row', borderWidth: 1, borderColor: '#E8E4DF' }, typeIcon: { width: 38, height: 38, borderRadius: 12, backgroundColor: '#FCE5DE', alignItems: 'center', justifyContent: 'center', marginRight: 12 }, imageIcon: { backgroundColor: '#E8DFF5' }, cardBody: { flex: 1 }, metaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7 }, metaContent: { flexDirection: 'row', alignItems: 'center', gap: 7, flex: 1 }, categoryBadge: { borderRadius: 8, paddingHorizontal: 7, paddingVertical: 3 }, workBadge: { backgroundColor: '#E7DDF5' }, personalBadge: { backgroundColor: '#FFF3D9' }, categoryBadgeText: { fontSize: 9, fontWeight: '800' }, workText: { color: '#8063A6' }, personalText: { color: '#B4771F' }, meta: { color: '#9AA3AA', fontSize: 11, fontWeight: '600' }, content: { color: '#29343D', fontSize: 15, lineHeight: 21, fontWeight: '500' }, cardActions: { flexDirection: 'row', alignItems: 'center', marginTop: 12, gap: 15 }, copyAction: { flexDirection: 'row', alignItems: 'center', gap: 5 }, copyText: { color: '#E76F51', fontSize: 13, fontWeight: '800' }, deleteText: { color: '#A7AFB4', fontSize: 13, fontWeight: '700' },
-  lightboxBackdrop: { flex: 1, backgroundColor: 'rgba(17,24,28,0.96)', alignItems: 'center', justifyContent: 'center', padding: 20 }, lightboxImage: { width: '100%', height: '80%' }, lightboxClose: { position: 'absolute', top: 58, right: 20, zIndex: 2, backgroundColor: 'rgba(255,255,255,0.14)', borderRadius: 14, paddingHorizontal: 14, paddingVertical: 9 }, lightboxCloseText: { color: '#FFFFFF', fontWeight: '800', fontSize: 13 }, ocrText: { color: '#29343D', backgroundColor: '#F6F4F1', borderRadius: 12, padding: 12, fontSize: 14, lineHeight: 20 }, modalBackdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(31,41,51,0.28)' }, modalCard: { backgroundColor: '#FFFFFF', borderTopLeftRadius: 26, borderTopRightRadius: 26, padding: 22, paddingBottom: 34 }, modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }, modalTitle: { color: '#1F2933', fontSize: 20, fontWeight: '800' }, modalMeta: { color: '#9AA3AA', fontSize: 12, fontWeight: '700', marginTop: 16 }, categoryLabel: { color: '#9AA3AA', fontSize: 10, fontWeight: '800', letterSpacing: 1.1, marginTop: 20, marginBottom: 8 }, modalCategoryRow: { flexDirection: 'row', gap: 8 }, modalCategory: { borderWidth: 1, borderColor: '#E8E4DF', borderRadius: 12, paddingHorizontal: 13, paddingVertical: 8 }, modalCategoryActive: { backgroundColor: '#E7DDF5', borderColor: '#C8B5E0' }, modalCategoryText: { color: '#7B8794', fontSize: 12, fontWeight: '700' }, modalCategoryTextActive: { color: '#8063A6' }, modalContent: { color: '#29343D', fontSize: 17, lineHeight: 25, marginTop: 10, minHeight: 90 }, modalActions: { gap: 10, marginTop: 20 }, modalPrimary: { backgroundColor: '#E76F51', borderRadius: 14, height: 50, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 7 }, modalPrimaryText: { color: '#FFFFFF', fontWeight: '800', fontSize: 14 }, modalSecondary: { borderWidth: 1, borderColor: '#F1C3B7', borderRadius: 14, height: 50, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 7 }, modalSecondaryText: { color: '#C9553B', fontWeight: '800', fontSize: 14 }, modalDanger: { height: 46, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 7 }, modalDangerText: { color: '#C9553B', fontWeight: '800', fontSize: 14 },
+  lightboxBackdrop: { flex: 1, backgroundColor: 'rgba(17,24,28,0.96)', alignItems: 'center', justifyContent: 'center', padding: 20 }, lightboxImage: { width: '100%', height: '80%' }, lightboxClose: { position: 'absolute', top: 58, right: 20, zIndex: 2, backgroundColor: 'rgba(255,255,255,0.14)', borderRadius: 14, paddingHorizontal: 14, paddingVertical: 9 }, lightboxCloseText: { color: '#FFFFFF', fontWeight: '800', fontSize: 13 }, ocrRetryButton: { position: 'absolute', backgroundColor: '#E76F51', borderRadius: 14, paddingHorizontal: 16, paddingVertical: 11 }, ocrRetryText: { color: '#FFFFFF', fontWeight: '800', fontSize: 13 }, ocrText: { color: '#29343D', backgroundColor: '#F6F4F1', borderRadius: 12, padding: 12, fontSize: 14, lineHeight: 20 }, modalBackdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(31,41,51,0.28)' }, modalCard: { backgroundColor: '#FFFFFF', borderTopLeftRadius: 26, borderTopRightRadius: 26, padding: 22, paddingBottom: 34 }, modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }, modalTitle: { color: '#1F2933', fontSize: 20, fontWeight: '800' }, modalMeta: { color: '#9AA3AA', fontSize: 12, fontWeight: '700', marginTop: 16 }, categoryLabel: { color: '#9AA3AA', fontSize: 10, fontWeight: '800', letterSpacing: 1.1, marginTop: 20, marginBottom: 8 }, modalCategoryRow: { flexDirection: 'row', gap: 8 }, modalCategory: { borderWidth: 1, borderColor: '#E8E4DF', borderRadius: 12, paddingHorizontal: 13, paddingVertical: 8 }, modalCategoryActive: { backgroundColor: '#E7DDF5', borderColor: '#C8B5E0' }, modalCategoryText: { color: '#7B8794', fontSize: 12, fontWeight: '700' }, modalCategoryTextActive: { color: '#8063A6' }, modalContent: { color: '#29343D', fontSize: 17, lineHeight: 25, marginTop: 10, minHeight: 90 }, modalActions: { gap: 10, marginTop: 20 }, modalPrimary: { backgroundColor: '#E76F51', borderRadius: 14, height: 50, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 7 }, modalPrimaryText: { color: '#FFFFFF', fontWeight: '800', fontSize: 14 }, modalSecondary: { borderWidth: 1, borderColor: '#F1C3B7', borderRadius: 14, height: 50, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 7 }, modalSecondaryText: { color: '#C9553B', fontWeight: '800', fontSize: 14 }, modalDanger: { height: 46, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 7 }, modalDangerText: { color: '#C9553B', fontWeight: '800', fontSize: 14 },
   empty: { alignItems: 'center', paddingTop: 55, paddingHorizontal: 36 }, resetButton: { backgroundColor: '#FCE5DE', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 9, marginTop: 16 }, resetText: { color: '#C9553B', fontSize: 13, fontWeight: '800' }, emptyIcon: { width: 66, height: 66, borderRadius: 22, backgroundColor: '#FCE5DE', alignItems: 'center', justifyContent: 'center', marginBottom: 15 }, emptyTitle: { color: '#29343D', fontSize: 18, fontWeight: '800', marginBottom: 7 }, emptyCopy: { color: '#8A949D', fontSize: 14, lineHeight: 21, textAlign: 'center' },
 });
