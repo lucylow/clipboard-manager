@@ -46,3 +46,8 @@
 - [x] Show an explicit no-results state for active searches and filters
 - [x] Add a one-tap clear-search interaction with accessible labeling
 - [x] Keep result counts accurate for combined search and filter queries
+
+- [x] Show explicit saved feedback when a preference changes
+- [x] Add a clear explanation for the current appearance mode
+- [x] Add haptic feedback for preference toggles
+- [x] Make clear-history feedback resilient across repeated settings visits
