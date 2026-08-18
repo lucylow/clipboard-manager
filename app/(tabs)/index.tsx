@@ -240,9 +240,16 @@ export default function HistoryScreen() {
   };
 
   const onRefresh = async () => {
+    if (refreshing) return;
     setRefreshing(true);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setRefreshing(false);
+    try {
+      await loadItems();
+      showNotice('History refreshed');
+    } catch {
+      showNotice('Could not refresh history');
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   return (

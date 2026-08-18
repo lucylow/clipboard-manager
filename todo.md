@@ -353,3 +353,9 @@
 - [x] Add accessible Paste progress feedback for reading and saving clipboard content
 - [x] Fix History card text overflow on narrow mobile layouts
 - [x] Re-run TypeScript, lint, and tests after the UX pass
+
+- [x] Audit synchronization and discovery flows for the next highest-impact UX improvement
+- [x] Improve synchronization feedback and flow clarity without changing the privacy model
+- [x] Verify core flows at mobile portrait sizes and rerun project checks
+- [x] Make pull-to-refresh synchronize persisted history and report completion or failure
+- [x] Re-run TypeScript, lint, tests, and mobile preview verification
