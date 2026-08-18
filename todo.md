@@ -346,3 +346,10 @@
 - [x] Verify the refined interface at mobile portrait sizes and rerun project checks
 - [x] Refine tab-bar label typography and remove deprecated shadow props
 - [x] Re-run TypeScript, lint, and tests after the UI pass
+
+- [x] Audit History, Favorites, and Settings flows for the highest-impact usability improvements
+- [x] Improve discoverability, action feedback, and flow clarity without changing the privacy model
+- [x] Verify core flows at mobile portrait sizes and rerun project checks
+- [x] Add accessible Paste progress feedback for reading and saving clipboard content
+- [x] Fix History card text overflow on narrow mobile layouts
+- [x] Re-run TypeScript, lint, and tests after the UX pass
