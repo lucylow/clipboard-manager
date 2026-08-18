@@ -92,3 +92,8 @@
 - [x] Keep Favorites image OCR and category metadata current after History changes
 - [x] Add safe empty-state handling after unfavorite and delete mutations
 - [x] Prevent stale tab writes from overwriting newer local history state
+
+- [x] Add multi-select mode for History items
+- [x] Add batch favorite and batch delete actions with confirmation
+- [x] Keep selection state safe across filtering and tab focus changes
+- [x] Add accessible selection counts and cancel controls
