@@ -257,3 +257,8 @@
 - [x] Add stronger recovery feedback for stale or incomplete local-state hydration
 - [x] Harden catalog loading and entitlement restore cleanup paths
 - [x] Keep all error states accessible and preserve the safe Free-plan fallback
+
+- [x] Inspect current build, runtime, and memory-pressure failures after the latest checkpoint
+- [x] Add a safe reset path for corrupted local monetization state
+- [x] Harden catalog and entitlement recovery against stale or malformed data
+- [x] Keep all error states accessible and preserve the safe Free-plan fallback
