@@ -293,3 +293,7 @@
 - [x] Audit History, Favorites, and Settings layouts for the highest-impact interface improvements
 - [x] Improve visual hierarchy, spacing, and interaction feedback across the primary mobile screens
 - [x] Verify the refined interface at mobile portrait sizes and rerun project checks
+
+- [x] Audit the latest History, Favorites, and Settings interface for another high-impact polish pass
+- [x] Improve active filter clarity, summary scanability, and mobile interaction feedback
+- [x] Verify the refined interface at mobile portrait sizes and rerun project checks
