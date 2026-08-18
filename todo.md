@@ -297,3 +297,9 @@
 - [x] Audit the latest History, Favorites, and Settings interface for another high-impact polish pass
 - [x] Improve active filter clarity, summary scanability, and mobile interaction feedback
 - [x] Verify the refined interface at mobile portrait sizes and rerun project checks
+
+- [x] Audit the latest core screens for another high-impact interface polish pass
+- [x] Improve hierarchy, spacing, and interaction feedback without changing clipboard behavior
+- [x] Verify the refined interface at mobile portrait sizes and rerun project checks
+- [x] Polish tab-bar active states and elevation without deprecated shadow props
+- [x] Remove render-time ThemeProvider console noise
