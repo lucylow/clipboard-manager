@@ -359,3 +359,7 @@
 - [x] Verify core flows at mobile portrait sizes and rerun project checks
 - [x] Make pull-to-refresh synchronize persisted history and report completion or failure
 - [x] Re-run TypeScript, lint, tests, and mobile preview verification
+
+- [ ] Audit status and discovery flows for the next highest-impact UX improvement
+- [ ] Improve status clarity and mobile flow smoothness without changing the privacy model
+- [ ] Verify core flows at mobile portrait sizes and rerun project checks
