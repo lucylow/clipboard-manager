@@ -72,3 +72,8 @@
 - [x] Show image dimensions and extraction status in image details
 - [x] Add clearer tap affordance for opening image previews on mobile
 - [x] Keep OCR text and image metadata visible in Favorites cards
+
+- [x] Add a safe persisted-image size guard before AsyncStorage writes
+- [x] Show image saving and OCR progress as a non-blocking mobile status state
+- [x] Add pressed-state feedback to image preview and primary media actions
+- [x] Keep corrupted image entries recoverable without crashing the history list
