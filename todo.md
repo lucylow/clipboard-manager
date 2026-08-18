@@ -182,3 +182,8 @@
 - [x] Show when local monetization data was last cleared or indicate that none exists
 - [x] Clarify that deleting measurement data does not affect clipboard history or entitlement state
 - [x] Keep privacy lifecycle messaging non-transactional and accessible
+
+- [x] Add a clear policy version or preview-status label in the privacy modal
+- [x] Show local data categories and retention behavior in a compact summary
+- [x] Add a clearer empty-state treatment after local monetization data is deleted
+- [x] Keep privacy copy concise, accessible, and non-transactional
