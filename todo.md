@@ -117,3 +117,8 @@
 - [x] Add a local entitlement state with a free-tier default
 - [x] Gate a clearly premium-only capability without breaking core free usage
 - [x] Add a non-transactional upgrade CTA placeholder for future store integration
+
+- [x] Add a dedicated Clipboard Pro upgrade detail modal
+- [x] Show premium feature benefits and free-tier availability clearly
+- [x] Add a recoverable restore-entitlement action placeholder
+- [x] Keep export gating feedback linked to the upgrade journey
