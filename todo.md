@@ -157,3 +157,8 @@
 - [x] Add a billing-readiness checklist that distinguishes configured from unavailable capabilities
 - [x] Add a safe plan-selection placeholder without showing invented prices or renewal terms
 - [x] Keep decision-support messaging non-transactional and accessible
+
+- [x] Add an explicit preview-mode trust note near upgrade actions
+- [x] Add local upgrade-interest and billing-notice measurement metadata
+- [x] Show a clearer distinction between informational usage tracking and enforced limits
+- [x] Keep all measurement local, non-identifying, and non-transactional
