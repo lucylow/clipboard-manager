@@ -36,3 +36,8 @@
 - [x] Add category filtering alongside type and favorites filters
 - [x] Persist category changes from the item-detail modal
 - [x] Keep category state synchronized across History and Favorites
+
+- [x] Show category badges on History cards
+- [x] Show category badges on Favorites cards
+- [x] Keep Favorites category display current after returning from History
+- [x] Improve category chip visual hierarchy and accessibility
