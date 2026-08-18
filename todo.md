@@ -67,3 +67,8 @@
 - [x] Add retry OCR action when extraction fails
 - [x] Keep lightbox controls safe around the mobile bottom and top insets
 - [x] Avoid retaining oversized image payloads when a save fails
+
+- [x] Show OCR text snippets on image cards when available
+- [x] Show image dimensions and extraction status in image details
+- [x] Add clearer tap affordance for opening image previews on mobile
+- [x] Keep OCR text and image metadata visible in Favorites cards
