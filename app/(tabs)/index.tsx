@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Clipboard from 'expo-clipboard';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, FlatList, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, FlatList, Modal, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 
@@ -33,6 +33,7 @@ export default function HistoryScreen() {
   const [filter, setFilter] = useState<Filter>('All');
   const [refreshing, setRefreshing] = useState(false);
   const [notice, setNotice] = useState('');
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY).then((saved) => saved && setItems(JSON.parse(saved)));
@@ -110,10 +111,16 @@ export default function HistoryScreen() {
       {notice ? <View style={styles.notice}><IconSymbol name="checkmark.circle.fill" size={17} color="#287A4B" /><Text style={styles.noticeText}>{notice}</Text></View> : null}
 
       <View style={styles.listHeader}><Text style={styles.sectionTitle}>{filter === 'All' ? 'Recent items' : filter}</Text><Text style={styles.countText}>{visibleItems.length} {visibleItems.length === 1 ? 'item' : 'items'}</Text></View>
-      <FlatList data={visibleItems} keyExtractor={(item) => item.id} showsVerticalScrollIndicator={false} contentContainerStyle={styles.listContent} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#E76F51" />} ListEmptyComponent={<View style={styles.empty}><View style={styles.emptyIcon}><IconSymbol name="doc.on.clipboard" size={30} color="#E76F51" /></View><Text style={styles.emptyTitle}>Nothing here yet</Text><Text style={styles.emptyCopy}>Paste something from your clipboard and it will appear in your history.</Text></View>} renderItem={({ item }) => <View style={styles.card}>
+      <FlatList data={visibleItems} keyExtractor={(item) => item.id} showsVerticalScrollIndicator={false} contentContainerStyle={styles.listContent} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#E76F51" />} ListEmptyComponent={<View style={styles.empty}><View style={styles.emptyIcon}><IconSymbol name="doc.on.clipboard" size={30} color="#E76F51" /></View><Text style={styles.emptyTitle}>Nothing here yet</Text><Text style={styles.emptyCopy}>Paste something from your clipboard and it will appear in your history.</Text></View>} renderItem={({ item }) =>         <Pressable style={styles.card} onPress={() => setSelectedItem(item)}>
         <View style={[styles.typeIcon, item.type === 'image' && styles.imageIcon]}><IconSymbol name={item.type === 'image' ? 'photo' : 'doc.text'} size={20} color={item.type === 'image' ? '#8063A6' : '#E76F51'} /></View>
         <View style={styles.cardBody}><View style={styles.metaRow}><Text style={styles.meta}>{item.source || 'Clipboard'} · {formatTime(item.timestamp)}</Text><Pressable onPress={() => toggleFavorite(item.id)} hitSlop={8}><IconSymbol name={item.favorite ? 'star.fill' : 'star'} size={19} color={item.favorite ? '#E9A23B' : '#AEB5B9'} /></Pressable></View><Text numberOfLines={3} style={styles.content}>{item.content}</Text><View style={styles.cardActions}><Pressable style={styles.copyAction} onPress={() => copyItem(item)}><IconSymbol name="doc.on.doc" size={15} color="#E76F51" /><Text style={styles.copyText}>Copy</Text></Pressable><Pressable onPress={() => Alert.alert('Delete item?', 'This will remove it from your history.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: () => deleteItem(item.id) }])}><Text style={styles.deleteText}>Delete</Text></Pressable></View></View>
-      </View>} />
+      </Pressable>} />
+      <Modal visible={selectedItem !== null} animationType="slide" transparent onRequestClose={() => setSelectedItem(null)}>
+        <View style={styles.modalBackdrop}><View style={styles.modalCard}>
+          <View style={styles.modalHeader}><Text style={styles.modalTitle}>Clipboard item</Text><Pressable onPress={() => setSelectedItem(null)}><IconSymbol name="xmark.circle.fill" size={24} color="#9AA3AA" /></Pressable></View>
+          {selectedItem ? <><Text style={styles.modalMeta}>{selectedItem.source || 'Clipboard'} · {formatTime(selectedItem.timestamp)}</Text><Text style={styles.modalContent}>{selectedItem.content}</Text><View style={styles.modalActions}><Pressable style={styles.modalPrimary} onPress={() => { copyItem(selectedItem); setSelectedItem(null); }}><IconSymbol name="doc.on.doc" size={17} color="#FFFFFF" /><Text style={styles.modalPrimaryText}>Copy to clipboard</Text></Pressable><Pressable style={styles.modalSecondary} onPress={() => { toggleFavorite(selectedItem.id); setSelectedItem({ ...selectedItem, favorite: !selectedItem.favorite }); }}><IconSymbol name={selectedItem.favorite ? 'star.fill' : 'star'} size={17} color="#E76F51" /><Text style={styles.modalSecondaryText}>{selectedItem.favorite ? 'Unfavorite' : 'Favorite'}</Text></Pressable></View></> : null}
+        </View></View>
+      </Modal>
     </ScreenContainer>
   );
 }
@@ -131,5 +138,6 @@ const styles = StyleSheet.create({
   notice: { backgroundColor: '#DDF3E4', borderRadius: 12, paddingVertical: 10, paddingHorizontal: 13, flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 12 }, noticeText: { color: '#287A4B', fontSize: 13, fontWeight: '700' },
   listHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 9 }, sectionTitle: { color: '#1F2933', fontSize: 18, fontWeight: '800' }, countText: { color: '#98A1A7', fontSize: 12, fontWeight: '600' }, listContent: { paddingBottom: 32, gap: 10 },
   card: { backgroundColor: '#FFFFFF', borderRadius: 18, padding: 15, flexDirection: 'row', borderWidth: 1, borderColor: '#E8E4DF' }, typeIcon: { width: 38, height: 38, borderRadius: 12, backgroundColor: '#FCE5DE', alignItems: 'center', justifyContent: 'center', marginRight: 12 }, imageIcon: { backgroundColor: '#E8DFF5' }, cardBody: { flex: 1 }, metaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7 }, meta: { color: '#9AA3AA', fontSize: 11, fontWeight: '600' }, content: { color: '#29343D', fontSize: 15, lineHeight: 21, fontWeight: '500' }, cardActions: { flexDirection: 'row', alignItems: 'center', marginTop: 12, gap: 15 }, copyAction: { flexDirection: 'row', alignItems: 'center', gap: 5 }, copyText: { color: '#E76F51', fontSize: 13, fontWeight: '800' }, deleteText: { color: '#A7AFB4', fontSize: 13, fontWeight: '700' },
+  modalBackdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(31,41,51,0.28)' }, modalCard: { backgroundColor: '#FFFFFF', borderTopLeftRadius: 26, borderTopRightRadius: 26, padding: 22, paddingBottom: 34 }, modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }, modalTitle: { color: '#1F2933', fontSize: 20, fontWeight: '800' }, modalMeta: { color: '#9AA3AA', fontSize: 12, fontWeight: '700', marginTop: 16 }, modalContent: { color: '#29343D', fontSize: 17, lineHeight: 25, marginTop: 10, minHeight: 90 }, modalActions: { gap: 10, marginTop: 20 }, modalPrimary: { backgroundColor: '#E76F51', borderRadius: 14, height: 50, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 7 }, modalPrimaryText: { color: '#FFFFFF', fontWeight: '800', fontSize: 14 }, modalSecondary: { borderWidth: 1, borderColor: '#F1C3B7', borderRadius: 14, height: 50, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 7 }, modalSecondaryText: { color: '#C9553B', fontWeight: '800', fontSize: 14 },
   empty: { alignItems: 'center', paddingTop: 55, paddingHorizontal: 36 }, emptyIcon: { width: 66, height: 66, borderRadius: 22, backgroundColor: '#FCE5DE', alignItems: 'center', justifyContent: 'center', marginBottom: 15 }, emptyTitle: { color: '#29343D', fontSize: 18, fontWeight: '800', marginBottom: 7 }, emptyCopy: { color: '#8A949D', fontSize: 14, lineHeight: 21, textAlign: 'center' },
 });

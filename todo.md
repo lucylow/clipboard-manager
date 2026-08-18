@@ -5,9 +5,9 @@
 - [x] Paste current system clipboard into local history
 - [x] Favorites tab with empty and populated states
 - [x] Settings tab with local preferences and clear-history confirmation
-- [ ] Item detail view for full content and actions
-- [x] AsyncStorage persistence for history and settings
+- [x] Item detail view for full content and actions
+- [x] AsyncStorage persistence for history and settings, including Settings toggles
 - [x] Custom Clipboard Manager icon and app branding configuration
 - [x] Add clipboard and haptics Expo dependencies as needed
 - [x] Run TypeScript and lint checks
-- [ ] Verify the main mobile UI at desktop and mobile preview sizes
+- [x] Verify the main mobile UI at mobile preview size; desktop verification remains a future pass
