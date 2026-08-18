@@ -64,6 +64,8 @@ export default function SettingsScreen() {
       if (!saved) return;
       try { const parsed = JSON.parse(saved) as Partial<Settings>; setAutoSave(parsed.autoSave !== false); setImages(parsed.images !== false); setDarkMode(parsed.darkMode === true); } catch { showError('Saved settings were unreadable. Defaults restored.'); }
     }).catch(() => showError('Saved settings could not be loaded. Defaults restored.'));
+    const retryTimer = hydrationAttempt > 0 ? setTimeout(() => setHydrationRetrying(false), 1200) : undefined;
+    return () => { if (retryTimer) clearTimeout(retryTimer); };
   }, [hydrationAttempt]);
   const showSaved = (message: string) => { setNoticeKind('success'); setNotice(message); setTimeout(() => setNotice(''), 1800); };
   const showError = (message: string) => { setNoticeKind('error'); setNotice(message); setTimeout(() => setNotice(''), 2600); };

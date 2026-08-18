@@ -242,3 +242,8 @@
 - [x] Add stronger recovery feedback for repeated hydration failures
 - [x] Make catalog and entitlement retries guard against duplicate in-flight actions
 - [x] Keep all error states accessible and preserve the safe Free-plan fallback
+
+- [x] Inspect current build, runtime, and memory-pressure failures after the latest checkpoint
+- [x] Add clearer recovery progress feedback for local-state retries
+- [x] Harden catalog and entitlement failure transitions against stale state
+- [x] Keep all error states accessible and preserve the safe Free-plan fallback
