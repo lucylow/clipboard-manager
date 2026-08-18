@@ -192,3 +192,8 @@
 - [x] Add a clearer upgrade-readiness checklist summary to Settings
 - [x] Link readiness items to the relevant future billing or privacy setup state
 - [x] Keep all actions local, reversible, accessible, and non-transactional
+
+- [x] Add a clearer billing-readiness detail view with configured and unavailable states
+- [x] Add a persistent Settings privacy shortcut for revisiting policy details
+- [x] Make privacy acknowledgment status visible without implying legal consent
+- [x] Keep all readiness and privacy actions local, reversible, accessible, and non-transactional
