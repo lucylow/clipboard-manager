@@ -31,3 +31,8 @@
 - [x] Keep the detail modal synchronized after deleting or clearing items
 - [x] Persist and restore the selected settings presentation state consistently
 - [x] Add visible confirmation when detail actions mutate an item
+
+- [x] Add editable categories to clipboard items
+- [x] Add category filtering alongside type and favorites filters
+- [x] Persist category changes from the item-detail modal
+- [x] Keep category state synchronized across History and Favorites
