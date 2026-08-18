@@ -87,3 +87,8 @@
 - [x] Show a clear notice when saved history is repaired or reset
 - [x] Keep persistence writes serialized to avoid stale concurrent saves
 - [x] Preserve valid entries when one saved record is invalid
+
+- [x] Refresh Favorites after every focus and navigation return
+- [x] Keep Favorites image OCR and category metadata current after History changes
+- [x] Add safe empty-state handling after unfavorite and delete mutations
+- [x] Prevent stale tab writes from overwriting newer local history state

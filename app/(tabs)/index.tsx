@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Clipboard from 'expo-clipboard';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Image, Modal, Platform, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -8,6 +8,7 @@ import { ScreenContainer } from '@/components/screen-container';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { haptic } from '@/lib/haptics';
 import { trpc } from '@/lib/trpc';
+import { queueClipboardWrite } from '@/lib/clipboard-storage';
 
 type Filter = 'All' | 'Text' | 'Images' | 'Favorites' | 'Work' | 'Personal';
 type Category = 'Work' | 'Personal';
@@ -43,7 +44,6 @@ export default function HistoryScreen() {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [lightboxItem, setLightboxItem] = useState<Item | null>(null);
   const [isSavingMedia, setIsSavingMedia] = useState(false);
-  const writeQueue = useRef<Promise<void>>(Promise.resolve());
   const insets = useSafeAreaInsets();
   const ocrMutation = trpc.ocr.extract.useMutation();
 
@@ -67,8 +67,7 @@ export default function HistoryScreen() {
 
   const persist = (next: Item[]) => {
     setItems(next);
-    writeQueue.current = writeQueue.current.catch(() => undefined).then(() => AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next)));
-    return writeQueue.current;
+    return queueClipboardWrite(next);
   };
 
   const visibleItems = useMemo(() => items.filter((item) => {
