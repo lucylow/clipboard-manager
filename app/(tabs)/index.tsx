@@ -1,48 +1,135 @@
-import { ScrollView, Text, View, TouchableOpacity } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Clipboard from 'expo-clipboard';
+import { useEffect, useMemo, useState } from 'react';
+import { Alert, FlatList, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ScreenContainer } from '@/components/screen-container';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 
-import { ScreenContainer } from "@/components/screen-container";
+type Filter = 'All' | 'Text' | 'Images' | 'Favorites';
+type Item = { id: string; type: 'text' | 'image'; content: string; timestamp: number; favorite: boolean; source?: string };
 
-/**
- * Home Screen - NativeWind Example
- *
- * This template uses NativeWind (Tailwind CSS for React Native).
- * You can use familiar Tailwind classes directly in className props.
- *
- * Key patterns:
- * - Use `className` instead of `style` for most styling
- * - Theme colors: use tokens directly (bg-background, text-foreground, bg-primary, etc.); no dark: prefix needed
- * - Responsive: standard Tailwind breakpoints work on web
- * - Custom colors defined in tailwind.config.js
- */
-export default function HomeScreen() {
+const STORAGE_KEY = 'clipboard-manager-items';
+const initialItems: Item[] = [
+  { id: '1', type: 'text', content: 'Design is not just what it looks like and feels like. Design is how it works.', timestamp: Date.now() - 1000 * 60 * 12, favorite: true, source: 'Notes' },
+  { id: '2', type: 'text', content: 'https://developer.apple.com/design/human-interface-guidelines/', timestamp: Date.now() - 1000 * 60 * 58, favorite: false, source: 'Safari' },
+  { id: '3', type: 'image', content: 'Screenshot from Photos', timestamp: Date.now() - 1000 * 60 * 60 * 3, favorite: false, source: 'Photos' },
+  { id: '4', type: 'text', content: 'Remember to review the launch checklist before Friday.', timestamp: Date.now() - 1000 * 60 * 60 * 5, favorite: false, source: 'Reminders' },
+  { id: '5', type: 'text', content: 'hello@northstar.studio', timestamp: Date.now() - 1000 * 60 * 60 * 24, favorite: true, source: 'Mail' },
+];
+
+function formatTime(timestamp: number) {
+  const diff = Math.max(0, Date.now() - timestamp);
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+}
+
+export default function HistoryScreen() {
+  const [items, setItems] = useState<Item[]>(initialItems);
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState<Filter>('All');
+  const [refreshing, setRefreshing] = useState(false);
+  const [notice, setNotice] = useState('');
+
+  useEffect(() => {
+    AsyncStorage.getItem(STORAGE_KEY).then((saved) => saved && setItems(JSON.parse(saved)));
+  }, []);
+
+  const persist = (next: Item[]) => {
+    setItems(next);
+    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  };
+
+  const visibleItems = useMemo(() => items.filter((item) => {
+    const matchesQuery = item.content.toLowerCase().includes(query.toLowerCase());
+    const matchesFilter = filter === 'All' || (filter === 'Text' && item.type === 'text') || (filter === 'Images' && item.type === 'image') || (filter === 'Favorites' && item.favorite);
+    return matchesQuery && matchesFilter;
+  }), [items, query, filter]);
+
+  const showNotice = (message: string) => {
+    setNotice(message);
+    setTimeout(() => setNotice(''), 2200);
+  };
+
+  const pasteClipboard = async () => {
+    try {
+      const text = await Clipboard.getStringAsync();
+      if (!text.trim()) return showNotice('Your clipboard is empty');
+      const next: Item = { id: `${Date.now()}`, type: 'text', content: text.trim(), timestamp: Date.now(), favorite: false, source: 'Clipboard' };
+      persist([next, ...items]);
+      showNotice('Saved to your clipboard history');
+    } catch {
+      showNotice('Could not access your clipboard');
+    }
+  };
+
+  const copyItem = async (item: Item) => {
+    if (item.type === 'text') await Clipboard.setStringAsync(item.content);
+    showNotice('Copied to clipboard');
+  };
+
+  const toggleFavorite = (id: string) => persist(items.map((item) => item.id === id ? { ...item, favorite: !item.favorite } : item));
+  const deleteItem = (id: string) => persist(items.filter((item) => item.id !== id));
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    setRefreshing(false);
+  };
+
   return (
-    <ScreenContainer className="p-6">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="flex-1 gap-8">
-          {/* Hero Section */}
-          <View className="items-center gap-2">
-            <Text className="text-4xl font-bold text-foreground">Welcome</Text>
-            <Text className="text-base text-muted text-center">
-              Edit app/(tabs)/index.tsx to get started
-            </Text>
-          </View>
-
-          {/* Example Card */}
-          <View className="w-full max-w-sm self-center bg-surface rounded-2xl p-6 shadow-sm border border-border">
-            <Text className="text-lg font-semibold text-foreground mb-2">NativeWind Ready</Text>
-            <Text className="text-sm text-muted leading-relaxed">
-              Use Tailwind CSS classes directly in your React Native components.
-            </Text>
-          </View>
-
-          {/* Example Button */}
-          <View className="items-center">
-            <TouchableOpacity className="bg-primary px-6 py-3 rounded-full active:opacity-80">
-              <Text className="text-background font-semibold">Get Started</Text>
-            </TouchableOpacity>
-          </View>
+    <ScreenContainer className="px-5" containerClassName="bg-[#F6F4F1]">
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.eyebrow}>YOUR COLLECTION</Text>
+          <Text style={styles.title}>Clipboard</Text>
         </View>
-      </ScrollView>
+        <Pressable style={styles.settingsButton} onPress={() => showNotice('Settings are available in the Settings tab')}>
+          <IconSymbol name="gearshape.fill" size={21} color="#56616B" />
+        </Pressable>
+      </View>
+
+      <View style={styles.summaryRow}>
+        <View><Text style={styles.summaryNumber}>{items.length}</Text><Text style={styles.summaryLabel}>saved items</Text></View>
+        <View style={styles.summaryDivider} />
+        <View><Text style={styles.summaryNumber}>{items.filter((item) => item.favorite).length}</Text><Text style={styles.summaryLabel}>favorites</Text></View>
+        <View style={styles.summarySpacer} />
+        <Pressable style={styles.pasteButton} onPress={pasteClipboard}><IconSymbol name="plus" size={18} color="#FFFFFF" /><Text style={styles.pasteText}>Paste</Text></Pressable>
+      </View>
+
+      <View style={styles.searchWrap}>
+        <IconSymbol name="magnifyingglass" size={19} color="#8A949D" />
+        <TextInput value={query} onChangeText={setQuery} placeholder="Search your history" placeholderTextColor="#9AA3AA" style={styles.searchInput} returnKeyType="search" />
+        {query.length > 0 && <Pressable onPress={() => setQuery('')}><IconSymbol name="xmark.circle.fill" size={18} color="#AAB2B7" /></Pressable>}
+      </View>
+
+      <View style={styles.chipsRow}>{(['All', 'Text', 'Images', 'Favorites'] as Filter[]).map((chip) => <Pressable key={chip} onPress={() => setFilter(chip)} style={[styles.chip, filter === chip && styles.chipActive]}><Text style={[styles.chipText, filter === chip && styles.chipTextActive]}>{chip}</Text></Pressable>)}</View>
+      {notice ? <View style={styles.notice}><IconSymbol name="checkmark.circle.fill" size={17} color="#287A4B" /><Text style={styles.noticeText}>{notice}</Text></View> : null}
+
+      <View style={styles.listHeader}><Text style={styles.sectionTitle}>{filter === 'All' ? 'Recent items' : filter}</Text><Text style={styles.countText}>{visibleItems.length} {visibleItems.length === 1 ? 'item' : 'items'}</Text></View>
+      <FlatList data={visibleItems} keyExtractor={(item) => item.id} showsVerticalScrollIndicator={false} contentContainerStyle={styles.listContent} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#E76F51" />} ListEmptyComponent={<View style={styles.empty}><View style={styles.emptyIcon}><IconSymbol name="doc.on.clipboard" size={30} color="#E76F51" /></View><Text style={styles.emptyTitle}>Nothing here yet</Text><Text style={styles.emptyCopy}>Paste something from your clipboard and it will appear in your history.</Text></View>} renderItem={({ item }) => <View style={styles.card}>
+        <View style={[styles.typeIcon, item.type === 'image' && styles.imageIcon]}><IconSymbol name={item.type === 'image' ? 'photo' : 'doc.text'} size={20} color={item.type === 'image' ? '#8063A6' : '#E76F51'} /></View>
+        <View style={styles.cardBody}><View style={styles.metaRow}><Text style={styles.meta}>{item.source || 'Clipboard'} · {formatTime(item.timestamp)}</Text><Pressable onPress={() => toggleFavorite(item.id)} hitSlop={8}><IconSymbol name={item.favorite ? 'star.fill' : 'star'} size={19} color={item.favorite ? '#E9A23B' : '#AEB5B9'} /></Pressable></View><Text numberOfLines={3} style={styles.content}>{item.content}</Text><View style={styles.cardActions}><Pressable style={styles.copyAction} onPress={() => copyItem(item)}><IconSymbol name="doc.on.doc" size={15} color="#E76F51" /><Text style={styles.copyText}>Copy</Text></Pressable><Pressable onPress={() => Alert.alert('Delete item?', 'This will remove it from your history.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: () => deleteItem(item.id) }])}><Text style={styles.deleteText}>Delete</Text></Pressable></View></View>
+      </View>} />
     </ScreenContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, paddingBottom: 18 },
+  eyebrow: { color: '#E76F51', fontSize: 11, fontWeight: '800', letterSpacing: 1.4, marginBottom: 5 },
+  title: { color: '#1F2933', fontSize: 32, fontWeight: '800', letterSpacing: -1 },
+  settingsButton: { width: 42, height: 42, borderRadius: 21, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#E8E4DF' },
+  summaryRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
+  summaryNumber: { color: '#1F2933', fontSize: 20, fontWeight: '800' }, summaryLabel: { color: '#8A949D', fontSize: 12, marginTop: 2 }, summaryDivider: { height: 28, width: 1, backgroundColor: '#DDD8D2', marginHorizontal: 18 }, summarySpacer: { flex: 1 },
+  pasteButton: { backgroundColor: '#E76F51', borderRadius: 14, paddingHorizontal: 15, paddingVertical: 11, flexDirection: 'row', alignItems: 'center', gap: 6 }, pasteText: { color: '#FFFFFF', fontWeight: '800', fontSize: 14 },
+  searchWrap: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E8E4DF', height: 50, borderRadius: 16, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, gap: 10 }, searchInput: { flex: 1, color: '#1F2933', fontSize: 15 },
+  chipsRow: { flexDirection: 'row', gap: 8, marginTop: 14, marginBottom: 13 }, chip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 13, backgroundColor: '#ECE9E5' }, chipActive: { backgroundColor: '#FCE5DE' }, chipText: { color: '#7B8794', fontSize: 13, fontWeight: '700' }, chipTextActive: { color: '#C9553B' },
+  notice: { backgroundColor: '#DDF3E4', borderRadius: 12, paddingVertical: 10, paddingHorizontal: 13, flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 12 }, noticeText: { color: '#287A4B', fontSize: 13, fontWeight: '700' },
+  listHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 9 }, sectionTitle: { color: '#1F2933', fontSize: 18, fontWeight: '800' }, countText: { color: '#98A1A7', fontSize: 12, fontWeight: '600' }, listContent: { paddingBottom: 32, gap: 10 },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 18, padding: 15, flexDirection: 'row', borderWidth: 1, borderColor: '#E8E4DF' }, typeIcon: { width: 38, height: 38, borderRadius: 12, backgroundColor: '#FCE5DE', alignItems: 'center', justifyContent: 'center', marginRight: 12 }, imageIcon: { backgroundColor: '#E8DFF5' }, cardBody: { flex: 1 }, metaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7 }, meta: { color: '#9AA3AA', fontSize: 11, fontWeight: '600' }, content: { color: '#29343D', fontSize: 15, lineHeight: 21, fontWeight: '500' }, cardActions: { flexDirection: 'row', alignItems: 'center', marginTop: 12, gap: 15 }, copyAction: { flexDirection: 'row', alignItems: 'center', gap: 5 }, copyText: { color: '#E76F51', fontSize: 13, fontWeight: '800' }, deleteText: { color: '#A7AFB4', fontSize: 13, fontWeight: '700' },
+  empty: { alignItems: 'center', paddingTop: 55, paddingHorizontal: 36 }, emptyIcon: { width: 66, height: 66, borderRadius: 22, backgroundColor: '#FCE5DE', alignItems: 'center', justifyContent: 'center', marginBottom: 15 }, emptyTitle: { color: '#29343D', fontSize: 18, fontWeight: '800', marginBottom: 7 }, emptyCopy: { color: '#8A949D', fontSize: 14, lineHeight: 21, textAlign: 'center' },
+});

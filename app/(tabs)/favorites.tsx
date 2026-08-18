@@ -1,0 +1,15 @@
+import { useMemo } from 'react';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ScreenContainer } from '@/components/screen-container';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+
+const favorites = [
+  { id: '1', content: 'Design is not just what it looks like and feels like. Design is how it works.', source: 'Notes', time: '12m ago' },
+  { id: '2', content: 'hello@northstar.studio', source: 'Mail', time: 'Yesterday' },
+];
+
+export default function FavoritesScreen() {
+  const data = useMemo(() => favorites, []);
+  return <ScreenContainer className="px-5" containerClassName="bg-[#F6F4F1]"><View style={styles.header}><Text style={styles.eyebrow}>CURATED BY YOU</Text><Text style={styles.title}>Favorites</Text><Text style={styles.subtitle}>The snippets you reach for most often.</Text></View><FlatList data={data} keyExtractor={(item) => item.id} contentContainerStyle={styles.list} showsVerticalScrollIndicator={false} renderItem={({ item }) => <View style={styles.card}><View style={styles.row}><View style={styles.icon}><IconSymbol name="star.fill" size={18} color="#E9A23B" /></View><View style={{ flex: 1 }}><Text style={styles.meta}>{item.source} · {item.time}</Text><Text style={styles.content}>{item.content}</Text></View><Pressable hitSlop={10}><IconSymbol name="star.fill" size={20} color="#E9A23B" /></Pressable></View><View style={styles.actionRow}><Pressable style={styles.copy}><IconSymbol name="doc.on.doc" size={15} color="#E76F51" /><Text style={styles.copyText}>Copy to clipboard</Text></Pressable></View></View>} ListEmptyComponent={<View style={styles.empty}><Text style={styles.emptyTitle}>No favorites yet</Text><Text style={styles.emptyCopy}>Tap the star on any history item to keep it close.</Text></View>} /></ScreenContainer>;
+}
+const styles = StyleSheet.create({ header: { paddingTop: 8, paddingBottom: 24 }, eyebrow: { color: '#E76F51', fontSize: 11, fontWeight: '800', letterSpacing: 1.4, marginBottom: 5 }, title: { color: '#1F2933', fontSize: 32, fontWeight: '800', letterSpacing: -1 }, subtitle: { color: '#8A949D', fontSize: 14, marginTop: 7 }, list: { paddingBottom: 32, gap: 10 }, card: { backgroundColor: '#FFFFFF', borderRadius: 18, padding: 15, borderWidth: 1, borderColor: '#E8E4DF' }, row: { flexDirection: 'row', alignItems: 'flex-start', gap: 11 }, icon: { width: 34, height: 34, borderRadius: 11, backgroundColor: '#FFF3D9', alignItems: 'center', justifyContent: 'center' }, meta: { color: '#9AA3AA', fontSize: 11, fontWeight: '600', marginBottom: 6 }, content: { color: '#29343D', fontSize: 15, lineHeight: 21, fontWeight: '500' }, actionRow: { borderTopWidth: 1, borderTopColor: '#F0EDE9', marginTop: 13, paddingTop: 11 }, copy: { flexDirection: 'row', alignItems: 'center', gap: 5 }, copyText: { color: '#E76F51', fontWeight: '800', fontSize: 13 }, empty: { alignItems: 'center', paddingTop: 80 }, emptyTitle: { fontSize: 18, fontWeight: '800', color: '#29343D' }, emptyCopy: { color: '#8A949D', marginTop: 8, textAlign: 'center' } });
