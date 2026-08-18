@@ -147,3 +147,8 @@
 - [x] Show future subscription metadata placeholders without inventing billing details
 - [x] Add clear non-transactional store-management and cancellation guidance
 - [x] Keep manage-plan actions safe when store billing is unavailable
+
+- [x] Add benefit-led upgrade framing tied to batch export outcomes
+- [x] Add clear billing-readiness status without implying an active subscription
+- [x] Add a safe waitlist or notify-when-billing-is-live interaction placeholder
+- [x] Keep conversion messaging honest and non-transactional in preview mode
