@@ -187,3 +187,8 @@
 - [x] Show local data categories and retention behavior in a compact summary
 - [x] Add a clearer empty-state treatment after local monetization data is deleted
 - [x] Keep privacy copy concise, accessible, and non-transactional
+
+- [x] Add an actionable policy acknowledgment state without implying legal acceptance
+- [x] Add a clearer upgrade-readiness checklist summary to Settings
+- [x] Link readiness items to the relevant future billing or privacy setup state
+- [x] Keep all actions local, reversible, accessible, and non-transactional
