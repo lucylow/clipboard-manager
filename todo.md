@@ -202,3 +202,8 @@
 - [x] Clarify which future product metadata is required before prices can be shown
 - [x] Add a safe configuration-status summary without exposing invented billing details
 - [x] Keep all store-readiness actions local, reversible, accessible, and non-transactional
+
+- [x] Add a concise next-step guidance card for future billing configuration
+- [x] Add explicit owner/setup states for products, validation, and store management
+- [x] Keep guidance informative without collecting credentials or claiming billing is active
+- [x] Keep all setup guidance local, reversible, accessible, and non-transactional
