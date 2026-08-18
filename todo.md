@@ -237,3 +237,8 @@
 - [x] Add a one-tap retry path for local monetization hydration warnings
 - [x] Harden catalog retry timers and entitlement restore state transitions
 - [x] Keep all error states accessible and preserve the safe Free-plan fallback
+
+- [x] Inspect current build, runtime, and memory-pressure failures after the latest checkpoint
+- [x] Add stronger recovery feedback for repeated hydration failures
+- [x] Make catalog and entitlement retries guard against duplicate in-flight actions
+- [x] Keep all error states accessible and preserve the safe Free-plan fallback
