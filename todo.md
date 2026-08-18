@@ -303,3 +303,9 @@
 - [x] Verify the refined interface at mobile portrait sizes and rerun project checks
 - [x] Polish tab-bar active states and elevation without deprecated shadow props
 - [x] Remove render-time ThemeProvider console noise
+
+- [x] Audit the latest core screens for another high-impact interface refinement
+- [x] Improve visual consistency, content density, and mobile interaction states
+- [x] Verify the refined interface at mobile portrait sizes and rerun project checks
+- [x] Align History and Favorites card actions with a clearer primary/secondary hierarchy
+- [x] Run TypeScript, lint, and tests after the UI pass
