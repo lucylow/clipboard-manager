@@ -207,3 +207,8 @@
 - [x] Add explicit owner/setup states for products, validation, and store management
 - [x] Keep guidance informative without collecting credentials or claiming billing is active
 - [x] Keep all setup guidance local, reversible, accessible, and non-transactional
+
+- [x] Add a compact product-catalog placeholder with clearly unavailable status
+- [x] Distinguish configured benefits from pending product and price metadata
+- [x] Add a clear “no purchase controls yet” explanation near the upgrade CTA
+- [x] Keep product-catalog presentation local, reversible, accessible, and non-transactional
