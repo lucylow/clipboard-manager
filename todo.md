@@ -127,3 +127,8 @@
 - [x] Show which features remain available on the free plan
 - [x] Add restore-purchase preparation copy and loading-safe feedback
 - [x] Keep upgrade and restore actions explicitly non-transactional until billing is integrated
+
+- [x] Refine Clipboard Pro value messaging around concrete user outcomes
+- [x] Add clearer entitlement status indicators to gated export actions
+- [x] Add a transparent free-tier usage-limit presentation without enforcing billing
+- [x] Keep upgrade, restore, and limit messaging explicitly non-transactional until store billing is integrated
