@@ -267,3 +267,8 @@
 - [x] Add safe post-reset recovery feedback for local monetization state
 - [x] Harden catalog and entitlement operations against repeated failures
 - [x] Keep all error states accessible and preserve the safe Free-plan fallback
+
+- [x] Inspect current build, runtime, and memory-pressure failures after the latest checkpoint
+- [x] Add safer post-reset failure recovery and user feedback
+- [x] Harden catalog and entitlement operations against repeated or stale failures
+- [x] Keep all error states accessible and preserve the safe Free-plan fallback
