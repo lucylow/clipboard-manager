@@ -112,3 +112,8 @@
 - [x] Export image entries with OCR context without duplicating oversized payloads
 - [x] Add image action feedback for unavailable or corrupted media
 - [x] Keep image actions accessible in History and Favorites previews
+
+- [x] Add a premium plan presentation in Settings
+- [x] Add a local entitlement state with a free-tier default
+- [x] Gate a clearly premium-only capability without breaking core free usage
+- [x] Add a non-transactional upgrade CTA placeholder for future store integration
