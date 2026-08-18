@@ -277,3 +277,10 @@
 - [x] Add clearer retry-progress and failure feedback for entitlement recovery
 - [x] Harden catalog and local persistence operations against repeated or stale failures
 - [x] Keep all error states accessible and preserve the safe Free-plan fallback
+
+- [x] Inspect current build, runtime, and memory-pressure failures after the latest checkpoint
+- [x] Add clearer recovery feedback for repeated reset and restore failures
+- [x] Harden catalog and local persistence operations against stale or repeated failures
+- [x] Keep all error states accessible and preserve the safe Free-plan fallback
+- [x] Add deterministic tests for malformed clipboard storage payload recovery
+- [x] Run TypeScript, lint, tests, and mobile Settings preview verification
