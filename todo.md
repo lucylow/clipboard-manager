@@ -167,3 +167,8 @@
 - [x] Add a clear monetization privacy explanation near usage tracking
 - [x] Make usage and interest counters respect the local telemetry preference
 - [x] Keep entitlement and upgrade-state messaging clear when telemetry is disabled
+
+- [x] Add a delete-local-monetization-data action with confirmation
+- [x] Show a clear opt-in status label and what data is retained locally
+- [x] Make disabling measurement optionally clear recorded usage and event metadata
+- [x] Keep entitlement state separate from optional monetization measurement data
