@@ -272,3 +272,8 @@
 - [x] Add safer post-reset failure recovery and user feedback
 - [x] Harden catalog and entitlement operations against repeated or stale failures
 - [x] Keep all error states accessible and preserve the safe Free-plan fallback
+
+- [x] Inspect current build, runtime, and memory-pressure failures after the latest checkpoint
+- [x] Add clearer retry-progress and failure feedback for entitlement recovery
+- [x] Harden catalog and local persistence operations against repeated or stale failures
+- [x] Keep all error states accessible and preserve the safe Free-plan fallback
