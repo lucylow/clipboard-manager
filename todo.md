@@ -309,3 +309,9 @@
 - [x] Verify the refined interface at mobile portrait sizes and rerun project checks
 - [x] Align History and Favorites card actions with a clearer primary/secondary hierarchy
 - [x] Run TypeScript, lint, and tests after the UI pass
+
+- [x] Audit the latest core screens for another high-impact interface refinement
+- [x] Improve hierarchy, spacing, and mobile interaction feedback without changing behavior
+- [x] Verify the refined interface at mobile portrait sizes and rerun project checks
+- [x] Add pressed-state feedback to category filters and Favorites cards
+- [x] Run TypeScript, lint, and tests after the UI pass
