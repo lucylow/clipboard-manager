@@ -217,3 +217,8 @@
 - [x] Add a clearly labeled mock product preview with IDs, prices, and renewal terms
 - [x] Keep mock catalog data visibly non-purchasable and separate from live entitlements
 - [x] Improve Clipboard Pro benefits hierarchy with relevant icons and accessible labels
+
+- [x] Inspect and resolve current TypeScript, Metro, and dev-server errors
+- [x] Add product-catalog loading timeout and recoverable error state
+- [x] Add safe error feedback for monetization persistence and restore actions
+- [x] Keep error states accessible and prevent failed preview data from looking purchasable
