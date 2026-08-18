@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Alert, FlatList, Modal, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { haptic } from '@/lib/haptics';
 
 type Filter = 'All' | 'Text' | 'Images' | 'Favorites';
 type Item = { id: string; type: 'text' | 'image'; content: string; timestamp: number; favorite: boolean; source?: string };
@@ -36,7 +37,10 @@ export default function HistoryScreen() {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY).then((saved) => saved && setItems(JSON.parse(saved)));
+    AsyncStorage.getItem(STORAGE_KEY).then((saved) => {
+      if (saved) setItems(JSON.parse(saved));
+      else AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(initialItems));
+    });
   }, []);
 
   const persist = (next: Item[]) => {
@@ -59,8 +63,11 @@ export default function HistoryScreen() {
     try {
       const text = await Clipboard.getStringAsync();
       if (!text.trim()) return showNotice('Your clipboard is empty');
-      const next: Item = { id: `${Date.now()}`, type: 'text', content: text.trim(), timestamp: Date.now(), favorite: false, source: 'Clipboard' };
+      const normalized = text.trim();
+      if (items.some((item) => item.type === 'text' && item.content === normalized)) return showNotice('That item is already in your history');
+      const next: Item = { id: `${Date.now()}`, type: 'text', content: normalized, timestamp: Date.now(), favorite: false, source: 'Clipboard' };
       persist([next, ...items]);
+      haptic.success();
       showNotice('Saved to your clipboard history');
     } catch {
       showNotice('Could not access your clipboard');
@@ -68,12 +75,12 @@ export default function HistoryScreen() {
   };
 
   const copyItem = async (item: Item) => {
-    if (item.type === 'text') await Clipboard.setStringAsync(item.content);
+    if (item.type === 'text') { await Clipboard.setStringAsync(item.content); haptic.success(); }
     showNotice('Copied to clipboard');
   };
 
-  const toggleFavorite = (id: string) => persist(items.map((item) => item.id === id ? { ...item, favorite: !item.favorite } : item));
-  const deleteItem = (id: string) => persist(items.filter((item) => item.id !== id));
+  const toggleFavorite = (id: string) => { haptic.light(); persist(items.map((item) => item.id === id ? { ...item, favorite: !item.favorite } : item)); };
+  const deleteItem = (id: string) => { haptic.medium(); persist(items.filter((item) => item.id !== id)); };
 
   const onRefresh = async () => {
     setRefreshing(true);

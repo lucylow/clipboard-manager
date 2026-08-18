@@ -11,3 +11,8 @@
 - [x] Add clipboard and haptics Expo dependencies as needed
 - [x] Run TypeScript and lint checks
 - [x] Verify the main mobile UI at mobile preview size; desktop verification remains a future pass
+
+- [x] Synchronize Favorites tab with the live persisted history
+- [x] Add copy and favorite actions that work from the Favorites tab
+- [x] Improve clipboard feedback and prevent duplicate saved entries
+- [x] Add haptic feedback to primary clipboard actions
