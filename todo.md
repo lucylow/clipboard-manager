@@ -172,3 +172,8 @@
 - [x] Show a clear opt-in status label and what data is retained locally
 - [x] Make disabling measurement optionally clear recorded usage and event metadata
 - [x] Keep entitlement state separate from optional monetization measurement data
+
+- [x] Add a concise privacy explanation link or expandable note near monetization controls
+- [x] Show when local plan-interest feedback was saved without exposing identifying data
+- [x] Make the delete-local-data result more explicit about what was removed
+- [x] Keep all privacy and interest messaging non-transactional and accessible
