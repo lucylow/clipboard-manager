@@ -162,3 +162,8 @@
 - [x] Add local upgrade-interest and billing-notice measurement metadata
 - [x] Show a clearer distinction between informational usage tracking and enforced limits
 - [x] Keep all measurement local, non-identifying, and non-transactional
+
+- [x] Add a local-only telemetry preference with an explicit off state
+- [x] Add a clear monetization privacy explanation near usage tracking
+- [x] Make usage and interest counters respect the local telemetry preference
+- [x] Keep entitlement and upgrade-state messaging clear when telemetry is disabled

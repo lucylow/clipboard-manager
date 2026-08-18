@@ -19,6 +19,7 @@ type Item = { id: string; type: 'text' | 'image'; content: string; imageData?: s
 const STORAGE_KEY = 'clipboard-manager-items';
 const PREMIUM_KEY = 'clipboard-manager-premium';
 const USAGE_KEY = 'clipboard-manager-usage';
+const TELEMETRY_KEY = 'clipboard-manager-telemetry-enabled';
 const initialItems: Item[] = [
   { id: '1', type: 'text', content: 'Design is not just what it looks like and feels like. Design is how it works.', timestamp: Date.now() - 1000 * 60 * 12, favorite: true, category: 'Work', source: 'Notes' },
   { id: '2', type: 'text', content: 'https://developer.apple.com/design/human-interface-guidelines/', timestamp: Date.now() - 1000 * 60 * 58, favorite: false, category: 'Work', source: 'Safari' },
@@ -31,6 +32,8 @@ type UsageState = { exportCount: number; ocrCount: number; periodStart: string }
 
 async function trackUsage(kind: 'exportCount' | 'ocrCount') {
   try {
+    const telemetryEnabled = await AsyncStorage.getItem(TELEMETRY_KEY);
+    if (telemetryEnabled !== 'true') return;
     const saved = await AsyncStorage.getItem(USAGE_KEY);
     const parsed = saved ? JSON.parse(saved) as Partial<UsageState> : {};
     const next: UsageState = { exportCount: typeof parsed.exportCount === 'number' ? parsed.exportCount : 0, ocrCount: typeof parsed.ocrCount === 'number' ? parsed.ocrCount : 0, periodStart: typeof parsed.periodStart === 'string' ? parsed.periodStart : new Date().toISOString() };
