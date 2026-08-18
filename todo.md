@@ -315,3 +315,10 @@
 - [x] Verify the refined interface at mobile portrait sizes and rerun project checks
 - [x] Add pressed-state feedback to category filters and Favorites cards
 - [x] Run TypeScript, lint, and tests after the UI pass
+
+- [x] Audit the latest core screens for another high-impact interface refinement
+- [x] Improve visual hierarchy, interaction feedback, and mobile usability without changing behavior
+- [x] Verify the refined interface at mobile portrait sizes and rerun project checks
+- [x] Add a cohesive History summary panel around counts and Paste
+- [x] Fix History card content overflow on narrow mobile layouts
+- [x] Re-run TypeScript, lint, tests, and mobile preview verification
