@@ -97,3 +97,8 @@
 - [x] Add batch favorite and batch delete actions with confirmation
 - [x] Keep selection state safe across filtering and tab focus changes
 - [x] Add accessible selection counts and cancel controls
+
+- [x] Add batch category actions for selected History items
+- [x] Persist batch category changes through the shared storage queue
+- [x] Show confirmation feedback after batch category assignment
+- [x] Keep selection mode accessible while category actions are available
