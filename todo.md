@@ -142,3 +142,8 @@
 - [x] Make upgrade and restore feedback distinguish local preview state from future store validation
 - [x] Add a clear manage-plan status treatment for active and inactive entitlements
 - [x] Keep entitlement architecture ready for server receipt validation without enabling payments
+
+- [x] Add a dedicated manage-plan status view for active and inactive entitlement states
+- [x] Show future subscription metadata placeholders without inventing billing details
+- [x] Add clear non-transactional store-management and cancellation guidance
+- [x] Keep manage-plan actions safe when store billing is unavailable
