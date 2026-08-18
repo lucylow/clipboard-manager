@@ -152,3 +152,8 @@
 - [x] Add clear billing-readiness status without implying an active subscription
 - [x] Add a safe waitlist or notify-when-billing-is-live interaction placeholder
 - [x] Keep conversion messaging honest and non-transactional in preview mode
+
+- [x] Add a concise upgrade decision summary with the primary Pro outcome
+- [x] Add a billing-readiness checklist that distinguishes configured from unavailable capabilities
+- [x] Add a safe plan-selection placeholder without showing invented prices or renewal terms
+- [x] Keep decision-support messaging non-transactional and accessible
