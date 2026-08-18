@@ -227,3 +227,8 @@
 - [x] Add stronger initialization failure handling for monetization state
 - [x] Add retry-safe recovery for catalog and entitlement flows
 - [x] Keep error notices accessible, actionable, and non-transactional
+
+- [x] Inspect current build, runtime, and resource-pressure failures after the latest checkpoint
+- [x] Add a consolidated local-state hydration recovery path
+- [x] Improve retry behavior and feedback for monetization state operations
+- [x] Keep recovery states accessible and preserve safe Free-plan behavior
