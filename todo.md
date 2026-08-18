@@ -212,3 +212,8 @@
 - [x] Distinguish configured benefits from pending product and price metadata
 - [x] Add a clear “no purchase controls yet” explanation near the upgrade CTA
 - [x] Keep product-catalog presentation local, reversible, accessible, and non-transactional
+
+- [x] Add a skeleton loading state for product-catalog metadata
+- [x] Add a clearly labeled mock product preview with IDs, prices, and renewal terms
+- [x] Keep mock catalog data visibly non-purchasable and separate from live entitlements
+- [x] Improve Clipboard Pro benefits hierarchy with relevant icons and accessible labels
