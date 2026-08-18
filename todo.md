@@ -41,3 +41,8 @@
 - [x] Show category badges on Favorites cards
 - [x] Keep Favorites category display current after returning from History
 - [x] Improve category chip visual hierarchy and accessibility
+
+- [x] Search across source app and category metadata
+- [x] Show an explicit no-results state for active searches and filters
+- [x] Add a one-tap clear-search interaction with accessible labeling
+- [x] Keep result counts accurate for combined search and filter queries
