@@ -21,3 +21,8 @@
 - [x] Show success feedback after clearing history
 - [x] Refresh History when returning to the tab after external changes
 - [x] Add a clear-history fallback that resets the visible seeded state safely
+
+- [x] Add a clear-all history action with confirmation and consistent state reset
+- [x] Keep item detail state synchronized after favorite and delete changes
+- [x] Add a visible item count and empty-state update after local mutations
+- [x] Improve action error handling for clipboard read and write failures
