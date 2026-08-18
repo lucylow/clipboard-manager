@@ -107,3 +107,8 @@
 - [x] Add native share-sheet support with a clipboard fallback on web
 - [x] Keep image selections represented safely in exported content
 - [x] Add accessible export/share feedback and cancel behavior
+
+- [x] Add an image-specific save/share action from the lightbox
+- [x] Export image entries with OCR context without duplicating oversized payloads
+- [x] Add image action feedback for unavailable or corrupted media
+- [x] Keep image actions accessible in History and Favorites previews
