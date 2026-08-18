@@ -284,3 +284,8 @@
 - [x] Keep all error states accessible and preserve the safe Free-plan fallback
 - [x] Add deterministic tests for malformed clipboard storage payload recovery
 - [x] Run TypeScript, lint, tests, and mobile Settings preview verification
+
+- [x] Add mocked Settings tests for reset and restore overlap guards
+- [x] Audit and reduce Metro memory-pressure causes in the development build process
+- [x] Replace temporary pointerEvents usage with the standard React Native interaction pattern
+- [x] Re-run tests, TypeScript, lint, and mobile preview verification

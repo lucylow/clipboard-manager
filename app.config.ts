@@ -123,7 +123,8 @@ const config: ExpoConfig = {
   ],
   experiments: {
     typedRoutes: true,
-    reactCompiler: true,
+    // Keep Metro memory usage bounded in development; compiler transforms remain opt-in.
+    reactCompiler: false,
   },
 };
 
