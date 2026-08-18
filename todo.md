@@ -137,3 +137,8 @@
 - [x] Show transparent usage context in the Clipboard Pro upgrade journey
 - [x] Improve the gated export prompt with a direct benefit and current entitlement status
 - [x] Keep usage tracking informational and non-blocking until billing and limits are enabled
+
+- [x] Introduce a structured local entitlement record with status, source, and validation state
+- [x] Make upgrade and restore feedback distinguish local preview state from future store validation
+- [x] Add a clear manage-plan status treatment for active and inactive entitlements
+- [x] Keep entitlement architecture ready for server receipt validation without enabling payments
