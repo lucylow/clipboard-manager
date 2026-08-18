@@ -82,3 +82,8 @@
 - [x] Announce OCR and image-save progress through accessible status text
 - [x] Improve pressed and disabled feedback for Paste and OCR retry controls
 - [x] Ensure image preview controls remain usable with large text and narrow screens
+
+- [x] Recover gracefully from malformed AsyncStorage JSON
+- [x] Show a clear notice when saved history is repaired or reset
+- [x] Keep persistence writes serialized to avoid stale concurrent saves
+- [x] Preserve valid entries when one saved record is invalid

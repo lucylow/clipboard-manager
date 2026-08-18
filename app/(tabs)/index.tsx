@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Clipboard from 'expo-clipboard';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Image, Modal, Platform, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -43,20 +43,32 @@ export default function HistoryScreen() {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [lightboxItem, setLightboxItem] = useState<Item | null>(null);
   const [isSavingMedia, setIsSavingMedia] = useState(false);
+  const writeQueue = useRef<Promise<void>>(Promise.resolve());
   const insets = useSafeAreaInsets();
   const ocrMutation = trpc.ocr.extract.useMutation();
 
   const loadItems = useCallback(async () => {
-    const saved = await AsyncStorage.getItem(STORAGE_KEY);
-    if (saved) { const normalized = normalizeItems(JSON.parse(saved)); setItems(normalized); await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(normalized)); }
-    else { setItems(initialItems); await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(initialItems)); }
+    try {
+      const saved = await AsyncStorage.getItem(STORAGE_KEY);
+      if (!saved) { setItems(initialItems); await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(initialItems)); return; }
+      const parsed = JSON.parse(saved);
+      const normalized = normalizeItems(Array.isArray(parsed) ? parsed : []);
+      setItems(normalized);
+      if (!Array.isArray(parsed) || normalized.length !== parsed.length) setNotice('History repaired: invalid entries were removed');
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
+    } catch {
+      setItems(initialItems);
+      try { await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(initialItems)); } catch { /* keep the in-memory fallback */ }
+      setNotice('Saved history could not be read, so starter items were restored');
+    }
   }, []);
   useEffect(() => { void loadItems(); }, [loadItems]);
   useFocusEffect(useCallback(() => { void loadItems(); }, [loadItems]));
 
   const persist = (next: Item[]) => {
     setItems(next);
-    return AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    writeQueue.current = writeQueue.current.catch(() => undefined).then(() => AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next)));
+    return writeQueue.current;
   };
 
   const visibleItems = useMemo(() => items.filter((item) => {
@@ -74,8 +86,8 @@ export default function HistoryScreen() {
   const saveImageWithOcr = async (imageData: string, imageSize?: { width: number; height: number }, source = 'Clipboard') => {
     if (isSavingMedia || ocrMutation.isPending) return showNotice('Media processing is already in progress');
     if (imageData.length > 4_500_000) return showNotice('This image is too large to save locally');
-    setIsSavingMedia(true);
     if (items.some((item) => item.type === 'image' && item.imageData === imageData)) return showNotice('That image is already in your history');
+    setIsSavingMedia(true);
     const next: Item = { id: `${Date.now()}`, type: 'image', content: 'Image from clipboard', imageData, imageSize, timestamp: Date.now(), favorite: false, category: 'Personal', source };
     try { await persist([next, ...items]); } catch { setItems(items); setIsSavingMedia(false); return showNotice('Could not save this image'); }
     haptic.success(); showNotice('Image saved · extracting text');
