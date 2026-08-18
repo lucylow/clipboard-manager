@@ -102,3 +102,8 @@
 - [x] Persist batch category changes through the shared storage queue
 - [x] Show confirmation feedback after batch category assignment
 - [x] Keep selection mode accessible while category actions are available
+
+- [x] Add export text for selected clipboard items
+- [x] Add native share-sheet support with a clipboard fallback on web
+- [x] Keep image selections represented safely in exported content
+- [x] Add accessible export/share feedback and cancel behavior
