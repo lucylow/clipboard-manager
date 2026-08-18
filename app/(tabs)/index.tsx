@@ -18,6 +18,7 @@ type Item = { id: string; type: 'text' | 'image'; content: string; imageData?: s
 
 const STORAGE_KEY = 'clipboard-manager-items';
 const PREMIUM_KEY = 'clipboard-manager-premium';
+const USAGE_KEY = 'clipboard-manager-usage';
 const initialItems: Item[] = [
   { id: '1', type: 'text', content: 'Design is not just what it looks like and feels like. Design is how it works.', timestamp: Date.now() - 1000 * 60 * 12, favorite: true, category: 'Work', source: 'Notes' },
   { id: '2', type: 'text', content: 'https://developer.apple.com/design/human-interface-guidelines/', timestamp: Date.now() - 1000 * 60 * 58, favorite: false, category: 'Work', source: 'Safari' },
@@ -25,6 +26,18 @@ const initialItems: Item[] = [
   { id: '4', type: 'text', content: 'Remember to review the launch checklist before Friday.', timestamp: Date.now() - 1000 * 60 * 60 * 5, favorite: false, category: 'Personal', source: 'Reminders' },
   { id: '5', type: 'text', content: 'hello@northstar.studio', timestamp: Date.now() - 1000 * 60 * 60 * 24, favorite: true, category: 'Personal', source: 'Mail' },
 ];
+
+type UsageState = { exportCount: number; ocrCount: number; periodStart: string };
+
+async function trackUsage(kind: 'exportCount' | 'ocrCount') {
+  try {
+    const saved = await AsyncStorage.getItem(USAGE_KEY);
+    const parsed = saved ? JSON.parse(saved) as Partial<UsageState> : {};
+    const next: UsageState = { exportCount: typeof parsed.exportCount === 'number' ? parsed.exportCount : 0, ocrCount: typeof parsed.ocrCount === 'number' ? parsed.ocrCount : 0, periodStart: typeof parsed.periodStart === 'string' ? parsed.periodStart : new Date().toISOString() };
+    next[kind] += 1;
+    await AsyncStorage.setItem(USAGE_KEY, JSON.stringify(next));
+  } catch { /* usage tracking is informational and must never block clipboard work */ }
+}
 
 function normalizeItems(items: Item[]) { return items.filter((item) => item && typeof item.id === 'string' && (item.type === 'text' || item.type === 'image') && typeof item.content === 'string').map((item) => item.category ? item : { ...item, category: item.id === '1' || item.id === '2' ? 'Work' as Category : item.id === '4' || item.id === '5' ? 'Personal' as Category : undefined }); }
 
@@ -103,6 +116,7 @@ export default function HistoryScreen() {
       const result = await ocrMutation.mutateAsync({ imageData });
       const updated = { ...next, ocrText: result.text || undefined };
       persist([updated, ...items]);
+      void trackUsage('ocrCount');
       showNotice(result.text ? 'Image saved · text extracted' : 'Image saved · no text found');
     } catch { showNotice('Image saved · text extraction unavailable'); }
     finally { setIsSavingMedia(false); }
@@ -116,6 +130,7 @@ export default function HistoryScreen() {
       const updated = items.map((candidate) => candidate.id === item.id ? { ...candidate, ocrText: result.text || undefined } : candidate);
       await persist(updated);
       setLightboxItem(updated.find((candidate) => candidate.id === item.id) ?? item);
+      void trackUsage('ocrCount');
       showNotice(result.text ? 'Text extracted' : 'No readable text found');
     } catch { showNotice('Text extraction failed · try again'); }
   };
@@ -170,7 +185,7 @@ export default function HistoryScreen() {
   const batchFavorite = () => { if (!selectedIds.length) return showNotice('Select at least one item'); persist(items.map((item) => selectedIds.includes(item.id) ? { ...item, favorite: true } : item)); haptic.light(); showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} added to favorites`); exitSelectionMode(); };
   const batchCategory = () => { if (!selectedIds.length) return showNotice('Select at least one item'); Alert.alert('Assign category', 'Choose a category for the selected items.', [{ text: 'Work', onPress: () => { persist(items.map((item) => selectedIds.includes(item.id) ? { ...item, category: 'Work' } : item)); haptic.light(); showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} moved to Work`); exitSelectionMode(); } }, { text: 'Personal', onPress: () => { persist(items.map((item) => selectedIds.includes(item.id) ? { ...item, category: 'Personal' } : item)); haptic.light(); showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} moved to Personal`); exitSelectionMode(); } }, { text: 'Cancel', style: 'cancel' }]); };
   const exportSelected = async () => {
-    if (!isPremium) return showNotice('Clipboard Pro is required for export');
+    if (!isPremium) return showNotice('Batch export is a Clipboard Pro feature · your history remains free');
     if (!selectedIds.length) return showNotice('Select at least one item');
     const selected = items.filter((item) => selectedIds.includes(item.id));
     const exportText = selected.map((item, index) => `${index + 1}. ${item.type === 'image' ? '[Image]' : item.content}${item.ocrText ? `\nOCR: ${item.ocrText}` : ''}${item.category ? `\nCategory: ${item.category}` : ''}${item.source ? `\nSource: ${item.source}` : ''}`).join('\n\n');
@@ -185,6 +200,7 @@ export default function HistoryScreen() {
         if (await Sharing.isAvailableAsync()) { await Sharing.shareAsync(fileUri, { dialogTitle: 'Share clipboard export', mimeType: 'text/plain' }); showNotice('Export ready to share'); }
         else { await Clipboard.setStringAsync(exportText); showNotice('Sharing unavailable; export copied to clipboard'); }
       }
+      void trackUsage('exportCount');
       haptic.success();
       exitSelectionMode();
     } catch { haptic.error(); showNotice('Could not export selected items'); }

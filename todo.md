@@ -132,3 +132,8 @@
 - [x] Add clearer entitlement status indicators to gated export actions
 - [x] Add a transparent free-tier usage-limit presentation without enforcing billing
 - [x] Keep upgrade, restore, and limit messaging explicitly non-transactional until store billing is integrated
+
+- [x] Add local usage-foundation state for future OCR and export limits
+- [x] Show transparent usage context in the Clipboard Pro upgrade journey
+- [x] Improve the gated export prompt with a direct benefit and current entitlement status
+- [x] Keep usage tracking informational and non-blocking until billing and limits are enabled
