@@ -222,3 +222,8 @@
 - [x] Add product-catalog loading timeout and recoverable error state
 - [x] Add safe error feedback for monetization persistence and restore actions
 - [x] Keep error states accessible and prevent failed preview data from looking purchasable
+
+- [x] Inspect current build, Metro, and preview errors after the latest checkpoint
+- [x] Add stronger initialization failure handling for monetization state
+- [x] Add retry-safe recovery for catalog and entitlement flows
+- [x] Keep error notices accessible, actionable, and non-transactional
