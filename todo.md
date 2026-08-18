@@ -16,3 +16,8 @@
 - [x] Add copy and favorite actions that work from the Favorites tab
 - [x] Improve clipboard feedback and prevent duplicate saved entries
 - [x] Add haptic feedback to primary clipboard actions
+
+- [x] Persist the dark-mode preference for future theme integration
+- [x] Show success feedback after clearing history
+- [x] Refresh History when returning to the tab after external changes
+- [x] Add a clear-history fallback that resets the visible seeded state safely

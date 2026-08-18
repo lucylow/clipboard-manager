@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Clipboard from 'expo-clipboard';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, FlatList, Modal, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { ScreenContainer } from '@/components/screen-container';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { haptic } from '@/lib/haptics';
@@ -36,12 +37,13 @@ export default function HistoryScreen() {
   const [notice, setNotice] = useState('');
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
-  useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY).then((saved) => {
-      if (saved) setItems(JSON.parse(saved));
-      else AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(initialItems));
-    });
+  const loadItems = useCallback(async () => {
+    const saved = await AsyncStorage.getItem(STORAGE_KEY);
+    if (saved) setItems(JSON.parse(saved));
+    else { setItems(initialItems); await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(initialItems)); }
   }, []);
+  useEffect(() => { void loadItems(); }, [loadItems]);
+  useFocusEffect(useCallback(() => { void loadItems(); }, [loadItems]));
 
   const persist = (next: Item[]) => {
     setItems(next);
