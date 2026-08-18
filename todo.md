@@ -26,3 +26,8 @@
 - [x] Keep item detail state synchronized after favorite and delete changes
 - [x] Add a visible item count and empty-state update after local mutations
 - [x] Improve action error handling for clipboard read and write failures
+
+- [x] Add delete action inside the item-detail modal
+- [x] Keep the detail modal synchronized after deleting or clearing items
+- [x] Persist and restore the selected settings presentation state consistently
+- [x] Add visible confirmation when detail actions mutate an item
