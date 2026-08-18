@@ -77,3 +77,8 @@
 - [x] Show image saving and OCR progress as a non-blocking mobile status state
 - [x] Add pressed-state feedback to image preview and primary media actions
 - [x] Keep corrupted image entries recoverable without crashing the history list
+
+- [x] Add complete accessibility labels and states to primary History actions
+- [x] Announce OCR and image-save progress through accessible status text
+- [x] Improve pressed and disabled feedback for Paste and OCR retry controls
+- [x] Ensure image preview controls remain usable with large text and narrow screens
