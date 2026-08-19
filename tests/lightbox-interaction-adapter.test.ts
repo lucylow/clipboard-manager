@@ -399,6 +399,27 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.getState()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
   });
 
+  it('reports the exact pending-event cap and recovers after capped work drains', () => {
+    const adapter = createLightboxInteractionAdapter();
+    let queued = false;
+    let atCap = 0;
+    adapter.subscribe((state) => {
+      if (!queued && state.visible) {
+        queued = true;
+        for (let index = 0; index < LIGHTBOX_MAX_PENDING_EVENTS; index += 1) {
+          adapter[index % 2 === 0 ? 'close' : 'open']();
+        }
+        atCap = adapter.getDiagnostics().pendingEventCount;
+      }
+    });
+
+    adapter.open();
+
+    expect(atCap).toBe(LIGHTBOX_MAX_PENDING_EVENTS);
+    expect(adapter.getDiagnostics()).toMatchObject({ pendingEventCount: 0, notifying: false });
+    expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+  });
+
   it('caps pathological re-entrant event growth and recovers for later dispatches', () => {
     const adapter = createLightboxInteractionAdapter();
     let notifications = 0;

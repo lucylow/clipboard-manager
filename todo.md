@@ -738,3 +738,7 @@
 - [x] Audit queue compaction and per-drain-cap interactions after coalescing
 - [x] Preserve bounded FIFO behavior at queue-head and cap boundaries
 - [x] Add queue-boundary coverage, rerun validation, and save the checkpoint
+
+- [x] Audit diagnostic pending-event counts at the queue cap boundary
+- [x] Preserve accurate cap-boundary diagnostics and recovery dispatch behavior
+- [x] Add cap-boundary diagnostics coverage, rerun validation, and save the checkpoint
