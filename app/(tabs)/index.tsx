@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Clipboard from 'expo-clipboard';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system/legacy';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Image, Modal, Platform, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
@@ -65,6 +65,7 @@ export default function HistoryScreen() {
   const [lastRefreshedAt, setLastRefreshedAt] = useState<number | null>(null);
   const [isPasting, setIsPasting] = useState(false);
   const [notice, setNotice] = useState('');
+  const noticeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [lightboxItem, setLightboxItem] = useState<Item | null>(null);
   const [isSavingMedia, setIsSavingMedia] = useState(false);
@@ -75,7 +76,14 @@ export default function HistoryScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const ocrMutation = trpc.ocr.extract.useMutation();
-  useEffect(() => { AsyncStorage.getItem(PREMIUM_KEY).then((saved) => setIsPremium(saved === 'true')); }, []);
+  useEffect(() => {
+    let active = true;
+    AsyncStorage.getItem(PREMIUM_KEY)
+      .then((saved) => { if (active) setIsPremium(saved === 'true'); })
+      .catch(() => { if (active) setIsPremium(false); });
+    return () => { active = false; };
+  }, []);
+  useEffect(() => () => { if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current); }, []);
 
   const loadItems = useCallback(async (): Promise<boolean> => {
     try {
@@ -111,8 +119,12 @@ export default function HistoryScreen() {
   }), [items, query, filter]);
 
   const showNotice = (message: string) => {
+    if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);
     setNotice(message);
-    setTimeout(() => setNotice(''), 2200);
+    noticeTimerRef.current = setTimeout(() => {
+      noticeTimerRef.current = null;
+      setNotice('');
+    }, 2200);
   };
 
   const saveImageWithOcr = async (imageData: string, imageSize?: { width: number; height: number }, source = 'Clipboard') => {

@@ -376,3 +376,9 @@
 - [x] Add a compact mobile filter bottom sheet for type and category filters
 - [x] Verify the new flows at mobile portrait sizes and rerun project checks
 - [x] Run TypeScript, lint, and tests for the three UX features
+
+- [x] Audit the latest code for high-impact maintainability and resilience gaps
+- [x] Implement targeted code-quality and reliability improvements without changing privacy behavior
+- [x] Run automated checks and verify core behavior before checkpointing
+- [x] Make History notice timers cleanup-safe and prevent stale timer overwrites
+- [x] Handle local premium-state hydration failures with a safe Free-plan fallback
