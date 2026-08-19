@@ -11,6 +11,20 @@ export type LightboxInteractionEvent =
   | { type: 'action-success' }
   | { type: 'action-failure' };
 
+export function getLightboxInteractionState(options: {
+  hasImage: boolean;
+  isSharing: boolean;
+  isOcrPending: boolean;
+  hasShareFailure: boolean;
+  hasOcrSaveFailure: boolean;
+}): LightboxInteractionState {
+  return {
+    visible: options.hasImage,
+    actionBusy: options.isSharing || options.isOcrPending,
+    retryAvailable: options.hasShareFailure || options.hasOcrSaveFailure,
+  };
+}
+
 export function reduceLightboxInteraction(
   state: LightboxInteractionState,
   event: LightboxInteractionEvent,

@@ -1,9 +1,11 @@
 import { getLightboxControlState, type LightboxControlState } from './lightbox-control-state';
+import { getLightboxInteractionState, type LightboxInteractionState } from './lightbox-interaction-state';
 import { getLightboxVisibilityState, type LightboxVisibilityState } from './lightbox-visibility-state';
 
 export type LightboxPresentationState = {
   visibility: LightboxVisibilityState;
   controls: LightboxControlState;
+  interaction: LightboxInteractionState;
 };
 
 export function getLightboxPresentationState(options: {
@@ -17,5 +19,6 @@ export function getLightboxPresentationState(options: {
   return {
     visibility: getLightboxVisibilityState(options.hasImage),
     controls: getLightboxControlState(options),
+    interaction: getLightboxInteractionState(options),
   };
 }

@@ -622,3 +622,7 @@
 - [x] Define deterministic lightbox open, close, and retry interaction transitions
 - [x] Add coverage for rapid dismissal and retry-state recovery transitions
 - [x] Rerun bounded TypeScript, lint, tests, and save the checkpoint
+
+- [x] Align lightbox presentation busy and retry semantics with the interaction reducer
+- [x] Preserve existing OCR/share accessibility labels and mutual-exclusion behavior
+- [x] Add deterministic integration coverage, rerun validation, and save the checkpoint
