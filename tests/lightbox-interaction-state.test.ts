@@ -29,4 +29,9 @@ describe('reduceLightboxInteraction', () => {
   it('ignores late failure after the lightbox has already closed', () => {
     expect(reduceLightboxInteraction(closed, { type: 'action-failure' })).toEqual(closed);
   });
+
+  it('keeps closed close and success events as identity no-ops', () => {
+    expect(reduceLightboxInteraction(closed, { type: 'close' })).toBe(closed);
+    expect(reduceLightboxInteraction(closed, { type: 'action-success' })).toBe(closed);
+  });
 });

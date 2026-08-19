@@ -34,11 +34,11 @@ export function reduceLightboxInteraction(
     case 'open':
       return { visible: true, actionBusy: false, retryAvailable: false };
     case 'close':
-      return { visible: false, actionBusy: false, retryAvailable: false };
+      return state.visible ? { visible: false, actionBusy: false, retryAvailable: false } : state;
     case 'action-start':
       return state.visible ? { ...state, actionBusy: true, retryAvailable: false } : state;
     case 'action-success':
-      return { ...state, actionBusy: false, retryAvailable: false };
+      return state.visible ? { ...state, actionBusy: false, retryAvailable: false } : state;
     case 'action-failure':
       return state.visible ? { ...state, actionBusy: false, retryAvailable: true } : state;
   }

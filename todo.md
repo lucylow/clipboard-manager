@@ -658,3 +658,7 @@
 - [x] Audit lightbox adapter public dispatch behavior for no-op and edge-state transitions
 - [x] Apply a defensive refinement without changing valid transition ordering
 - [x] Add edge-transition coverage, rerun validation, and save the checkpoint
+
+- [x] Audit lightbox reducer no-op transitions for explicit state invariants
+- [x] Apply a defensive immutable-state refinement without changing UI behavior
+- [x] Add no-op transition coverage, rerun validation, and save the checkpoint
