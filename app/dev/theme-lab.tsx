@@ -9,6 +9,12 @@ import { useColors } from "@/hooks/use-colors";
 import { useThemeContext } from "@/lib/theme-provider";
 import { diagnosticsEqual } from "@/lib/lightbox-diagnostics";
 import {
+  LIGHTBOX_ACTION_CONTROLS,
+  resetLightboxAdapter,
+  runLightboxAction,
+  type LightboxAction,
+} from "@/lib/lightbox-diagnostics-panel";
+import {
   createLightboxInteractionAdapter,
   type LightboxInteractionAdapter,
   type LightboxInteractionDiagnostics,
@@ -17,15 +23,6 @@ import {
 type PaletteName = keyof typeof SchemeColors.light;
 
 const paletteNames: PaletteName[] = Object.keys(SchemeColors.light) as PaletteName[];
-
-type LightboxAction = "open" | "close" | "startAction" | "succeed" | "fail";
-const lightboxActions: readonly (readonly [LightboxAction, string])[] = [
-  ["open", "Open"],
-  ["close", "Close"],
-  ["startAction", "Start action"],
-  ["succeed", "Succeed"],
-  ["fail", "Fail"],
-];
 
 function ColorSwatch({ name, value }: { name: PaletteName; value: string }) {
   return (
@@ -81,14 +78,12 @@ export default function ThemeLabScreen() {
     };
   }, [lightboxAdapter]);
 
-  const runLightboxAction = useCallback((action: LightboxAction) => {
-    if (lightboxAdapter.getDiagnostics().released) return;
-    lightboxAdapter[action]();
+  const handleLightboxAction = useCallback((action: LightboxAction) => {
+    runLightboxAction(lightboxAdapter, action);
   }, [lightboxAdapter]);
 
-  const resetLightboxAdapter = useCallback(() => {
-    lightboxAdapter.release();
-    const nextAdapter = createLightboxInteractionAdapter();
+  const handleResetLightboxAdapter = useCallback(() => {
+    const nextAdapter = resetLightboxAdapter(lightboxAdapter, createLightboxInteractionAdapter);
     setLightboxAdapter(nextAdapter);
     const nextDiagnostics = nextAdapter.getDiagnostics();
     setLightboxDiagnostics((previous) =>
@@ -292,12 +287,12 @@ export default function ThemeLabScreen() {
             </View>
 
             <View className="mt-3 flex-row flex-wrap gap-2">
-              {lightboxActions.map(([action, label]) => (
+              {LIGHTBOX_ACTION_CONTROLS.map(([action, label]) => (
                 <Pressable
                   key={action}
                   accessibilityRole="button"
                   accessibilityLabel={`Run lightbox ${label.toLowerCase()} action`}
-                  onPress={() => runLightboxAction(action)}
+                  onPress={() => handleLightboxAction(action)}
                   style={({ pressed }) => [
                     styles.diagnosticButton,
                     { backgroundColor: colors.tint, opacity: pressed ? 0.72 : 1 },
@@ -309,7 +304,7 @@ export default function ThemeLabScreen() {
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Reset lightbox diagnostics adapter"
-                onPress={resetLightboxAdapter}
+                onPress={handleResetLightboxAdapter}
                 style={({ pressed }) => [
                   styles.diagnosticButton,
                   styles.diagnosticResetButton,

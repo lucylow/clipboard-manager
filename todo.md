@@ -854,3 +854,7 @@
 - [x] Audit table-driven diagnostics mutation cases for readability
 - [x] Refine mutation case typing and field labels without changing coverage
 - [x] Re-run validation and save the mutation-case checkpoint
+
+- [x] Inspect diagnostics panel reset and disabled-action behavior
+- [x] Add deterministic UI-level coverage for reset and disabled controls
+- [x] Re-run validation and save the diagnostics-panel test checkpoint
