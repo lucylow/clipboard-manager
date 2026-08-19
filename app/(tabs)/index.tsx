@@ -14,6 +14,7 @@ import { createNoticeController, type NoticeController } from '@/lib/notice-cont
 import { trpc } from '@/lib/trpc';
 import { useHistoryPersistence } from '@/hooks/use-history-persistence';
 import { removeClipboardItems, updateClipboardItem, updateClipboardItems } from '@/lib/clipboard-item-mutations';
+import { withTimeout } from '@/lib/with-timeout';
 
 type Filter = 'All' | 'Text' | 'Images' | 'Favorites' | 'Work' | 'Personal';
 type Category = 'Work' | 'Personal';
@@ -246,12 +247,14 @@ export default function HistoryScreen() {
     const selected = items.filter((item) => selectedIds.includes(item.id));
     const exportText = selected.map((item, index) => `${index + 1}. ${item.type === 'image' ? '[Image]' : item.content}${item.ocrText ? `\nOCR: ${item.ocrText}` : ''}${item.category ? `\nCategory: ${item.category}` : ''}${item.source ? `\nSource: ${item.source}` : ''}`).join('\n\n');
     setIsExporting(true);
+    let temporaryFileUri: string | null = null;
     try {
       if (Platform.OS === 'web') {
         await Clipboard.setStringAsync(exportText);
         showNotice('Selected items copied as export text');
       } else {
         const fileUri = `${FileSystem.cacheDirectory}clipboard-export.txt`;
+        temporaryFileUri = fileUri;
         await FileSystem.writeAsStringAsync(fileUri, exportText, { encoding: FileSystem.EncodingType.UTF8 });
         if (await Sharing.isAvailableAsync()) { await Sharing.shareAsync(fileUri, { dialogTitle: 'Share clipboard export', mimeType: 'text/plain' }); showNotice('Export ready to share'); }
         else { await Clipboard.setStringAsync(exportText); showNotice('Sharing unavailable; export copied to clipboard'); }
@@ -260,18 +263,25 @@ export default function HistoryScreen() {
       haptic.success();
       exitSelectionMode();
     } catch { haptic.error(); showNotice('Could not export selected items'); }
-    finally { setIsExporting(false); }
+    finally {
+      if (temporaryFileUri) {
+        try { await withTimeout(FileSystem.deleteAsync(temporaryFileUri, { idempotent: true }), 1500, 'Export cleanup timed out'); } catch { /* cleanup must not replace the share result */ }
+      }
+      setIsExporting(false);
+    }
   };
   const shareImageItem = async (item: Item) => {
     if (isExporting) return showNotice('Another share or export is already in progress');
     if (!item.imageData) return showNotice('This image is no longer available');
     setIsExporting(true);
+    let temporaryFileUri: string | null = null;
     try {
       if (Platform.OS === 'web') {
         await Clipboard.setStringAsync(item.ocrText ? `Image OCR text:\n${item.ocrText}` : 'Image saved in Clipboard Manager');
         showNotice('Image context copied to clipboard');
       } else {
         const fileUri = `${FileSystem.cacheDirectory}clipboard-image-${item.id}.png`;
+        temporaryFileUri = fileUri;
         await FileSystem.writeAsStringAsync(fileUri, item.imageData, { encoding: FileSystem.EncodingType.Base64 });
         if (await Sharing.isAvailableAsync()) { await Sharing.shareAsync(fileUri, { dialogTitle: 'Share saved image', mimeType: 'image/png' }); showNotice('Image ready to share'); }
         else { await Clipboard.setImageAsync(item.imageData); showNotice('Sharing unavailable; image copied to clipboard'); }
@@ -279,7 +289,12 @@ export default function HistoryScreen() {
       setFailedImageShareId(null);
       haptic.success();
     } catch { setFailedImageShareId(item.id); haptic.error(); showNotice('Could not share this image · try again'); }
-    finally { setIsExporting(false); }
+    finally {
+      if (temporaryFileUri) {
+        try { await withTimeout(FileSystem.deleteAsync(temporaryFileUri, { idempotent: true }), 1500, 'Image-share cleanup timed out'); } catch { /* cleanup must not replace the share result */ }
+      }
+      setIsExporting(false);
+    }
   };
   const batchDelete = () => {
     if (!selectedIds.length) return showNotice('Select at least one item');

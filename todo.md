@@ -461,3 +461,7 @@
 - [x] Make image sharing and selected export keep explicit recovery state on failure
 - [x] Prevent stale busy states from blocking later image actions
 - [x] Add regression coverage and rerun TypeScript, lint, and tests
+
+- [x] Add bounded cleanup for temporary native image-share files
+- [x] Preserve sharing success and failure feedback when cleanup itself fails
+- [x] Add regression coverage and rerun TypeScript, lint, and tests
