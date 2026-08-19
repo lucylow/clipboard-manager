@@ -79,6 +79,7 @@ export default function HistoryScreen() {
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isExporting, setIsExporting] = useState(false);
+  const [failedImageShareId, setFailedImageShareId] = useState<string | null>(null);
   const [isPremium, setIsPremium] = useState(false);
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -239,6 +240,7 @@ export default function HistoryScreen() {
     ]);
   };
   const exportSelected = async () => {
+    if (isExporting) return showNotice('Another share or export is already in progress');
     if (!isPremium) return showNotice('Batch export is a Clipboard Pro feature · your history remains free');
     if (!selectedIds.length) return showNotice('Select at least one item');
     const selected = items.filter((item) => selectedIds.includes(item.id));
@@ -261,6 +263,7 @@ export default function HistoryScreen() {
     finally { setIsExporting(false); }
   };
   const shareImageItem = async (item: Item) => {
+    if (isExporting) return showNotice('Another share or export is already in progress');
     if (!item.imageData) return showNotice('This image is no longer available');
     setIsExporting(true);
     try {
@@ -273,8 +276,9 @@ export default function HistoryScreen() {
         if (await Sharing.isAvailableAsync()) { await Sharing.shareAsync(fileUri, { dialogTitle: 'Share saved image', mimeType: 'image/png' }); showNotice('Image ready to share'); }
         else { await Clipboard.setImageAsync(item.imageData); showNotice('Sharing unavailable; image copied to clipboard'); }
       }
+      setFailedImageShareId(null);
       haptic.success();
-    } catch { haptic.error(); showNotice('Could not share this image'); }
+    } catch { setFailedImageShareId(item.id); haptic.error(); showNotice('Could not share this image · try again'); }
     finally { setIsExporting(false); }
   };
   const batchDelete = () => {
@@ -390,7 +394,7 @@ export default function HistoryScreen() {
         </View></View>
       </Modal>
       <Modal visible={lightboxItem !== null} animationType="fade" transparent onRequestClose={() => setLightboxItem(null)}>
-        <View style={styles.lightboxBackdrop}><Pressable accessibilityRole="button" accessibilityLabel="Close image preview" style={[styles.lightboxClose, { top: insets.top + 12 }]} onPress={() => setLightboxItem(null)}><Text style={styles.lightboxCloseText}>Close</Text></Pressable>{lightboxItem?.imageData ? <Image resizeMode="contain" style={styles.lightboxImage} source={{ uri: `data:image/png;base64,${lightboxItem.imageData}` }} /> : <ActivityIndicator color="#FFFFFF" />}{lightboxItem ? <View style={styles.lightboxInfo}><Text style={styles.lightboxInfoTitle}>{lightboxItem.ocrText ? 'Extracted text' : 'No extracted text yet'}</Text>{lightboxItem.ocrText ? <Text style={styles.lightboxInfoText}>{lightboxItem.ocrText}</Text> : null}{lightboxItem.imageSize ? <Text style={styles.lightboxInfoMeta}>{lightboxItem.imageSize.width} × {lightboxItem.imageSize.height}px</Text> : null}<Pressable accessibilityRole="button" accessibilityLabel="Share saved image" accessibilityState={{ busy: isExporting, disabled: isExporting }} disabled={isExporting} style={({ pressed }) => [styles.lightboxShareButton, pressed && styles.primaryPressed]} onPress={() => void shareImageItem(lightboxItem)}><Text style={styles.lightboxShareText}>{isExporting ? 'Preparing image…' : 'Share image'}</Text></Pressable></View> : null}{lightboxItem && (!lightboxItem.ocrText || ocrSaveFailures.includes(lightboxItem.id)) ? <Pressable accessibilityRole="button" accessibilityLabel={ocrSaveFailures.includes(lightboxItem.id) ? 'Retry saving extracted text' : 'Extract text from image'} accessibilityState={{ busy: ocrMutation.isPending, disabled: ocrMutation.isPending }} disabled={ocrMutation.isPending} style={({ pressed }) => [styles.ocrRetryButton, { bottom: insets.bottom + 18 }, pressed && styles.primaryPressed]} onPress={() => void retryOcr(lightboxItem)}><Text style={styles.ocrRetryText}>{ocrMutation.isPending ? 'Extracting text…' : ocrSaveFailures.includes(lightboxItem.id) ? 'Retry saving text' : 'Extract text'}</Text></Pressable> : null}</View>
+        <View style={styles.lightboxBackdrop}><Pressable accessibilityRole="button" accessibilityLabel="Close image preview" style={[styles.lightboxClose, { top: insets.top + 12 }]} onPress={() => setLightboxItem(null)}><Text style={styles.lightboxCloseText}>Close</Text></Pressable>{lightboxItem?.imageData ? <Image resizeMode="contain" style={styles.lightboxImage} source={{ uri: `data:image/png;base64,${lightboxItem.imageData}` }} /> : <ActivityIndicator color="#FFFFFF" />}{lightboxItem ? <View style={styles.lightboxInfo}><Text style={styles.lightboxInfoTitle}>{lightboxItem.ocrText ? 'Extracted text' : 'No extracted text yet'}</Text>{lightboxItem.ocrText ? <Text style={styles.lightboxInfoText}>{lightboxItem.ocrText}</Text> : null}{lightboxItem.imageSize ? <Text style={styles.lightboxInfoMeta}>{lightboxItem.imageSize.width} × {lightboxItem.imageSize.height}px</Text> : null}<Pressable accessibilityRole="button" accessibilityLabel={failedImageShareId === lightboxItem.id ? 'Retry sharing saved image' : 'Share saved image'} accessibilityState={{ busy: isExporting, disabled: isExporting }} disabled={isExporting} style={({ pressed }) => [styles.lightboxShareButton, pressed && styles.primaryPressed]} onPress={() => void shareImageItem(lightboxItem)}><Text style={styles.lightboxShareText}>{isExporting ? 'Preparing image…' : failedImageShareId === lightboxItem.id ? 'Retry share' : 'Share image'}</Text></Pressable></View> : null}{lightboxItem && (!lightboxItem.ocrText || ocrSaveFailures.includes(lightboxItem.id)) ? <Pressable accessibilityRole="button" accessibilityLabel={ocrSaveFailures.includes(lightboxItem.id) ? 'Retry saving extracted text' : 'Extract text from image'} accessibilityState={{ busy: ocrMutation.isPending, disabled: ocrMutation.isPending }} disabled={ocrMutation.isPending} style={({ pressed }) => [styles.ocrRetryButton, { bottom: insets.bottom + 18 }, pressed && styles.primaryPressed]} onPress={() => void retryOcr(lightboxItem)}><Text style={styles.ocrRetryText}>{ocrMutation.isPending ? 'Extracting text…' : ocrSaveFailures.includes(lightboxItem.id) ? 'Retry saving text' : 'Extract text'}</Text></Pressable> : null}</View>
       </Modal>
     </ScreenContainer>
   );

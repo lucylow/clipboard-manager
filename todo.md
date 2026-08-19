@@ -457,3 +457,7 @@
 - [x] Track images whose OCR metadata could not be persisted
 - [x] Add an accessible retry action for failed OCR metadata saves
 - [x] Add regression coverage and rerun TypeScript, lint, and tests
+
+- [x] Make image sharing and selected export keep explicit recovery state on failure
+- [x] Prevent stale busy states from blocking later image actions
+- [x] Add regression coverage and rerun TypeScript, lint, and tests
