@@ -950,3 +950,7 @@
 - [x] Audit combined diagnostics comparison coverage across snapshot shapes
 - [x] Add targeted full-field comparison regression coverage
 - [x] Re-run validation and save the combined-comparison checkpoint
+
+- [x] Audit readonly diagnostics type naming and fixture clarity
+- [x] Refine readonly type names without changing behavior
+- [x] Re-run validation and save the readonly-naming checkpoint
