@@ -74,6 +74,23 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
   });
 
+  it('reports queued and notifying diagnostics during a re-entrant drain', () => {
+    const adapter = createLightboxInteractionAdapter();
+    const inFlight: Array<{ pendingEventCount: number; notifying: boolean }> = [];
+    adapter.subscribe((state) => {
+      if (state.visible && !state.actionBusy) {
+        adapter.startAction();
+        const diagnostics = adapter.getDiagnostics();
+        inFlight.push({ pendingEventCount: diagnostics.pendingEventCount, notifying: diagnostics.notifying });
+      }
+    });
+
+    adapter.open();
+
+    expect(inFlight).toEqual([{ pendingEventCount: 1, notifying: true }]);
+    expect(adapter.getDiagnostics()).toMatchObject({ pendingEventCount: 0, notifying: false, released: false });
+  });
+
   it('reports a read-only diagnostic snapshot across lifecycle states', () => {
     const adapter = createLightboxInteractionAdapter();
     const initial = adapter.getDiagnostics();

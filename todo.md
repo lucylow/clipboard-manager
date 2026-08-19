@@ -690,3 +690,7 @@
 - [x] Define a read-only lightbox adapter diagnostic snapshot contract
 - [x] Expose diagnostics without mutable state or behavior changes
 - [x] Add diagnostic coverage, rerun validation, and save the checkpoint
+
+- [x] Audit diagnostics during in-flight notification and pathological re-entrant activity
+- [x] Keep diagnostic counters bounded and semantically accurate
+- [x] Add active-drain diagnostics coverage, rerun validation, and save the checkpoint
