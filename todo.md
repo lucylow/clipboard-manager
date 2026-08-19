@@ -542,3 +542,7 @@
 - [ ] Capture the opened lightbox modal after an interactive preview probe
 
 - [x] Rerun bounded TypeScript, lint, and deterministic tests after mobile lightbox-entry validation
+
+- [x] Extract a pure lightbox action-state model for close, share, OCR, and retry controls
+- [x] Add deterministic coverage for interactive lightbox states without native UI dependencies
+- [x] Rerun bounded TypeScript, lint, tests, and save the checkpoint
