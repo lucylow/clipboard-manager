@@ -882,3 +882,7 @@
 - [x] Audit diagnostics control descriptors against adapter capabilities
 - [x] Add consistency coverage for every exposed control
 - [x] Re-run validation and save the capability-alignment checkpoint
+
+- [x] Audit repeated diagnostics subscription and unsubscribe cycles
+- [x] Add targeted coverage for duplicate or stale listeners
+- [x] Re-run validation and save the subscription-lifecycle checkpoint

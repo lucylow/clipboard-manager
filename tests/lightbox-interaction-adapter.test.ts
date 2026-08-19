@@ -704,3 +704,32 @@ describe('released callback error isolation', () => {
     expect(adapter.release()).toBe(false);
   });
 });
+
+
+describe('subscription churn safety', () => {
+  it('does not retain listeners after repeated subscribe and unsubscribe cycles', () => {
+    const adapter = createLightboxInteractionAdapter();
+    let notifications = 0;
+
+    for (let index = 0; index < 32; index += 1) {
+      const unsubscribe = adapter.subscribe(() => {
+        notifications += 1;
+      });
+      expect(adapter.getDiagnostics().listenerCount).toBe(1);
+      expect(unsubscribe()).toBe(true);
+      expect(unsubscribe()).toBe(false);
+      expect(adapter.getDiagnostics().listenerCount).toBe(0);
+    }
+
+    adapter.open();
+
+    expect(notifications).toBe(0);
+    expect(adapter.getDiagnostics()).toMatchObject({
+      listenerCount: 0,
+      pendingEventCount: 0,
+      notifying: false,
+      released: false,
+    });
+    adapter.release();
+  });
+});
