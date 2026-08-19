@@ -91,6 +91,30 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.getState()).toEqual({ visible: true, actionBusy: true, retryAvailable: false });
   });
 
+  it('isolates dispatch return snapshots for no-op and queued actions', () => {
+    const adapter = createLightboxInteractionAdapter();
+    const first = adapter.open();
+    first.visible = false;
+    const noOp = adapter.open();
+    noOp.visible = false;
+
+    let queuedResult: ReturnType<typeof adapter.startAction> | undefined;
+    adapter.subscribe((state) => {
+      if (state.visible && !state.actionBusy && !queuedResult) {
+        queuedResult = adapter.startAction();
+        queuedResult.visible = false;
+        queuedResult.actionBusy = true;
+      }
+    });
+
+    const final = adapter.getState();
+    expect(final).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+    adapter.open();
+    expect(queuedResult).toBeDefined();
+    expect(adapter.getState()).toEqual({ visible: true, actionBusy: true, retryAvailable: false });
+    expect(adapter.getDiagnostics()).toMatchObject({ pendingEventCount: 0, notifying: false });
+  });
+
   it('supports unsubscribe without affecting the adapter state', () => {
     const adapter = createLightboxInteractionAdapter();
     const listener = () => undefined;

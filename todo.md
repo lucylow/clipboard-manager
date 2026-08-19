@@ -770,3 +770,7 @@
 - [x] Audit processing-budget exhaustion while listeners continue enqueueing work
 - [x] Verify the adapter settles cleanly and accepts later user-driven recovery
 - [x] Add exhaustion-recovery coverage, rerun validation, and save the checkpoint
+
+- [x] Audit dispatch return snapshots across no-op and queued actions
+- [x] Verify returned state mutations cannot affect committed adapter state
+- [x] Add return-value isolation coverage, rerun validation, and save the checkpoint
