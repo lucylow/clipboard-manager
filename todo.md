@@ -602,3 +602,7 @@
 - [x] Extract a reusable session-aware lightbox feedback predicate
 - [x] Replace duplicated OCR/share session checks without changing behavior
 - [x] Add deterministic helper coverage, rerun validation, and save the checkpoint
+
+- [x] Centralize the lightbox session guard into a shared reusable utility
+- [x] Preserve History and Favorites cleanup, retry, and accessibility behavior during migration
+- [x] Add deterministic shared-guard coverage, rerun validation, and save the checkpoint

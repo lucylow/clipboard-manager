@@ -21,7 +21,7 @@ import { createHistoryRecoveryCoordinator } from '@/lib/history-recovery-coordin
 import { createRecoveryFailureCounter } from '@/lib/recovery-failure-counter';
 import { getLightboxPresentationState } from '@/lib/lightbox-presentation-state';
 import { createLightboxOperationGuard } from '@/lib/lightbox-operation-guard';
-import { isCurrentLightboxAction } from '@/lib/lightbox-async-state';
+import { useLightboxSessionGuard } from '@/hooks/use-lightbox-session-guard';
 
 type Filter = 'All' | 'Text' | 'Images' | 'Favorites' | 'Work' | 'Personal';
 type Category = 'Work' | 'Personal';
@@ -82,8 +82,7 @@ export default function HistoryScreen() {
   const noticeControllerRef = useRef<NoticeController | null>(null);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [lightboxItem, setLightboxItem] = useState<Item | null>(null);
-  const lightboxItemIdRef = useRef<string | null>(null);
-  const lightboxSessionRef = useRef(0);
+  const { sessionRef: lightboxSessionRef, canApplyFeedback: canApplyLightboxFeedback } = useLightboxSessionGuard(lightboxItem?.id ?? null);
   const [isSavingMedia, setIsSavingMedia] = useState(false);
   const [ocrSaveFailures, setOcrSaveFailures] = useState<string[]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
@@ -153,13 +152,6 @@ export default function HistoryScreen() {
     return () => subscription.remove();
   }, [handleRecoveryFailure, recoveryCoordinator]);
   useEffect(() => { setSelectedIds((current) => current.filter((id) => items.some((item) => item.id === id))); }, [items]);
-  useEffect(() => {
-    lightboxItemIdRef.current = lightboxItem?.id ?? null;
-    lightboxSessionRef.current += 1;
-  }, [lightboxItem]);
-
-  const canApplyLightboxFeedback = (actionItemId: string, actionToken: number) => isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current });
-
   const visibleItems = useMemo(() => items.filter((item) => {
     const searchableText = [item.content, item.ocrText, item.source, item.category, item.type === 'image' ? 'image' : 'text'].filter(Boolean).join(' ').toLowerCase();
     const matchesQuery = searchableText.includes(query.trim().toLowerCase());
