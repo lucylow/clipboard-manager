@@ -790,3 +790,7 @@
 - [x] Set a balanced 512 MB Metro development heap cap after validating the lower 384 MB cap was insufficient
 - [x] Restart services and confirm the development processes remain alive after the cap change
 - [x] Save the final 512 MB memory-stability checkpoint
+
+- [x] Audit Metro cache and watch configuration for avoidable memory churn
+- [x] Apply a development-only stability adjustment without changing app behavior
+- [x] Re-run validation and save the cache-stability checkpoint
