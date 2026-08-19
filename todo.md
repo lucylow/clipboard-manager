@@ -842,3 +842,7 @@
 - [x] Audit generic typing and callback reuse for diagnostics fixtures
 - [x] Apply a type-safe helper refinement without weakening cleanup guarantees
 - [x] Re-run validation and save the fixture-helper checkpoint
+
+- [x] Audit repeated callback execution through the diagnostics fixture helper
+- [x] Add deterministic coverage for repeated results and final cleanup
+- [x] Re-run validation and save the repeated-callback checkpoint

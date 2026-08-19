@@ -99,6 +99,20 @@ describe("lightbox diagnostics equality", () => {
     expect(createdAdapter?.getDiagnostics().released).toBe(true);
   });
 
+  it("supports repeated callback execution before final fixture cleanup", () => {
+    const states = withDiagnosticsAdapter((adapter) => [
+      adapter.getState(),
+      adapter.open(),
+      adapter.close(),
+    ]);
+
+    expect(states).toEqual([
+      { visible: false, actionBusy: false, retryAvailable: false },
+      { visible: true, actionBusy: false, retryAvailable: false },
+      { visible: false, actionBusy: false, retryAvailable: false },
+    ]);
+  });
+
   it("keeps repeated fixture cleanup isolated from a fresh adapter", () => {
     const first = createLightboxInteractionAdapter();
     const firstSnapshot = first.getDiagnostics();
