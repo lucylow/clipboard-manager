@@ -79,7 +79,6 @@ export default function ThemeLabScreen() {
   const runLightboxAction = useCallback((action: LightboxAction) => {
     if (lightboxAdapter.getDiagnostics().released) return;
     lightboxAdapter[action]();
-    setLightboxDiagnostics(lightboxAdapter.getDiagnostics());
   }, [lightboxAdapter]);
 
   const resetLightboxAdapter = useCallback(() => {

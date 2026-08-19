@@ -802,3 +802,7 @@
 - [x] Audit adapter creation and subscription churn during repeated diagnostics resets
 - [x] Apply a safe lifecycle refinement without changing production behavior
 - [x] Re-run validation and save the lifecycle checkpoint
+
+- [x] Audit redundant diagnostics state updates from adapter notifications
+- [x] Apply a safe UI refresh refinement without changing adapter semantics
+- [x] Re-run validation and save the notification-refresh checkpoint
