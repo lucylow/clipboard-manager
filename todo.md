@@ -794,3 +794,7 @@
 - [x] Audit Metro cache and watch configuration for avoidable memory churn
 - [x] Apply a development-only stability adjustment without changing app behavior
 - [x] Re-run validation and save the cache-stability checkpoint
+
+- [x] Audit diagnostics route render-time allocations and action typing
+- [x] Apply a lightweight memoization and type-safety refinement
+- [x] Re-run validation and save the code-quality checkpoint

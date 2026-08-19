@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { ScreenContainer } from "@/components/screen-container";
@@ -16,6 +16,15 @@ import {
 type PaletteName = keyof typeof SchemeColors.light;
 
 const paletteNames: PaletteName[] = Object.keys(SchemeColors.light) as PaletteName[];
+
+type LightboxAction = "open" | "close" | "startAction" | "succeed" | "fail";
+const lightboxActions: readonly (readonly [LightboxAction, string])[] = [
+  ["open", "Open"],
+  ["close", "Close"],
+  ["startAction", "Start action"],
+  ["succeed", "Succeed"],
+  ["fail", "Fail"],
+];
 
 function ColorSwatch({ name, value }: { name: PaletteName; value: string }) {
   return (
@@ -67,15 +76,17 @@ export default function ThemeLabScreen() {
     };
   }, [lightboxAdapter]);
 
-  const runLightboxAction = (action: keyof Pick<LightboxInteractionAdapter, "open" | "close" | "startAction" | "succeed" | "fail">) => {
+  const runLightboxAction = useCallback((action: LightboxAction) => {
     lightboxAdapter[action]();
     setLightboxDiagnostics(lightboxAdapter.getDiagnostics());
-  };
+  }, [lightboxAdapter]);
 
-  const resetLightboxAdapter = () => {
+  const resetLightboxAdapter = useCallback(() => {
     lightboxAdapter.release();
-    setLightboxAdapter(createLightboxInteractionAdapter());
-  };
+    const nextAdapter = createLightboxInteractionAdapter();
+    setLightboxAdapter(nextAdapter);
+    setLightboxDiagnostics(nextAdapter.getDiagnostics());
+  }, [lightboxAdapter]);
 
   const swatches = useMemo(
     () =>
@@ -273,13 +284,7 @@ export default function ThemeLabScreen() {
             </View>
 
             <View className="mt-3 flex-row flex-wrap gap-2">
-              {([
-                ["open", "Open"],
-                ["close", "Close"],
-                ["startAction", "Start action"],
-                ["succeed", "Succeed"],
-                ["fail", "Fail"],
-              ] as const).map(([action, label]) => (
+              {lightboxActions.map(([action, label]) => (
                 <Pressable
                   key={action}
                   accessibilityRole="button"
