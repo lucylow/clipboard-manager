@@ -60,6 +60,8 @@ function formatTime(timestamp: number) {
 
 export default function HistoryScreen() {
   const [items, setItems] = useState<Item[]>(initialItems);
+  const itemsRef = useRef<Item[]>(initialItems);
+  const persistRevisionRef = useRef(0);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('All');
   const [refreshing, setRefreshing] = useState(false);
@@ -110,10 +112,28 @@ export default function HistoryScreen() {
   useFocusEffect(useCallback(() => { void loadItems(); }, [loadItems]));
   useEffect(() => { setSelectedIds((current) => current.filter((id) => items.some((item) => item.id === id))); }, [items]);
 
-  const persist = (next: Item[]) => {
+  const showNotice = useCallback((message: string) => {
+    noticeControllerRef.current?.show(message);
+  }, []);
+
+  const persist = useCallback(async (next: Item[]) => {
+    const previous = itemsRef.current;
+    const revision = persistRevisionRef.current + 1;
+    persistRevisionRef.current = revision;
+    itemsRef.current = next;
     setItems(next);
-    return queueClipboardWrite(next);
-  };
+    try {
+      await queueClipboardWrite(next);
+      return true;
+    } catch {
+      if (persistRevisionRef.current === revision) {
+        itemsRef.current = previous;
+        setItems(previous);
+      }
+      showNotice('Could not save the latest history change. Your previous saved history is still available.');
+      return false;
+    }
+  }, [showNotice]);
 
   const visibleItems = useMemo(() => items.filter((item) => {
     const searchableText = [item.content, item.ocrText, item.source, item.category, item.type === 'image' ? 'image' : 'text'].filter(Boolean).join(' ').toLowerCase();
@@ -122,9 +142,9 @@ export default function HistoryScreen() {
     return matchesQuery && matchesFilter;
   }), [items, query, filter]);
 
-  const showNotice = (message: string) => {
-    noticeControllerRef.current?.show(message);
-  };
+  useEffect(() => {
+    itemsRef.current = items;
+  }, [items]);
 
   const saveImageWithOcr = async (imageData: string, imageSize?: { width: number; height: number }, source = 'Clipboard') => {
     if (isSavingMedia || ocrMutation.isPending) return showNotice('Media processing is already in progress');
