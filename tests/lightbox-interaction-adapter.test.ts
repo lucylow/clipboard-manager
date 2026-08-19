@@ -45,6 +45,23 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.getState()).toEqual({ visible: true, actionBusy: true, retryAvailable: false });
   });
 
+  it('queues re-entrant events until every listener sees the current transition', () => {
+    const adapter = createLightboxInteractionAdapter();
+    const first: string[] = [];
+    const second: string[] = [];
+    adapter.subscribe((state) => {
+      first.push(`${state.visible}:${state.actionBusy}`);
+      if (state.visible && !state.actionBusy) adapter.startAction();
+    });
+    adapter.subscribe((state) => second.push(`${state.visible}:${state.actionBusy}`));
+
+    adapter.open();
+
+    expect(first).toEqual(['true:false', 'true:true']);
+    expect(second).toEqual(['true:false', 'true:true']);
+    expect(adapter.getState()).toEqual({ visible: true, actionBusy: true, retryAvailable: false });
+  });
+
   it('supports unsubscribe without affecting the adapter state', () => {
     const adapter = createLightboxInteractionAdapter();
     const listener = () => undefined;

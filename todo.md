@@ -642,3 +642,7 @@
 - [x] Audit interaction-adapter listener notification failure boundaries
 - [x] Prevent one faulty subscriber from interrupting other listeners or state transitions
 - [x] Add deterministic failure-isolation coverage, rerun validation, and save the checkpoint
+
+- [x] Audit re-entrant and unsubscribe-during-notification adapter behavior
+- [x] Preserve deterministic listener delivery with subscription changes during a transition
+- [x] Add deterministic re-entrancy coverage, rerun validation, and save the checkpoint
