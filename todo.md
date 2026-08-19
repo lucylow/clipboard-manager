@@ -846,3 +846,7 @@
 - [x] Audit repeated callback execution through the diagnostics fixture helper
 - [x] Add deterministic coverage for repeated results and final cleanup
 - [x] Re-run validation and save the repeated-callback checkpoint
+
+- [x] Audit repeated fixture setup for unnecessary ceremony
+- [x] Simplify diagnostics test helpers while preserving explicit cleanup
+- [x] Re-run validation and save the fixture-readability checkpoint

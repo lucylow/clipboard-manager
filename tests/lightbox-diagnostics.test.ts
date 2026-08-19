@@ -20,14 +20,14 @@ function withDiagnosticsAdapter<T>(work: (adapter: DiagnosticsAdapter) => T): T 
   }
 }
 
-function diagnostics(): LightboxInteractionDiagnostics {
+function readDiagnosticsSnapshot(): LightboxInteractionDiagnostics {
   return withDiagnosticsAdapter((adapter) => adapter.getDiagnostics());
 }
 
 describe("lightbox diagnostics equality", () => {
   it("treats equivalent state snapshots as equal", () => {
-    const previous = diagnostics();
-    const next = diagnostics();
+    const previous = readDiagnosticsSnapshot();
+    const next = readDiagnosticsSnapshot();
 
     expect(lightboxStateEqual(previous.state, next.state)).toBe(true);
     expect(diagnosticsEqual(previous, next)).toBe(true);
@@ -42,15 +42,15 @@ describe("lightbox diagnostics equality", () => {
     ["notifying", (value: LightboxInteractionDiagnostics) => ({ ...value, notifying: true })],
     ["released", (value: LightboxInteractionDiagnostics) => ({ ...value, released: true })],
   ])("detects a changed %s field", (_label, mutate) => {
-    const previous = diagnostics();
+    const previous = readDiagnosticsSnapshot();
     const next = mutate(previous);
 
     expect(diagnosticsEqual(previous, next)).toBe(false);
   });
 
   it("does not mutate compared snapshots", () => {
-    const previous = diagnostics();
-    const next = diagnostics();
+    const previous = readDiagnosticsSnapshot();
+    const next = readDiagnosticsSnapshot();
     const previousBefore = JSON.stringify(previous);
     const nextBefore = JSON.stringify(next);
 
@@ -60,8 +60,8 @@ describe("lightbox diagnostics equality", () => {
   });
 
   it("remains stable across repeated equal-snapshot checks", () => {
-    const previous = diagnostics();
-    const next = diagnostics();
+    const previous = readDiagnosticsSnapshot();
+    const next = readDiagnosticsSnapshot();
 
     expect(Array.from({ length: 10 }, () => diagnosticsEqual(previous, next))).toEqual(
       Array.from({ length: 10 }, () => true),
@@ -69,7 +69,7 @@ describe("lightbox diagnostics equality", () => {
   });
 
   it("detects combined lifecycle and state changes as one meaningful update", () => {
-    const previous = diagnostics();
+    const previous = readDiagnosticsSnapshot();
     const next = {
       ...previous,
       state: {
