@@ -694,3 +694,7 @@
 - [x] Audit diagnostics during in-flight notification and pathological re-entrant activity
 - [x] Keep diagnostic counters bounded and semantically accurate
 - [x] Add active-drain diagnostics coverage, rerun validation, and save the checkpoint
+
+- [x] Audit diagnostic listener and queue counts across subscribe, unsubscribe, and release transitions
+- [x] Preserve diagnostic consistency without changing adapter behavior
+- [x] Add lifecycle consistency coverage, rerun validation, and save the checkpoint
