@@ -682,3 +682,7 @@
 - [x] Trace remaining deprecated pointerEvents usage to app-owned or dependency-owned source
 - [x] Confirm no app-owned deprecated interaction props require replacement
 - [x] Validate warning behavior, rerun tests, and save the checkpoint
+
+- [x] Audit release during re-entrant lightbox drains for queued-work cleanup
+- [x] Ensure release leaves no pending events or notification lock behind
+- [x] Add release-during-drain coverage, rerun validation, and save the checkpoint

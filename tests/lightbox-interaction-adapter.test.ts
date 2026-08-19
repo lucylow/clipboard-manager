@@ -102,6 +102,24 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.getState()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
   });
 
+  it('clears re-entrant queued work when released during a drain', () => {
+    const adapter = createLightboxInteractionAdapter();
+    const notifications: string[] = [];
+    adapter.subscribe((state) => {
+      notifications.push(`${state.visible}:${state.actionBusy}`);
+      if (state.visible && !state.actionBusy) {
+        adapter.startAction();
+        adapter.release();
+      }
+    });
+
+    adapter.open();
+
+    expect(notifications).toEqual(['true:false']);
+    expect(adapter.getState()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+    expect(adapter.startAction()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+  });
+
   it('keeps resubscribed listeners isolated from stale unsubscribe handles', () => {
     const adapter = createLightboxInteractionAdapter();
     let notifications = 0;
