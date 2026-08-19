@@ -369,3 +369,10 @@
 - [x] Verify core flows at mobile portrait sizes and rerun project checks
 - [x] Make the History header Settings shortcut navigate to the Settings screen
 - [x] Re-run TypeScript, lint, tests, and mobile preview verification
+
+- [x] Audit History–Settings navigation, refresh failure, and filter flows
+- [x] Add smooth navigation transition animations between History and Settings
+- [x] Add a visible refresh-failure recovery action with retry behavior
+- [x] Add a compact mobile filter bottom sheet for type and category filters
+- [x] Verify the new flows at mobile portrait sizes and rerun project checks
+- [x] Run TypeScript, lint, and tests for the three UX features
