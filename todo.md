@@ -874,3 +874,7 @@
 - [x] Audit diagnostics-panel control model API naming and typing
 - [x] Refine control descriptors without changing runtime behavior
 - [x] Re-run validation and save the control-model checkpoint
+
+- [x] Audit diagnostics action dispatch for stale or invalid inputs
+- [x] Add defensive boundary coverage without changing valid UI actions
+- [x] Re-run validation and save the action-boundary checkpoint

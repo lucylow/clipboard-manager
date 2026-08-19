@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { createLightboxInteractionAdapter } from "../lib/lightbox-interaction-adapter";
 import {
+  isLightboxAction,
   LIGHTBOX_ACTION_CONTROLS,
   resetLightboxAdapter,
   runLightboxAction,
@@ -16,6 +17,27 @@ describe("lightbox diagnostics panel controls", () => {
       { action: "succeed", label: "Succeed" },
       { action: "fail", label: "Fail" },
     ]);
+  });
+
+  it("recognizes only actions exposed by the control model", () => {
+    expect(isLightboxAction("open")).toBe(true);
+    expect(isLightboxAction("fail")).toBe(true);
+    expect(isLightboxAction("reset")).toBe(false);
+    expect(isLightboxAction("release")).toBe(false);
+  });
+
+  it("ignores stale invalid actions without invoking adapter methods", () => {
+    const adapter = createLightboxInteractionAdapter();
+
+    try {
+      const before = adapter.getDiagnostics();
+      const after = runLightboxAction(adapter, "reset");
+
+      expect(after).toEqual(before);
+      expect(adapter.getDiagnostics()).toEqual(before);
+    } finally {
+      adapter.release();
+    }
   });
 
   it("runs a live action and returns the committed diagnostics snapshot", () => {

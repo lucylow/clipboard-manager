@@ -18,12 +18,20 @@ export const LIGHTBOX_ACTION_CONTROLS: readonly LightboxActionControl[] = [
   { action: "fail", label: "Fail" },
 ];
 
+const LIGHTBOX_ACTIONS = new Set<LightboxAction>(
+  LIGHTBOX_ACTION_CONTROLS.map(({ action }) => action),
+);
+
+export function isLightboxAction(value: string): value is LightboxAction {
+  return LIGHTBOX_ACTIONS.has(value as LightboxAction);
+}
+
 export function runLightboxAction(
   adapter: LightboxInteractionAdapter,
-  action: LightboxAction,
+  action: LightboxAction | string,
 ): LightboxInteractionDiagnostics {
   const diagnostics = adapter.getDiagnostics();
-  if (diagnostics.released) return diagnostics;
+  if (diagnostics.released || !isLightboxAction(action)) return diagnostics;
 
   adapter[action]();
   return adapter.getDiagnostics();
