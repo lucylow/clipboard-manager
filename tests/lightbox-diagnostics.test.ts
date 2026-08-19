@@ -79,7 +79,9 @@ describe("lightbox diagnostics equality", () => {
       state: Object.freeze({ visible: false, actionBusy: false, retryAvailable: false }),
     });
 
-    expect(diagnosticsEqual(previous, next)).toBe(true);
+    expect(Array.from({ length: 16 }, () => diagnosticsEqual(previous, next))).toEqual(
+      Array.from({ length: 16 }, () => true),
+    );
     expect(previous.state).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
     expect(next.state).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
   });

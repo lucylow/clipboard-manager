@@ -942,3 +942,7 @@
 - [x] Audit read-only diagnostics contract at the adapter boundary
 - [x] Add targeted structural-typing coverage for comparator inputs
 - [x] Re-run validation and save the boundary-contract checkpoint
+
+- [x] Audit comparator equality for equivalent frozen snapshots and repeated reads
+- [x] Add targeted frozen equality regression coverage
+- [x] Re-run validation and save the comparator-stability checkpoint
