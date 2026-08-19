@@ -477,3 +477,7 @@
 - [x] Coordinate foreground cache cleanup with focus-based History hydration
 - [x] Prevent overlapping resume maintenance and persisted History reads
 - [x] Add regression coverage and rerun TypeScript, lint, and tests
+
+- [x] Coordinate native app resume with the existing single-flight cache cleanup
+- [x] Prevent duplicate History hydration when app resume and tab focus occur together
+- [x] Add regression coverage and rerun TypeScript, lint, and tests

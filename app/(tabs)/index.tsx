@@ -3,7 +3,7 @@ import * as Clipboard from 'expo-clipboard';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system/legacy';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Image, Modal, Platform, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, AppState, FlatList, Image, Modal, Platform, Pressable, RefreshControl, StyleSheet, Text, TextInput, View, type AppStateStatus } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -85,6 +85,7 @@ export default function HistoryScreen() {
   const [failedImageShareId, setFailedImageShareId] = useState<string | null>(null);
   const [isPremium, setIsPremium] = useState(false);
   const cacheCleanupFlightRef = useRef(createSingleFlight<number>());
+  const appStateRef = useRef<AppStateStatus>(AppState.currentState);
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const ocrMutation = trpc.ocr.extract.useMutation();
@@ -115,11 +116,21 @@ export default function HistoryScreen() {
       (uri) => FileSystem.deleteAsync(uri, { idempotent: true }),
     ));
   }, []);
+  const recoverAfterResume = useCallback(async () => {
+    await runCacheCleanup();
+    await loadItems();
+  }, [loadItems, runCacheCleanup]);
   useFocusEffect(useCallback(() => {
-    let active = true;
-    void runCacheCleanup().then(() => { if (active) return loadItems(); });
-    return () => { active = false; };
-  }, [loadItems, runCacheCleanup]));
+    void recoverAfterResume();
+  }, [recoverAfterResume]));
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      const previousState = appStateRef.current;
+      appStateRef.current = nextState;
+      if (nextState === 'active' && previousState !== 'active') void recoverAfterResume();
+    });
+    return () => subscription.remove();
+  }, [recoverAfterResume]);
   useEffect(() => { setSelectedIds((current) => current.filter((id) => items.some((item) => item.id === id))); }, [items]);
 
   const visibleItems = useMemo(() => items.filter((item) => {
