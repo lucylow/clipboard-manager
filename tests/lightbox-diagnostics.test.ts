@@ -59,6 +59,21 @@ describe("lightbox diagnostics equality", () => {
     expect(diagnosticsEqual(previous, next)).toBe(false);
   });
 
+  it("accepts frozen nested snapshots without mutation", () => {
+    const previous = Object.freeze({
+      ...readDiagnosticsSnapshot(),
+      state: Object.freeze({ visible: false, actionBusy: false, retryAvailable: false }),
+    });
+    const next = Object.freeze({
+      ...readDiagnosticsSnapshot(),
+      state: Object.freeze({ visible: false, actionBusy: false, retryAvailable: false }),
+    });
+
+    expect(diagnosticsEqual(previous, next)).toBe(true);
+    expect(previous.state).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
+    expect(next.state).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
+  });
+
   it("does not mutate compared snapshots", () => {
     const previous = readDiagnosticsSnapshot();
     const next = readDiagnosticsSnapshot();

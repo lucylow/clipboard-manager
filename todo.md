@@ -934,3 +934,7 @@
 - [x] Audit diagnostics snapshot fixture contracts for accidental mutation
 - [x] Add read-only test-facing snapshot typing where safe
 - [x] Re-run validation and save the snapshot-contract checkpoint
+
+- [x] Audit read-only diagnostics contract consumers and nested state usage
+- [x] Add targeted nested read-only contract coverage
+- [x] Re-run validation and save the read-only-consumer checkpoint
