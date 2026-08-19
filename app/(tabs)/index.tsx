@@ -19,8 +19,7 @@ import { cleanupManagedTemporaryFiles } from '@/lib/temporary-cache-cleanup';
 import { createSingleFlight } from '@/lib/single-flight';
 import { createHistoryRecoveryCoordinator } from '@/lib/history-recovery-coordinator';
 import { createRecoveryFailureCounter } from '@/lib/recovery-failure-counter';
-import { getLightboxControlState } from '@/lib/lightbox-control-state';
-import { getLightboxVisibilityState } from '@/lib/lightbox-visibility-state';
+import { getLightboxPresentationState } from '@/lib/lightbox-presentation-state';
 import { createLightboxOperationGuard } from '@/lib/lightbox-operation-guard';
 
 type Filter = 'All' | 'Text' | 'Images' | 'Favorites' | 'Work' | 'Personal';
@@ -414,17 +413,16 @@ export default function HistoryScreen() {
     }
   };
 
-  const lightboxVisibility = getLightboxVisibilityState(lightboxItem !== null);
-  const lightboxControls = lightboxItem
-    ? getLightboxControlState({
-        hasOcrText: Boolean(lightboxItem.ocrText),
-        hasOcrSaveFailure: ocrSaveFailures.includes(lightboxItem.id),
-        isSharing: isExporting,
-        hasShareFailure: failedImageShareId === lightboxItem.id,
-        isOcrPending: ocrMutation.isPending,
-        hasImage: Boolean(lightboxItem.imageData),
-      })
-    : null;
+  const lightboxPresentation = getLightboxPresentationState({
+    hasOcrText: Boolean(lightboxItem?.ocrText),
+    hasOcrSaveFailure: Boolean(lightboxItem && ocrSaveFailures.includes(lightboxItem.id)),
+    isSharing: isExporting,
+    hasShareFailure: Boolean(lightboxItem && failedImageShareId === lightboxItem.id),
+    isOcrPending: ocrMutation.isPending,
+    hasImage: Boolean(lightboxItem?.imageData),
+  });
+  const lightboxVisibility = lightboxPresentation.visibility;
+  const lightboxControls = lightboxItem ? lightboxPresentation.controls : null;
 
   return (
     <ScreenContainer {...(Platform.OS === 'web' ? { onDragOver: (event: any) => event.preventDefault(), onDrop: handleDrop } as any : {})} className="px-5" containerClassName="bg-[#F6F4F1]">

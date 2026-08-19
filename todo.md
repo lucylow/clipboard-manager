@@ -582,3 +582,7 @@
 - [x] Extract a pure lightbox visibility and close-transition model
 - [x] Add deterministic coverage for open, close, and repeated-dismiss transitions
 - [x] Rerun bounded TypeScript, lint, tests, and save the checkpoint
+
+- [x] Unify lightbox visibility and action-state derivation into one presentation snapshot
+- [x] Add deterministic coverage for rapid open, close, and retry-state transitions
+- [x] Rerun bounded TypeScript, lint, tests, and save the checkpoint
