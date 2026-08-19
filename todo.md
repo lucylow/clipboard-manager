@@ -558,3 +558,7 @@
 - [x] Enforce OCR/share mutual exclusion inside the underlying lightbox action handlers
 - [x] Add deterministic race coverage for handler-level busy guards and recovery
 - [x] Rerun bounded TypeScript, lint, tests, and save the checkpoint
+
+- [x] Bring Favorites image sharing to the same guarded, cleanup-safe flow as History
+- [x] Add deterministic coverage for Favorites image-share guard and recovery behavior
+- [x] Rerun bounded TypeScript, lint, tests, and save the checkpoint

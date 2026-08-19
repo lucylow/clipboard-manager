@@ -29,6 +29,14 @@ describe('getImageActionPresentation', () => {
     });
   });
 
+  it('disables sharing while another image action is active', () => {
+    expect(getImageActionPresentation('share', { busy: false, failed: false, blocked: true })).toMatchObject({
+      label: 'Share image',
+      disabled: true,
+      busy: false,
+    });
+  });
+
   it('does not expose a stale retry label after a successful share', () => {
     expect(getImageActionPresentation('share', { busy: false, failed: false })).toEqual({
       label: 'Share image',
