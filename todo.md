@@ -445,3 +445,7 @@
 - [x] Make batch mutation handlers observe persistence failure results
 - [x] Keep selection cleanup and success notices from masking failed saves
 - [x] Add regression coverage and rerun TypeScript, lint, and tests
+
+- [x] Make clear-history success feedback depend on persistence success
+- [x] Make single-item deletion and favorite mutations expose failed-save feedback consistently
+- [x] Add regression coverage and rerun TypeScript, lint, and tests

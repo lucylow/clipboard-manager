@@ -191,8 +191,14 @@ export default function HistoryScreen() {
     } catch { haptic.error(); showNotice('Could not copy this item'); }
   };
 
-  const toggleFavorite = (id: string) => { haptic.light(); persist(updateClipboardItem(items, id, (item) => ({ ...item, favorite: !item.favorite }))); };
-  const setCategory = (id: string, category: Category) => { haptic.light(); persist(updateClipboardItem(items, id, (item) => ({ ...item, category }))); };
+  const toggleFavorite = async (id: string) => {
+    const saved = await persist(updateClipboardItem(items, id, (item) => ({ ...item, favorite: !item.favorite })));
+    if (saved) haptic.light();
+  };
+  const setCategory = async (id: string, category: Category) => {
+    const saved = await persist(updateClipboardItem(items, id, (item) => ({ ...item, category })));
+    if (saved) haptic.light();
+  };
   const toggleSelection = (id: string) => setSelectedIds((current) => current.includes(id) ? current.filter((selectedId) => selectedId !== id) : [...current, id]);
   const exitSelectionMode = () => { setSelectionMode(false); setSelectedIds([]); };
   const batchFavorite = async () => {
@@ -271,11 +277,32 @@ export default function HistoryScreen() {
       } },
     ]);
   };
-  const clearAll = () => Alert.alert('Clear all history?', 'Every saved clipboard item will be removed.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Clear all', style: 'destructive', onPress: () => { persist([]); setSelectedItem(null); haptic.medium(); showNotice('History cleared'); } }]);
-  const deleteItem = (id: string) => { haptic.medium(); persist(removeClipboardItems(items, new Set([id]))); };
+  const clearAll = () => Alert.alert('Clear all history?', 'Every saved clipboard item will be removed.', [
+    { text: 'Cancel', style: 'cancel' },
+    { text: 'Clear all', style: 'destructive', onPress: async () => {
+      const saved = await persist([]);
+      if (!saved) return;
+      setSelectedItem(null);
+      haptic.medium();
+      showNotice('History cleared');
+    } },
+  ]);
+  const deleteItem = async (id: string) => {
+    const saved = await persist(removeClipboardItems(items, new Set([id])));
+    if (saved) haptic.medium();
+    return saved;
+  };
   const deleteSelected = () => {
     if (!selectedItem) return;
-    Alert.alert('Delete item?', 'This will remove it from your history.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: () => { deleteItem(selectedItem.id); setSelectedItem(null); showNotice('Item deleted'); } }]);
+    Alert.alert('Delete item?', 'This will remove it from your history.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: async () => {
+        const saved = await deleteItem(selectedItem.id);
+        if (!saved) return;
+        setSelectedItem(null);
+        showNotice('Item deleted');
+      } },
+    ]);
   };
 
   const onRefresh = async () => {
