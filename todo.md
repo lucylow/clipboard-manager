@@ -686,3 +686,7 @@
 - [x] Audit release during re-entrant lightbox drains for queued-work cleanup
 - [x] Ensure release leaves no pending events or notification lock behind
 - [x] Add release-during-drain coverage, rerun validation, and save the checkpoint
+
+- [x] Define a read-only lightbox adapter diagnostic snapshot contract
+- [x] Expose diagnostics without mutable state or behavior changes
+- [x] Add diagnostic coverage, rerun validation, and save the checkpoint

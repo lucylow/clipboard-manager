@@ -7,6 +7,14 @@ import {
 type LightboxInteractionListener = (state: LightboxInteractionState) => void;
 type LightboxInteractionSubscription = { listener: LightboxInteractionListener };
 
+export type LightboxInteractionDiagnostics = {
+  state: LightboxInteractionState;
+  pendingEventCount: number;
+  listenerCount: number;
+  notifying: boolean;
+  released: boolean;
+};
+
 const CLOSED_STATE: LightboxInteractionState = {
   visible: false,
   actionBusy: false,
@@ -29,6 +37,13 @@ export function createLightboxInteractionAdapter(initialState: LightboxInteracti
   let isNotifying = false;
   let released = false;
   const readState = () => ({ ...state });
+  const readDiagnostics = (): LightboxInteractionDiagnostics => ({
+    state: readState(),
+    pendingEventCount: pendingEvents.length - pendingEventHead,
+    listenerCount: listeners.size,
+    notifying: isNotifying,
+    released,
+  });
 
   const dispatch = (event: LightboxInteractionEvent) => {
     if (released) return readState();
@@ -68,6 +83,7 @@ export function createLightboxInteractionAdapter(initialState: LightboxInteracti
 
   return {
     getState: readState,
+    getDiagnostics: readDiagnostics,
     release: () => {
       if (released) return false;
       released = true;
