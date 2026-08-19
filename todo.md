@@ -670,3 +670,7 @@
 - [x] Audit remaining lightbox transition invariants for busy/retry mutual exclusion
 - [x] Apply the safest invariant refinement without changing valid OCR/share flows
 - [x] Add invariant coverage, rerun validation, and save the checkpoint
+
+- [x] Audit lightbox subscription cleanup during repeated subscribe/unsubscribe cycles
+- [x] Ensure repeated unsubscribe and listener removal remain deterministic
+- [x] Add lifecycle coverage, rerun validation, and save the checkpoint

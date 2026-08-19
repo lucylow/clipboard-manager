@@ -5,6 +5,7 @@ import {
 } from './lightbox-interaction-state';
 
 type LightboxInteractionListener = (state: LightboxInteractionState) => void;
+type LightboxInteractionSubscription = { listener: LightboxInteractionListener };
 
 const CLOSED_STATE: LightboxInteractionState = {
   visible: false,
@@ -22,7 +23,7 @@ export const LIGHTBOX_MAX_PENDING_EVENTS = 64;
 
 export function createLightboxInteractionAdapter(initialState: LightboxInteractionState = CLOSED_STATE) {
   let state = { ...initialState };
-  const listeners = new Set<LightboxInteractionListener>();
+  const listeners = new Set<LightboxInteractionSubscription>();
   const pendingEvents: LightboxInteractionEvent[] = [];
   let pendingEventHead = 0;
   let isNotifying = false;
@@ -46,9 +47,9 @@ export function createLightboxInteractionAdapter(initialState: LightboxInteracti
         const nextState = reduceLightboxInteraction(state, nextEvent);
         if (nextState === state) continue;
         state = nextState;
-        [...listeners].forEach((listener) => {
+        [...listeners].forEach((subscription) => {
           try {
-            listener(readState());
+            subscription.listener(readState());
           } catch {
             // A UI subscriber must not interrupt the committed transition or other listeners.
           }
@@ -65,8 +66,14 @@ export function createLightboxInteractionAdapter(initialState: LightboxInteracti
   return {
     getState: readState,
     subscribe: (listener: LightboxInteractionListener) => {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
+      const subscription = { listener };
+      listeners.add(subscription);
+      let active = true;
+      return () => {
+        if (!active) return false;
+        active = false;
+        return listeners.delete(subscription);
+      };
     },
     open: () => dispatch({ type: 'open' }),
     close: () => dispatch({ type: 'close' }),
