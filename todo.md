@@ -746,3 +746,7 @@
 - [x] Audit rejected lightbox events at the queue boundary for stale diagnostics
 - [x] Preserve clean cap-recovery behavior for the next user-driven transition
 - [x] Add rejection-recovery coverage, rerun validation, and save the checkpoint
+
+- [x] Audit repeated lightbox release and resubscription lifecycle behavior
+- [x] Verify post-release dispatches cannot reactivate listeners or queued work
+- [x] Add lifecycle coverage, rerun validation, and save the checkpoint

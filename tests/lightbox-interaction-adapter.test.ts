@@ -333,6 +333,29 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.subscribe(() => { notifications += 1; })()).toBe(false);
   });
 
+  it('keeps repeated release safe after resubscription and blocks post-release work', () => {
+    const adapter = createLightboxInteractionAdapter();
+    let notifications = 0;
+    const firstUnsubscribe = adapter.subscribe(() => { notifications += 1; });
+    adapter.open();
+    const secondUnsubscribe = adapter.subscribe(() => { notifications += 1; });
+
+    expect(adapter.release()).toBe(true);
+    expect(firstUnsubscribe()).toBe(false);
+    expect(secondUnsubscribe()).toBe(false);
+    expect(adapter.release()).toBe(false);
+    expect(adapter.subscribe(() => { notifications += 1; })()).toBe(false);
+    expect(adapter.close()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+    expect(adapter.getDiagnostics()).toEqual({
+      state: { visible: true, actionBusy: false, retryAvailable: false },
+      pendingEventCount: 0,
+      listenerCount: 0,
+      notifying: false,
+      released: true,
+    });
+    expect(notifications).toBe(1);
+  });
+
   it('stops delivering the current notification cycle after release', () => {
     const adapter = createLightboxInteractionAdapter();
     const notifications: string[] = [];
