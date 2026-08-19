@@ -139,6 +139,22 @@ describe("lightbox diagnostics equality", () => {
     expect(diagnosticsEqual(first, second)).toBe(true);
   });
 
+  it("keeps custom lifecycle snapshots immutable across repeated comparisons", () => {
+    const snapshot = freezeDiagnosticsSnapshot({
+      ...readDiagnosticsSnapshot(),
+      pendingEventCount: 2,
+      listenerCount: 4,
+      notifying: true,
+      released: true,
+    });
+    const before = JSON.stringify(snapshot);
+
+    expect(Array.from({ length: 12 }, () => diagnosticsEqual(snapshot, snapshot))).toEqual(
+      Array.from({ length: 12 }, () => true),
+    );
+    expect(JSON.stringify(snapshot)).toBe(before);
+  });
+
   it("creates independent nested state for repeated frozen fixtures", () => {
     const first = freezeDiagnosticsSnapshot(readDiagnosticsSnapshot());
     const second = freezeDiagnosticsSnapshot(readDiagnosticsSnapshot());
