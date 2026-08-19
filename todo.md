@@ -998,3 +998,7 @@
 - [x] Audit initial interaction-adapter state for malformed runtime values
 - [x] Add deterministic normalization regression coverage for invalid initial state
 - [x] Re-run validation and save the initial-state hardening checkpoint
+
+- [x] Audit diagnostics and state-copy boundaries for remaining aliasing risks
+- [x] Add deterministic state-copy isolation regression coverage
+- [x] Re-run validation and save the state-copy hardening checkpoint

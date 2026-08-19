@@ -60,7 +60,11 @@ export function createLightboxInteractionAdapter(
   let pendingEventHead = 0;
   let isNotifying = false;
   let released = false;
-  const readState = () => ({ ...state });
+  const readState = (): LightboxInteractionState => ({
+    visible: state.visible,
+    actionBusy: state.actionBusy,
+    retryAvailable: state.retryAvailable,
+  });
   const readDiagnostics = (): LightboxInteractionDiagnostics => ({
     state: readState(),
     pendingEventCount: pendingEvents.length - pendingEventHead,

@@ -847,6 +847,25 @@ describe('no-op transition stability', () => {
 
 
 describe('nested snapshot isolation', () => {
+  it('returns detached diagnostics roots across repeated reads', () => {
+    const adapter = createLightboxInteractionAdapter();
+    adapter.open();
+
+    const first = adapter.getDiagnostics();
+    first.pendingEventCount = 999;
+    first.listenerCount = 999;
+    first.notifying = true;
+    first.released = true;
+
+    expect(adapter.getDiagnostics()).toMatchObject({
+      pendingEventCount: 0,
+      listenerCount: 0,
+      notifying: false,
+      released: false,
+    });
+    adapter.release();
+  });
+
   it('returns independent nested state objects across repeated diagnostics reads', () => {
     const adapter = createLightboxInteractionAdapter();
     adapter.open();
