@@ -11,6 +11,7 @@ import { ScreenContainer } from '@/components/screen-container';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { haptic } from '@/lib/haptics';
 import { createNoticeController, type NoticeController } from '@/lib/notice-controller';
+import { createSingleFlight } from '@/lib/single-flight';
 import { trpc } from '@/lib/trpc';
 import { queueClipboardWrite } from '@/lib/clipboard-storage';
 
@@ -67,6 +68,7 @@ export default function HistoryScreen() {
   const [isPasting, setIsPasting] = useState(false);
   const [notice, setNotice] = useState('');
   const noticeControllerRef = useRef<NoticeController | null>(null);
+  const loadItemsFlightRef = useRef(createSingleFlight<boolean>());
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [lightboxItem, setLightboxItem] = useState<Item | null>(null);
   const [isSavingMedia, setIsSavingMedia] = useState(false);
@@ -87,7 +89,7 @@ export default function HistoryScreen() {
   }, []);
   useEffect(() => () => { noticeControllerRef.current?.dispose(); }, []);
 
-  const loadItems = useCallback(async (): Promise<boolean> => {
+  const loadItems = useCallback(() => loadItemsFlightRef.current.run(async (): Promise<boolean> => {
     try {
       const saved = await AsyncStorage.getItem(STORAGE_KEY);
       if (!saved) { setItems(initialItems); await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(initialItems)); return true; }
@@ -103,7 +105,7 @@ export default function HistoryScreen() {
       setNotice('Saved history could not be read, so starter items were restored');
       return false;
     }
-  }, []);
+  }), []);
   useFocusEffect(useCallback(() => { void loadItems(); }, [loadItems]));
   useEffect(() => { setSelectedIds((current) => current.filter((id) => items.some((item) => item.id === id))); }, [items]);
 

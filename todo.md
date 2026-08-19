@@ -394,3 +394,9 @@
 - [x] Add deterministic tests and rerun all project checks before checkpointing
 - [x] Remove duplicate initial History hydration to reduce overlapping storage reads
 - [x] Re-run TypeScript, lint, and tests after the hydration cleanup
+
+- [x] Audit storage concurrency and History hydration paths for overlapping reads
+- [x] Implement single-flight loading and resilience improvements
+- [x] Add deterministic tests and rerun all project checks before checkpointing
+- [x] Share concurrent History hydration requests through a single in-flight promise
+- [x] Add tests for concurrent sharing and post-failure recovery
