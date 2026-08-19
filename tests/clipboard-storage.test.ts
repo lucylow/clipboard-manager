@@ -36,4 +36,18 @@ describe('parseStoredArray', () => {
     await expect(queueClipboardWrite([{ id: 'second' }])).resolves.toBeUndefined();
     expect(setItem).toHaveBeenCalledTimes(2);
   });
+
+  it('rejects a stalled write and allows a later write to proceed', async () => {
+    vi.useFakeTimers();
+    const setItem = vi.mocked(AsyncStorage.setItem);
+    setItem.mockReset();
+    setItem.mockImplementationOnce(() => new Promise<void>(() => undefined));
+    setItem.mockResolvedValue(undefined);
+
+    const stalled = queueClipboardWrite([{ id: 'stalled' }]);
+    await vi.advanceTimersByTimeAsync(5000);
+    await expect(stalled).rejects.toThrow('Clipboard storage write timed out');
+    await expect(queueClipboardWrite([{ id: 'recovered' }])).resolves.toBeUndefined();
+    vi.useRealTimers();
+  });
 });

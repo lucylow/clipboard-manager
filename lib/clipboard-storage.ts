@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { withTimeout } from './with-timeout';
 
 export const CLIPBOARD_STORAGE_KEY = 'clipboard-manager-items';
 
@@ -19,7 +20,11 @@ export function queueClipboardWrite<T>(items: T[]): Promise<void> {
   writeQueue = writeQueue
     .catch(() => undefined)
     .then(async () => {
-      await AsyncStorage.setItem(CLIPBOARD_STORAGE_KEY, JSON.stringify(items));
+      await withTimeout(
+        AsyncStorage.setItem(CLIPBOARD_STORAGE_KEY, JSON.stringify(items)),
+        5000,
+        'Clipboard storage write timed out',
+      );
     });
   writeQueue.catch(() => undefined);
   return writeQueue;
@@ -33,12 +38,20 @@ export function updateClipboardStorage<T>(updater: (items: T[]) => T[]): Promise
   writeQueue = writeQueue
     .catch(() => undefined)
     .then(async () => {
-      const saved = await AsyncStorage.getItem(CLIPBOARD_STORAGE_KEY);
+      const saved = await withTimeout(
+        AsyncStorage.getItem(CLIPBOARD_STORAGE_KEY),
+        5000,
+        'Clipboard storage read timed out',
+      );
       const next = updater(parseStoredArray<T>(saved));
       if (!Array.isArray(next)) {
         throw new Error('Clipboard storage updater must return an array');
       }
-      await AsyncStorage.setItem(CLIPBOARD_STORAGE_KEY, JSON.stringify(next));
+      await withTimeout(
+        AsyncStorage.setItem(CLIPBOARD_STORAGE_KEY, JSON.stringify(next)),
+        5000,
+        'Clipboard storage update timed out',
+      );
     });
   writeQueue.catch(() => undefined);
   return writeQueue;

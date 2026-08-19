@@ -419,3 +419,9 @@
 - [x] Add deterministic tests and rerun all project checks before checkpointing
 - [x] Add bounded History storage-read recovery through a reusable timeout helper
 - [x] Add deterministic coverage for timeout success, rejection, and stall recovery
+
+- [x] Audit the latest code for the next high-impact reliability gap
+- [x] Implement a targeted maintainability or resilience improvement
+- [x] Add deterministic tests and rerun all project checks before checkpointing
+- [x] Bound shared clipboard writes and read-modify-write updates with timeout recovery
+- [x] Add deterministic stalled-write recovery coverage with fake timers
