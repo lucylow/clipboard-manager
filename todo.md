@@ -862,3 +862,7 @@
 - [x] Audit repeated diagnostics-panel reset lifecycle behavior
 - [x] Add regression coverage for stale subscriptions and duplicate synchronization
 - [x] Re-run validation and save the reset-lifecycle checkpoint
+
+- [x] Audit callback error isolation during reset interactions
+- [x] Add targeted regression coverage for subscriber failures and released transitions
+- [x] Re-run validation and save the callback-isolation checkpoint

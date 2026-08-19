@@ -680,3 +680,27 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
   });
 });
+
+
+describe('released callback error isolation', () => {
+  it('keeps release stable when a subscriber releases and then throws', () => {
+    const adapter = createLightboxInteractionAdapter();
+    const received: string[] = [];
+    adapter.subscribe(() => {
+      adapter.release();
+      throw new Error('release callback failure');
+    });
+    adapter.subscribe(() => received.push('later listener'));
+
+    expect(() => adapter.open()).not.toThrow();
+    expect(received).toEqual([]);
+    expect(adapter.getDiagnostics()).toEqual({
+      state: { visible: true, actionBusy: false, retryAvailable: false },
+      pendingEventCount: 0,
+      listenerCount: 0,
+      notifying: false,
+      released: true,
+    });
+    expect(adapter.release()).toBe(false);
+  });
+});
