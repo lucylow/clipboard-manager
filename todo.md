@@ -497,3 +497,7 @@
 - [x] Add local-only tracking for repeated lifecycle recovery failures
 - [x] Show a concise actionable notice only after repeated failures without exposing sensitive data
 - [x] Add deterministic coverage and rerun TypeScript, lint, and tests
+
+- [x] Add a visible inline retry action for repeated History recovery failures
+- [x] Keep retry state accessible and protected against overlapping recovery runs
+- [x] Rerun TypeScript, lint, tests, and preview validation

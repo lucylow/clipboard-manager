@@ -377,12 +377,7 @@ export default function HistoryScreen() {
     if (refreshing) return;
     setRefreshing(true);
     try {
-      const succeeded = await loadItems();
-      if (!succeeded) {
-        setRefreshError(true);
-        showNotice('Refresh needs attention');
-        return;
-      }
+      await recoveryCoordinator.run();
       setRefreshError(false);
       setLastRefreshedAt(Date.now());
       showNotice('History refreshed');
