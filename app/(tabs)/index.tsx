@@ -14,7 +14,7 @@ import { createNoticeController, type NoticeController } from '@/lib/notice-cont
 import { trpc } from '@/lib/trpc';
 import { useHistoryPersistence } from '@/hooks/use-history-persistence';
 import { removeClipboardItems, updateClipboardItem, updateClipboardItems } from '@/lib/clipboard-item-mutations';
-import { withTimeout } from '@/lib/with-timeout';
+import { cleanupTemporaryFile } from '@/lib/temporary-file-cleanup';
 
 type Filter = 'All' | 'Text' | 'Images' | 'Favorites' | 'Work' | 'Personal';
 type Category = 'Work' | 'Personal';
@@ -264,9 +264,7 @@ export default function HistoryScreen() {
       exitSelectionMode();
     } catch { haptic.error(); showNotice('Could not export selected items'); }
     finally {
-      if (temporaryFileUri) {
-        try { await withTimeout(FileSystem.deleteAsync(temporaryFileUri, { idempotent: true }), 1500, 'Export cleanup timed out'); } catch { /* cleanup must not replace the share result */ }
-      }
+      await cleanupTemporaryFile(temporaryFileUri, (uri) => FileSystem.deleteAsync(uri, { idempotent: true }));
       setIsExporting(false);
     }
   };
@@ -290,9 +288,7 @@ export default function HistoryScreen() {
       haptic.success();
     } catch { setFailedImageShareId(item.id); haptic.error(); showNotice('Could not share this image · try again'); }
     finally {
-      if (temporaryFileUri) {
-        try { await withTimeout(FileSystem.deleteAsync(temporaryFileUri, { idempotent: true }), 1500, 'Image-share cleanup timed out'); } catch { /* cleanup must not replace the share result */ }
-      }
+      await cleanupTemporaryFile(temporaryFileUri, (uri) => FileSystem.deleteAsync(uri, { idempotent: true }));
       setIsExporting(false);
     }
   };

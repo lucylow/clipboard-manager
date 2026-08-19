@@ -465,3 +465,7 @@
 - [x] Add bounded cleanup for temporary native image-share files
 - [x] Preserve sharing success and failure feedback when cleanup itself fails
 - [x] Add regression coverage and rerun TypeScript, lint, and tests
+
+- [x] Extract a testable temporary-file cleanup helper
+- [x] Cover cleanup success, deletion failure, and timeout without masking share results
+- [x] Validate interrupted-operation recovery with TypeScript, lint, and tests
