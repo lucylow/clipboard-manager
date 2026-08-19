@@ -100,6 +100,32 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
   });
 
+  it('preserves meaningful FIFO transitions around re-entrant no-op events', () => {
+    const adapter = createLightboxInteractionAdapter();
+    const seen: string[] = [];
+    let queued = false;
+    adapter.subscribe((state) => {
+      seen.push(`${state.visible}:${state.actionBusy}:${state.retryAvailable}`);
+      if (!queued && state.visible && !state.actionBusy) {
+        queued = true;
+        adapter.close();
+        adapter.startAction();
+        adapter.open();
+        adapter.startAction();
+      }
+    });
+
+    adapter.open();
+
+    expect(seen).toEqual([
+      'true:false:false',
+      'false:false:false',
+      'true:false:false',
+      'true:true:false',
+    ]);
+    expect(adapter.getDiagnostics()).toMatchObject({ pendingEventCount: 0, notifying: false });
+  });
+
   it('coalesces consecutive duplicate re-entrant events but preserves distinct FIFO events', () => {
     const adapter = createLightboxInteractionAdapter();
     const seen: string[] = [];

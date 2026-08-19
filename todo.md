@@ -762,3 +762,7 @@
 - [x] Audit listener removal during an active notification snapshot
 - [x] Verify removed listeners do not receive later queued transitions in the cycle
 - [x] Add snapshot-removal coverage, rerun validation, and save the checkpoint
+
+- [x] Audit mixed no-op and state-changing events during bounded drains
+- [x] Verify meaningful transitions retain FIFO ordering around redundant events
+- [x] Add mixed-event ordering coverage, rerun validation, and save the checkpoint
