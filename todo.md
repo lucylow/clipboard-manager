@@ -706,3 +706,7 @@
 - [x] Audit lightbox adapter initialization against caller-owned mutable state
 - [x] Preserve initial state isolation without changing transition behavior
 - [x] Add initialization isolation coverage, rerun validation, and save the checkpoint
+
+- [x] Audit lightbox adapter allocations during frequent dispatch and diagnostics reads
+- [x] Apply a safe performance refinement without weakening snapshot isolation
+- [x] Add performance coverage, rerun validation, and save the checkpoint
