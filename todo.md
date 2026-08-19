@@ -578,3 +578,7 @@
 - [x] Inspect current preview logs and process health under memory pressure
 - [x] Apply only an app-owned stability fix if the runtime evidence supports one
 - [x] Rerun bounded validation and save the checkpoint with remaining external noise documented
+
+- [x] Extract a pure lightbox visibility and close-transition model
+- [x] Add deterministic coverage for open, close, and repeated-dismiss transitions
+- [x] Rerun bounded TypeScript, lint, tests, and save the checkpoint
