@@ -32,6 +32,19 @@ describe('createLightboxInteractionAdapter', () => {
     expect(states).toEqual(['true:false:false', 'false:false:false']);
   });
 
+  it('isolates throwing subscribers while preserving later notifications and state', () => {
+    const adapter = createLightboxInteractionAdapter();
+    const received: string[] = [];
+    adapter.subscribe(() => { throw new Error('subscriber failure'); });
+    adapter.subscribe((state) => received.push(`${state.visible}:${state.actionBusy}`));
+
+    expect(() => adapter.open()).not.toThrow();
+    expect(() => adapter.startAction()).not.toThrow();
+
+    expect(received).toEqual(['true:false', 'true:true']);
+    expect(adapter.getState()).toEqual({ visible: true, actionBusy: true, retryAvailable: false });
+  });
+
   it('supports unsubscribe without affecting the adapter state', () => {
     const adapter = createLightboxInteractionAdapter();
     const listener = () => undefined;

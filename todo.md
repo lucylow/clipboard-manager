@@ -638,3 +638,7 @@
 - [x] Audit native lightbox open, close, and action-feedback boundaries
 - [x] Implement a platform-neutral interaction adapter without changing current UI behavior
 - [x] Add deterministic adapter coverage, rerun bounded validation, and save the checkpoint
+
+- [x] Audit interaction-adapter listener notification failure boundaries
+- [x] Prevent one faulty subscriber from interrupting other listeners or state transitions
+- [x] Add deterministic failure-isolation coverage, rerun validation, and save the checkpoint

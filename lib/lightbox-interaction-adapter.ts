@@ -20,7 +20,13 @@ export function createLightboxInteractionAdapter(initialState: LightboxInteracti
     const nextState = reduceLightboxInteraction(state, event);
     if (nextState === state) return state;
     state = nextState;
-    listeners.forEach((listener) => listener(state));
+    [...listeners].forEach((listener) => {
+      try {
+        listener(state);
+      } catch {
+        // A UI subscriber must not interrupt the committed transition or other listeners.
+      }
+    });
     return state;
   };
 
