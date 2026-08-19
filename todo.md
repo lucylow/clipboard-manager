@@ -634,3 +634,7 @@
 - [x] Audit combined OCR text, OCR-save failure, and share-failure presentation states
 - [x] Ensure retry labels and action visibility remain coherent when failures coexist
 - [x] Add deterministic combined-state coverage, rerun validation, and save the checkpoint
+
+- [x] Audit native lightbox open, close, and action-feedback boundaries
+- [x] Implement a platform-neutral interaction adapter without changing current UI behavior
+- [x] Add deterministic adapter coverage, rerun bounded validation, and save the checkpoint
