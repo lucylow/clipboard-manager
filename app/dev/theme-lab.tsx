@@ -55,10 +55,14 @@ export default function ThemeLabScreen() {
   );
 
   useEffect(() => {
-    const sync = () => setLightboxDiagnostics(lightboxAdapter.getDiagnostics());
+    let active = true;
+    const sync = () => {
+      if (active) setLightboxDiagnostics(lightboxAdapter.getDiagnostics());
+    };
     const unsubscribe = lightboxAdapter.subscribe(sync);
     sync();
     return () => {
+      active = false;
       unsubscribe();
     };
   }, [lightboxAdapter]);

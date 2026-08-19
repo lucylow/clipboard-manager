@@ -782,3 +782,7 @@
 - [x] Audit the app integration point for development-only lightbox diagnostics
 - [x] Add an isolated diagnostics panel without changing production behavior
 - [x] Add diagnostics-panel coverage, rerun validation, and save the checkpoint
+
+- [x] Audit stale adapter callbacks across repeated diagnostics resets
+- [x] Verify reset lifecycle values cannot be overwritten by an old adapter
+- [x] Add stale-adapter coverage, rerun validation, and save the checkpoint
