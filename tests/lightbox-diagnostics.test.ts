@@ -92,6 +92,17 @@ describe("lightbox diagnostics equality", () => {
     expect(diagnosticsEqual(previous, next)).toBe(false);
   });
 
+  it("releases the fixture adapter after successful test work", () => {
+    let createdAdapter: DiagnosticsAdapter | undefined;
+    const result = withDiagnosticsAdapter((adapter) => {
+      createdAdapter = adapter;
+      return adapter.open();
+    });
+
+    expect(result).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+    expect(createdAdapter?.getDiagnostics().released).toBe(true);
+  });
+
   it("releases the fixture adapter when test work throws", () => {
     let createdAdapter: DiagnosticsAdapter | undefined;
 

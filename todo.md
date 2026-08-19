@@ -910,3 +910,11 @@
 - [x] Audit repeated diagnostics test setup and assertion patterns
 - [x] Simplify safe repeated patterns without weakening cleanup or coverage
 - [x] Re-run validation and save the test-helper checkpoint
+
+- [x] Audit diagnostics fixture cleanup symmetry on success and failure paths
+- [x] Add explicit cleanup-path regression coverage where useful
+- [x] Re-run validation and save the cleanup-symmetry checkpoint
+
+- [x] Audit diagnostics fixture cleanup symmetry on success and failure paths
+- [x] Add explicit cleanup-path regression coverage where useful
+- [x] Re-run validation and save the cleanup-symmetry checkpoint
