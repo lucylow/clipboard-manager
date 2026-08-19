@@ -95,7 +95,7 @@ export function createLightboxInteractionAdapter(
         if (nextState === state) continue;
         state = nextState;
         [...listeners].forEach((subscription) => {
-          if (released) return;
+          if (released || !listeners.has(subscription)) return;
           try {
             subscription.listener(readState());
           } catch {

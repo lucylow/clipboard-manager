@@ -1002,3 +1002,7 @@
 - [x] Audit diagnostics and state-copy boundaries for remaining aliasing risks
 - [x] Add deterministic state-copy isolation regression coverage
 - [x] Re-run validation and save the state-copy hardening checkpoint
+
+- [x] Audit listener lifecycle cleanup and stale unsubscribe behavior
+- [x] Add deterministic cleanup regression coverage for repeated unsubscribe calls
+- [x] Re-run validation and save the listener-cleanup checkpoint

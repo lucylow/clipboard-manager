@@ -475,6 +475,23 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.getDiagnostics()).toMatchObject({ listenerCount: 0, notifying: false, pendingEventCount: 0 });
   });
 
+  it('skips a listener unsubscribed earlier in the same notification cycle', () => {
+    const adapter = createLightboxInteractionAdapter();
+    const received: string[] = [];
+    let unsubscribeSecond = () => false;
+    adapter.subscribe(() => {
+      received.push('first');
+      unsubscribeSecond();
+    });
+    unsubscribeSecond = adapter.subscribe(() => received.push('second'));
+
+    adapter.open();
+
+    expect(received).toEqual(['first']);
+    expect(adapter.getDiagnostics()).toMatchObject({ listenerCount: 1, notifying: false, pendingEventCount: 0 });
+    adapter.release();
+  });
+
   it('keeps repeated release safe after resubscription and blocks post-release work', () => {
     const adapter = createLightboxInteractionAdapter();
     let notifications = 0;
