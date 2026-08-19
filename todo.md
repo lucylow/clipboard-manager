@@ -702,3 +702,7 @@
 - [x] Audit lightbox adapter public API typing and lifecycle return contracts
 - [x] Add explicit adapter interface types without changing runtime behavior
 - [x] Add API contract coverage, rerun validation, and save the checkpoint
+
+- [x] Audit lightbox adapter initialization against caller-owned mutable state
+- [x] Preserve initial state isolation without changing transition behavior
+- [x] Add initialization isolation coverage, rerun validation, and save the checkpoint
