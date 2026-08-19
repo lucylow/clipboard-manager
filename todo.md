@@ -974,3 +974,7 @@
 - [x] Audit repeated adapter fixture setup in diagnostics tests
 - [x] Refine fixture readability without weakening cleanup guarantees
 - [x] Re-run validation and save the fixture-readability checkpoint
+
+- [x] Audit frozen diagnostics fixture independence across repeated creation
+- [x] Add targeted coverage for independent nested frozen state
+- [x] Re-run validation and save the fixture-independence checkpoint

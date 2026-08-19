@@ -102,6 +102,14 @@ describe("lightbox diagnostics equality", () => {
     expect(next.state).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
   });
 
+  it("creates independent nested state for repeated frozen fixtures", () => {
+    const first = freezeDiagnosticsSnapshot(readDiagnosticsSnapshot());
+    const second = freezeDiagnosticsSnapshot(readDiagnosticsSnapshot());
+
+    expect(first.state).not.toBe(second.state);
+    expect(diagnosticsEqual(first, second)).toBe(true);
+  });
+
   it("does not mutate compared snapshots", () => {
     const previous = readDiagnosticsSnapshot();
     const next = readDiagnosticsSnapshot();
