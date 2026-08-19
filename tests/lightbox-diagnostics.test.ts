@@ -36,7 +36,6 @@ describe("lightbox diagnostics equality", () => {
 
     expect(diagnosticsEqual(previous, next)).toBe(false);
   });
-});
 
   it("does not mutate compared snapshots", () => {
     const previous = diagnostics();
@@ -75,3 +74,17 @@ describe("lightbox diagnostics equality", () => {
 
     expect(diagnosticsEqual(previous, next)).toBe(false);
   });
+
+  it("keeps repeated fixture cleanup isolated from a fresh adapter", () => {
+    const first = createLightboxInteractionAdapter();
+    const firstSnapshot = first.getDiagnostics();
+    expect(first.release()).toBe(true);
+    expect(first.release()).toBe(false);
+
+    const second = createLightboxInteractionAdapter();
+    const secondSnapshot = second.getDiagnostics();
+    expect(secondSnapshot.released).toBe(false);
+    expect(diagnosticsEqual(firstSnapshot, secondSnapshot)).toBe(true);
+    second.release();
+  });
+});

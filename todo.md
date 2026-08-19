@@ -830,3 +830,7 @@
 - [x] Audit combined lifecycle and state field combinations
 - [x] Add deterministic coverage for multi-field diagnostics changes
 - [x] Re-run validation and save the combined-coverage checkpoint
+
+- [x] Audit repeated fixture release and fresh-adapter creation behavior
+- [x] Add deterministic coverage proving lifecycle isolation across fixtures
+- [x] Re-run validation and save the repeated-cleanup checkpoint
