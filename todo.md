@@ -586,3 +586,7 @@
 - [x] Unify lightbox visibility and action-state derivation into one presentation snapshot
 - [x] Add deterministic coverage for rapid open, close, and retry-state transitions
 - [x] Rerun bounded TypeScript, lint, tests, and save the checkpoint
+
+- [x] Audit stale OCR and share results after lightbox close or item replacement
+- [x] Prevent stale async results from updating the wrong lightbox item
+- [x] Add deterministic stale-result coverage, rerun validation, and save the checkpoint

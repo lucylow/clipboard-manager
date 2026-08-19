@@ -21,6 +21,7 @@ import { createHistoryRecoveryCoordinator } from '@/lib/history-recovery-coordin
 import { createRecoveryFailureCounter } from '@/lib/recovery-failure-counter';
 import { getLightboxPresentationState } from '@/lib/lightbox-presentation-state';
 import { createLightboxOperationGuard } from '@/lib/lightbox-operation-guard';
+import { isCurrentLightboxAction } from '@/lib/lightbox-async-state';
 
 type Filter = 'All' | 'Text' | 'Images' | 'Favorites' | 'Work' | 'Personal';
 type Category = 'Work' | 'Personal';
@@ -81,6 +82,7 @@ export default function HistoryScreen() {
   const noticeControllerRef = useRef<NoticeController | null>(null);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [lightboxItem, setLightboxItem] = useState<Item | null>(null);
+  const lightboxItemIdRef = useRef<string | null>(null);
   const [isSavingMedia, setIsSavingMedia] = useState(false);
   const [ocrSaveFailures, setOcrSaveFailures] = useState<string[]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
@@ -150,6 +152,7 @@ export default function HistoryScreen() {
     return () => subscription.remove();
   }, [handleRecoveryFailure, recoveryCoordinator]);
   useEffect(() => { setSelectedIds((current) => current.filter((id) => items.some((item) => item.id === id))); }, [items]);
+  useEffect(() => { lightboxItemIdRef.current = lightboxItem?.id ?? null; }, [lightboxItem?.id]);
 
   const visibleItems = useMemo(() => items.filter((item) => {
     const searchableText = [item.content, item.ocrText, item.source, item.category, item.type === 'image' ? 'image' : 'text'].filter(Boolean).join(' ').toLowerCase();
@@ -200,9 +203,11 @@ export default function HistoryScreen() {
         return;
       }
       setOcrSaveFailures((current) => current.filter((id) => id !== item.id));
-      setLightboxItem(updated.find((candidate) => candidate.id === item.id) ?? item);
+      if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null })) {
+        setLightboxItem(updated.find((candidate) => candidate.id === item.id) ?? item);
+        showNotice(result.text ? 'Text extracted' : 'No readable text found');
+      }
       void trackUsage('ocrCount');
-      showNotice(result.text ? 'Text extracted' : 'No readable text found');
     } catch { showNotice('Text extraction failed · try again'); }
     finally { lightboxOperationGuardRef.current.release('ocr'); }
   };
