@@ -34,4 +34,14 @@ describe('reduceLightboxInteraction', () => {
     expect(reduceLightboxInteraction(closed, { type: 'close' })).toBe(closed);
     expect(reduceLightboxInteraction(closed, { type: 'action-success' })).toBe(closed);
   });
+
+  it('keeps repeated action events as identity no-ops when state cannot change', () => {
+    const idle = { visible: true, actionBusy: false, retryAvailable: false };
+    const busy = { visible: true, actionBusy: true, retryAvailable: false };
+    const failed = { visible: true, actionBusy: false, retryAvailable: true };
+
+    expect(reduceLightboxInteraction(busy, { type: 'action-start' })).toBe(busy);
+    expect(reduceLightboxInteraction(failed, { type: 'action-failure' })).toBe(failed);
+    expect(reduceLightboxInteraction(idle, { type: 'action-success' })).toBe(idle);
+  });
 });

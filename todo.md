@@ -662,3 +662,7 @@
 - [x] Audit lightbox reducer no-op transitions for explicit state invariants
 - [x] Apply a defensive immutable-state refinement without changing UI behavior
 - [x] Add no-op transition coverage, rerun validation, and save the checkpoint
+
+- [x] Audit combined lightbox closed, busy, retry, and success transitions
+- [x] Apply the safest state-transition refinement without changing valid flows
+- [x] Add combined-state coverage, rerun validation, and save the checkpoint
