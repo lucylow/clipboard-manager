@@ -9,8 +9,17 @@ import {
   lightboxStateEqual,
 } from "../lib/lightbox-diagnostics";
 
+function withDiagnosticsAdapter<T>(work: (adapter: ReturnType<typeof createLightboxInteractionAdapter>) => T): T {
+  const adapter = createLightboxInteractionAdapter();
+  try {
+    return work(adapter);
+  } finally {
+    adapter.release();
+  }
+}
+
 function diagnostics(): LightboxInteractionDiagnostics {
-  return createLightboxInteractionAdapter().getDiagnostics();
+  return withDiagnosticsAdapter((adapter) => adapter.getDiagnostics());
 }
 
 describe("lightbox diagnostics equality", () => {
@@ -73,6 +82,19 @@ describe("lightbox diagnostics equality", () => {
     };
 
     expect(diagnosticsEqual(previous, next)).toBe(false);
+  });
+
+  it("releases the fixture adapter when test work throws", () => {
+    let createdAdapter: ReturnType<typeof createLightboxInteractionAdapter> | undefined;
+
+    expect(() =>
+      withDiagnosticsAdapter((adapter) => {
+        createdAdapter = adapter;
+        throw new Error("fixture failure");
+      }),
+    ).toThrow("fixture failure");
+
+    expect(createdAdapter?.getDiagnostics().released).toBe(true);
   });
 
   it("keeps repeated fixture cleanup isolated from a fresh adapter", () => {

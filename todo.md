@@ -834,3 +834,7 @@
 - [x] Audit repeated fixture release and fresh-adapter creation behavior
 - [x] Add deterministic coverage proving lifecycle isolation across fixtures
 - [x] Re-run validation and save the repeated-cleanup checkpoint
+
+- [x] Audit fixture cleanup behavior when assertions or setup steps fail
+- [x] Add deterministic exceptional-path cleanup coverage without leaking adapters
+- [x] Re-run validation and save the exceptional-cleanup checkpoint
