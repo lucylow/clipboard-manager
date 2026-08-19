@@ -726,3 +726,7 @@
 - [x] Audit subscribe, unsubscribe, and resubscribe behavior during notification snapshots
 - [x] Preserve deterministic delivery and token-safe cleanup during listener changes
 - [x] Add subscription-lifecycle coverage, rerun validation, and save the checkpoint
+
+- [x] Audit release cleanup after subscription replacement during notification
+- [x] Preserve token-safe cleanup and stable released diagnostics
+- [x] Add release-after-resubscribe coverage, rerun validation, and save the checkpoint

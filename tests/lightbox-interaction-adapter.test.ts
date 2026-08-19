@@ -150,6 +150,31 @@ describe('createLightboxInteractionAdapter', () => {
     expect(received).toEqual(['first', 'second', 'second', 'replacement']);
   });
 
+  it('cleans replaced subscriptions when release occurs in the same notification', () => {
+    const adapter = createLightboxInteractionAdapter();
+    let unsubscribeReplacement = () => false;
+    let replaced = false;
+    adapter.subscribe(() => {
+      if (!replaced) {
+        replaced = true;
+        adapter.subscribe(() => undefined);
+      }
+    });
+    adapter.subscribe(() => {
+      if (replaced) adapter.release();
+    });
+
+    adapter.open();
+
+    expect(adapter.getDiagnostics()).toMatchObject({
+      listenerCount: 0,
+      pendingEventCount: 0,
+      notifying: false,
+      released: true,
+    });
+    expect(unsubscribeReplacement()).toBe(false);
+  });
+
   it('keeps diagnostic listener counts aligned with independent cleanup handles', () => {
     const adapter = createLightboxInteractionAdapter();
     const listener = () => undefined;
