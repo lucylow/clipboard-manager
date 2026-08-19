@@ -5,14 +5,17 @@ import type {
 
 export type LightboxAction = "open" | "close" | "startAction" | "succeed" | "fail";
 
-export type LightboxActionControl = readonly [action: LightboxAction, label: string];
+export type LightboxActionControl = Readonly<{
+  action: LightboxAction;
+  label: string;
+}>;
 
 export const LIGHTBOX_ACTION_CONTROLS: readonly LightboxActionControl[] = [
-  ["open", "Open"],
-  ["close", "Close"],
-  ["startAction", "Start action"],
-  ["succeed", "Succeed"],
-  ["fail", "Fail"],
+  { action: "open", label: "Open" },
+  { action: "close", label: "Close" },
+  { action: "startAction", label: "Start action" },
+  { action: "succeed", label: "Succeed" },
+  { action: "fail", label: "Fail" },
 ];
 
 export function runLightboxAction(

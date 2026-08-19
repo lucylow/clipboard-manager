@@ -10,11 +10,11 @@ import {
 describe("lightbox diagnostics panel controls", () => {
   it("keeps the visible action controls in their stable UI order", () => {
     expect(LIGHTBOX_ACTION_CONTROLS).toEqual([
-      ["open", "Open"],
-      ["close", "Close"],
-      ["startAction", "Start action"],
-      ["succeed", "Succeed"],
-      ["fail", "Fail"],
+      { action: "open", label: "Open" },
+      { action: "close", label: "Close" },
+      { action: "startAction", label: "Start action" },
+      { action: "succeed", label: "Succeed" },
+      { action: "fail", label: "Fail" },
     ]);
   });
 

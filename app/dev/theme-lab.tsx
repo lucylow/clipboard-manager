@@ -287,7 +287,7 @@ export default function ThemeLabScreen() {
             </View>
 
             <View className="mt-3 flex-row flex-wrap gap-2">
-              {LIGHTBOX_ACTION_CONTROLS.map(([action, label]) => (
+              {LIGHTBOX_ACTION_CONTROLS.map(({ action, label }) => (
                 <Pressable
                   key={action}
                   accessibilityRole="button"

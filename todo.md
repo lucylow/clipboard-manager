@@ -870,3 +870,7 @@
 - [x] Audit diagnostics snapshot isolation across reset and callback failures
 - [x] Add a distinct regression test for detached diagnostics snapshots if needed
 - [x] Re-run validation and save the snapshot-isolation checkpoint
+
+- [x] Audit diagnostics-panel control model API naming and typing
+- [x] Refine control descriptors without changing runtime behavior
+- [x] Re-run validation and save the control-model checkpoint
