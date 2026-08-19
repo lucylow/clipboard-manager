@@ -62,6 +62,8 @@ export function createLightboxInteractionAdapter(
   const dispatch = (event: LightboxInteractionEvent) => {
     if (released) return readState();
     if (pendingEvents.length - pendingEventHead >= LIGHTBOX_MAX_PENDING_EVENTS) return readState();
+    const lastPendingEvent = pendingEvents[pendingEvents.length - 1];
+    if (isNotifying && lastPendingEvent?.type === event.type) return readState();
     pendingEvents.push(event);
     if (isNotifying) return readState();
 

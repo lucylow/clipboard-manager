@@ -730,3 +730,7 @@
 - [x] Audit release cleanup after subscription replacement during notification
 - [x] Preserve token-safe cleanup and stable released diagnostics
 - [x] Add release-after-resubscribe coverage, rerun validation, and save the checkpoint
+
+- [x] Audit duplicate re-entrant lightbox events for safe coalescing boundaries
+- [x] Preserve meaningful transition order and recovery semantics while bounding redundant work
+- [x] Add queue-coalescing coverage, rerun validation, and save the checkpoint
