@@ -818,3 +818,7 @@
 - [x] Audit diagnostics helper input types and comparison assumptions
 - [x] Apply a type-safe maintainability refinement without changing runtime behavior
 - [x] Re-run validation and save the helper-typing checkpoint
+
+- [x] Identify a pure module boundary for diagnostics snapshot comparison
+- [x] Extract the helper and add deterministic equality/inequality coverage
+- [x] Re-run validation and save the helper-extraction checkpoint

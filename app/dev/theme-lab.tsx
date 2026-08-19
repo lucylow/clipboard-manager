@@ -7,6 +7,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { SchemeColors, type ColorScheme } from "@/constants/theme";
 import { useColors } from "@/hooks/use-colors";
 import { useThemeContext } from "@/lib/theme-provider";
+import { diagnosticsEqual } from "@/lib/lightbox-diagnostics";
 import {
   createLightboxInteractionAdapter,
   type LightboxInteractionAdapter,
@@ -49,32 +50,6 @@ function DiagnosticRow({ label, value }: { label: string; value: string }) {
 
 function diagnosticsLabel(diagnostics: LightboxInteractionDiagnostics) {
   return diagnostics.released ? "Released" : diagnostics.notifying ? "Draining" : "Idle";
-}
-
-type LightboxDiagnosticsState = LightboxInteractionDiagnostics["state"];
-
-function lightboxStateEqual(
-  previous: LightboxDiagnosticsState,
-  next: LightboxDiagnosticsState,
-): boolean {
-  return (
-    previous.visible === next.visible &&
-    previous.actionBusy === next.actionBusy &&
-    previous.retryAvailable === next.retryAvailable
-  );
-}
-
-function diagnosticsEqual(
-  previous: LightboxInteractionDiagnostics,
-  next: LightboxInteractionDiagnostics,
-): boolean {
-  return (
-    previous.pendingEventCount === next.pendingEventCount &&
-    previous.listenerCount === next.listenerCount &&
-    previous.notifying === next.notifying &&
-    previous.released === next.released &&
-    lightboxStateEqual(previous.state, next.state)
-  );
 }
 
 export default function ThemeLabScreen() {
