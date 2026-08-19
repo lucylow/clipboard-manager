@@ -630,3 +630,7 @@
 - [x] Audit unavailable-image, retry, and action-visibility edge cases in lightbox presentation
 - [x] Apply consistent presentation rules without weakening existing accessibility or retry behavior
 - [x] Add targeted regression coverage, rerun bounded validation, and save the checkpoint
+
+- [x] Audit combined OCR text, OCR-save failure, and share-failure presentation states
+- [x] Ensure retry labels and action visibility remain coherent when failures coexist
+- [x] Add deterministic combined-state coverage, rerun validation, and save the checkpoint

@@ -24,6 +24,20 @@ describe('getLightboxPresentationState', () => {
     expect(retry.interaction).toEqual({ visible: true, actionBusy: false, retryAvailable: true });
   });
 
+  it('keeps OCR and sharing retries coherent when both operations have failed', () => {
+    const state = getLightboxPresentationState({ ...base, hasImage: true, hasOcrText: true, hasOcrSaveFailure: true, hasShareFailure: true });
+    expect(state.interaction).toEqual({ visible: true, actionBusy: false, retryAvailable: true });
+    expect(state.controls.ocrVisible).toBe(true);
+    expect(state.controls.ocr.label).toBe('Retry saving text');
+    expect(state.controls.share.label).toBe('Retry share');
+  });
+
+  it('preserves a share retry label while disabling it during OCR work', () => {
+    const state = getLightboxPresentationState({ ...base, hasImage: true, hasShareFailure: true, isOcrPending: true });
+    expect(state.interaction).toEqual({ visible: true, actionBusy: true, retryAvailable: true });
+    expect(state.controls.share).toMatchObject({ label: 'Retry share', disabled: true, busy: false });
+  });
+
   it('keeps the interaction state closed when the image payload is unavailable', () => {
     const state = getLightboxPresentationState({ ...base, hasImage: false, hasOcrSaveFailure: true });
     expect(state.interaction).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
