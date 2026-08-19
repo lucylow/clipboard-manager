@@ -441,6 +441,16 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.subscribe(() => { notifications += 1; })()).toBe(false);
   });
 
+  it('rejects invalid runtime subscription inputs without corrupting the adapter', () => {
+    const adapter = createLightboxInteractionAdapter();
+    const invalidListener = null as unknown as Parameters<typeof adapter.subscribe>[0];
+
+    expect(adapter.subscribe(invalidListener)()).toBe(false);
+    expect(adapter.getDiagnostics()).toMatchObject({ listenerCount: 0, released: false });
+    expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+    expect(adapter.getDiagnostics()).toMatchObject({ listenerCount: 0, notifying: false, pendingEventCount: 0 });
+  });
+
   it('keeps repeated release safe after resubscription and blocks post-release work', () => {
     const adapter = createLightboxInteractionAdapter();
     let notifications = 0;

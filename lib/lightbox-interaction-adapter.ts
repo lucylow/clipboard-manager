@@ -109,7 +109,7 @@ export function createLightboxInteractionAdapter(
       return true;
     },
     subscribe: (listener: LightboxInteractionListener) => {
-      if (released) return () => false;
+      if (released || typeof listener !== 'function') return () => false;
       const subscription = { listener };
       listeners.add(subscription);
       let active = true;

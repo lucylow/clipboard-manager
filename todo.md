@@ -990,3 +990,7 @@
 - [x] Audit custom lifecycle diagnostics immutability across repeated comparisons
 - [x] Add targeted immutable lifecycle regression coverage
 - [x] Re-run validation and save the lifecycle-immutability checkpoint
+
+- [x] Audit the next interaction-adapter boundary for stale or duplicate lifecycle actions
+- [x] Add deterministic defensive regression coverage for the boundary
+- [x] Re-run validation and save the interaction-hardening checkpoint
