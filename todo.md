@@ -437,3 +437,7 @@
 - [x] Extract typed History item mutation helpers for favorite, category, and deletion updates
 - [x] Preserve optimistic persistence and failure feedback across the helper migration
 - [x] Add focused regression coverage and rerun TypeScript, lint, and tests
+
+- [x] Migrate batch category mutations to the typed item mutation helper
+- [x] Preserve category feedback and optimistic persistence behavior
+- [x] Add or update regression coverage and rerun TypeScript, lint, and tests

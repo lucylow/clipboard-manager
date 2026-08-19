@@ -196,7 +196,21 @@ export default function HistoryScreen() {
   const toggleSelection = (id: string) => setSelectedIds((current) => current.includes(id) ? current.filter((selectedId) => selectedId !== id) : [...current, id]);
   const exitSelectionMode = () => { setSelectionMode(false); setSelectedIds([]); };
   const batchFavorite = () => { if (!selectedIds.length) return showNotice('Select at least one item'); persist(updateClipboardItems(items, new Set(selectedIds), (item) => ({ ...item, favorite: true }))); haptic.light(); showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} added to favorites`); exitSelectionMode(); };
-  const batchCategory = () => { if (!selectedIds.length) return showNotice('Select at least one item'); Alert.alert('Assign category', 'Choose a category for the selected items.', [{ text: 'Work', onPress: () => { persist(items.map((item) => selectedIds.includes(item.id) ? { ...item, category: 'Work' } : item)); haptic.light(); showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} moved to Work`); exitSelectionMode(); } }, { text: 'Personal', onPress: () => { persist(items.map((item) => selectedIds.includes(item.id) ? { ...item, category: 'Personal' } : item)); haptic.light(); showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} moved to Personal`); exitSelectionMode(); } }, { text: 'Cancel', style: 'cancel' }]); };
+  const batchCategory = () => {
+    if (!selectedIds.length) return showNotice('Select at least one item');
+    const selectedIdSet = new Set(selectedIds);
+    const applyCategory = (category: Category) => {
+      persist(updateClipboardItems(items, selectedIdSet, (item) => ({ ...item, category })));
+      haptic.light();
+      showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} moved to ${category}`);
+      exitSelectionMode();
+    };
+    Alert.alert('Assign category', 'Choose a category for the selected items.', [
+      { text: 'Work', onPress: () => applyCategory('Work') },
+      { text: 'Personal', onPress: () => applyCategory('Personal') },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  };
   const exportSelected = async () => {
     if (!isPremium) return showNotice('Batch export is a Clipboard Pro feature · your history remains free');
     if (!selectedIds.length) return showNotice('Select at least one item');
