@@ -10,6 +10,20 @@ import {
 } from "../lib/lightbox-diagnostics";
 
 type DiagnosticsAdapter = ReturnType<typeof createLightboxInteractionAdapter>;
+type DiagnosticsMutationCase = readonly [
+  label: string,
+  mutate: (value: LightboxInteractionDiagnostics) => LightboxInteractionDiagnostics,
+];
+
+const diagnosticsMutationCases: readonly DiagnosticsMutationCase[] = [
+  ["visible", (value) => ({ ...value, state: { ...value.state, visible: true } })],
+  ["busy", (value) => ({ ...value, state: { ...value.state, actionBusy: true } })],
+  ["retry", (value) => ({ ...value, state: { ...value.state, retryAvailable: true } })],
+  ["pending events", (value) => ({ ...value, pendingEventCount: 1 })],
+  ["listeners", (value) => ({ ...value, listenerCount: 1 })],
+  ["notifying", (value) => ({ ...value, notifying: true })],
+  ["released", (value) => ({ ...value, released: true })],
+];
 
 function withDiagnosticsAdapter<T>(work: (adapter: DiagnosticsAdapter) => T): T {
   const adapter = createLightboxInteractionAdapter();
@@ -33,15 +47,7 @@ describe("lightbox diagnostics equality", () => {
     expect(diagnosticsEqual(previous, next)).toBe(true);
   });
 
-  it.each([
-    ["visible", (value: LightboxInteractionDiagnostics) => ({ ...value, state: { ...value.state, visible: true } })],
-    ["busy", (value: LightboxInteractionDiagnostics) => ({ ...value, state: { ...value.state, actionBusy: true } })],
-    ["retry", (value: LightboxInteractionDiagnostics) => ({ ...value, state: { ...value.state, retryAvailable: true } })],
-    ["pending events", (value: LightboxInteractionDiagnostics) => ({ ...value, pendingEventCount: 1 })],
-    ["listeners", (value: LightboxInteractionDiagnostics) => ({ ...value, listenerCount: 1 })],
-    ["notifying", (value: LightboxInteractionDiagnostics) => ({ ...value, notifying: true })],
-    ["released", (value: LightboxInteractionDiagnostics) => ({ ...value, released: true })],
-  ])("detects a changed %s field", (_label, mutate) => {
+  it.each(diagnosticsMutationCases)("detects a changed %s field", (_label, mutate) => {
     const previous = readDiagnosticsSnapshot();
     const next = mutate(previous);
 

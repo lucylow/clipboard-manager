@@ -850,3 +850,7 @@
 - [x] Audit repeated fixture setup for unnecessary ceremony
 - [x] Simplify diagnostics test helpers while preserving explicit cleanup
 - [x] Re-run validation and save the fixture-readability checkpoint
+
+- [x] Audit table-driven diagnostics mutation cases for readability
+- [x] Refine mutation case typing and field labels without changing coverage
+- [x] Re-run validation and save the mutation-case checkpoint
