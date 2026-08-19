@@ -203,8 +203,10 @@ export default function HistoryScreen() {
       const updated = items.map((candidate) => candidate.id === item.id ? { ...candidate, ocrText: result.text || undefined } : candidate);
       const metadataSaved = await persist(updated);
       if (!metadataSaved) {
-        setOcrSaveFailures((current) => current.includes(item.id) ? current : [...current, item.id]);
-        showNotice('Text extracted · could not save the updated image');
+        if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) {
+          setOcrSaveFailures((current) => current.includes(item.id) ? current : [...current, item.id]);
+          showNotice('Text extracted · could not save the updated image');
+        }
         return;
       }
       setOcrSaveFailures((current) => current.filter((id) => id !== item.id));
@@ -213,7 +215,9 @@ export default function HistoryScreen() {
         showNotice(result.text ? 'Text extracted' : 'No readable text found');
       }
       void trackUsage('ocrCount');
-    } catch { showNotice('Text extraction failed · try again'); }
+    } catch {
+      if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) showNotice('Text extraction failed · try again');
+    }
     finally { lightboxOperationGuardRef.current.release('ocr'); }
   };
 
@@ -347,13 +351,13 @@ export default function HistoryScreen() {
     try {
       if (Platform.OS === 'web') {
         await Clipboard.setStringAsync(item.ocrText ? `Image OCR text:\n${item.ocrText}` : 'Image saved in Clipboard Manager');
-        showNotice('Image context copied to clipboard');
+        if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) showNotice('Image context copied to clipboard');
       } else {
         const fileUri = `${FileSystem.cacheDirectory}clipboard-image-${item.id}.png`;
         temporaryFileUri = fileUri;
         await FileSystem.writeAsStringAsync(fileUri, item.imageData, { encoding: FileSystem.EncodingType.Base64 });
-        if (await Sharing.isAvailableAsync()) { await Sharing.shareAsync(fileUri, { dialogTitle: 'Share saved image', mimeType: 'image/png' }); showNotice('Image ready to share'); }
-        else { await Clipboard.setImageAsync(item.imageData); showNotice('Sharing unavailable; image copied to clipboard'); }
+        if (await Sharing.isAvailableAsync()) { await Sharing.shareAsync(fileUri, { dialogTitle: 'Share saved image', mimeType: 'image/png' }); if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) showNotice('Image ready to share'); }
+        else { await Clipboard.setImageAsync(item.imageData); if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) showNotice('Sharing unavailable; image copied to clipboard'); }
       }
       if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) setFailedImageShareId(null);
       haptic.success();

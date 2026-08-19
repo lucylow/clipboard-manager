@@ -594,3 +594,7 @@
 - [x] Audit asynchronous image-share completion feedback after lightbox close or item replacement
 - [x] Prevent stale share success or failure state from affecting a different preview
 - [x] Add deterministic stale-share coverage, rerun validation, and save the checkpoint
+
+- [x] Audit asynchronous OCR/share notices and retry indicators across History and Favorites
+- [x] Prevent stale notices or retry indicators from affecting a different lightbox session
+- [x] Add deterministic feedback-state coverage, rerun validation, and save the checkpoint

@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Clipboard from 'expo-clipboard';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system/legacy';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Image, Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +13,7 @@ import { updateClipboardStorage } from '@/lib/clipboard-storage';
 import { cleanupTemporaryFile } from '@/lib/temporary-file-cleanup';
 import { createLightboxOperationGuard } from '@/lib/lightbox-operation-guard';
 import { getLightboxPresentationState } from '@/lib/lightbox-presentation-state';
+import { isCurrentLightboxAction } from '@/lib/lightbox-async-state';
 
 type Item = { id: string; type: 'text' | 'image'; content: string; imageData?: string; imageSize?: { width: number; height: number }; ocrText?: string; timestamp: number; favorite: boolean; category?: 'Work' | 'Personal'; source?: string };
 const STORAGE_KEY = 'clipboard-manager-items';
@@ -34,9 +35,15 @@ export default function FavoritesScreen() {
   const [isSharing, setIsSharing] = useState(false);
   const [shareFailed, setShareFailed] = useState(false);
   const lightboxOperationGuardRef = useRef(createLightboxOperationGuard());
+  const lightboxItemIdRef = useRef<string | null>(null);
+  const lightboxSessionRef = useRef(0);
   const insets = useSafeAreaInsets();
   const loadItems = useCallback(async () => { try { const saved = await AsyncStorage.getItem(STORAGE_KEY); if (!saved) return setItems(seedFavorites); const parsed = JSON.parse(saved); const all = Array.isArray(parsed) ? parsed as Item[] : []; const normalized = all.filter((item) => item && typeof item.id === 'string' && (item.type === 'text' || item.type === 'image')).map((item) => item.category ? item : { ...item, category: item.id === '1' || item.id === '2' ? 'Work' as const : item.id === '4' || item.id === '5' ? 'Personal' as const : undefined }); await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(normalized)); setItems(normalized.filter((item) => item.favorite)); } catch { setItems(seedFavorites); setNotice('Favorites were restored from the local fallback'); } }, []);
   useFocusEffect(useCallback(() => { void loadItems(); }, [loadItems]));
+  useEffect(() => {
+    lightboxItemIdRef.current = lightboxItem?.id ?? null;
+    lightboxSessionRef.current += 1;
+  }, [lightboxItem]);
   const showNotice = (message: string) => { setNotice(message); setTimeout(() => setNotice(''), 2000); };
   const copyItem = async (item: Item) => { try { if (item.type === 'text') await Clipboard.setStringAsync(item.content); else if (item.imageData) await Clipboard.setImageAsync(item.imageData); else return showNotice('This image is no longer available'); haptic.success(); showNotice(item.type === 'image' ? 'Image copied to clipboard' : 'Copied to clipboard'); } catch { haptic.error(); showNotice('Could not copy this item'); } };
   const toggleFavorite = async (id: string) => { try { await updateClipboardStorage<Item>((all) => all.map((item) => item.id === id ? { ...item, favorite: false } : item)); haptic.light(); await loadItems(); showNotice('Removed from favorites'); } catch { showNotice('Could not update this favorite'); } };
@@ -48,27 +55,30 @@ export default function FavoritesScreen() {
     }
     setIsSharing(true);
     setShareFailed(false);
+    const actionToken = lightboxSessionRef.current;
     let temporaryFileUri: string | null = null;
     try {
       if (Platform.OS === 'web') {
         await Clipboard.setStringAsync(item.ocrText ? `Image OCR text:\n${item.ocrText}` : 'Image saved in Clipboard Manager');
-        showNotice('Image context copied to clipboard');
+        if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) showNotice('Image context copied to clipboard');
       } else {
         temporaryFileUri = `${FileSystem.cacheDirectory}clipboard-favorite-${item.id}.png`;
         await FileSystem.writeAsStringAsync(temporaryFileUri, item.imageData, { encoding: FileSystem.EncodingType.Base64 });
         if (await Sharing.isAvailableAsync()) {
           await Sharing.shareAsync(temporaryFileUri, { dialogTitle: 'Share saved image', mimeType: 'image/png' });
-          showNotice('Image ready to share');
+          if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) showNotice('Image ready to share');
         } else {
           await Clipboard.setImageAsync(item.imageData);
-          showNotice('Sharing unavailable; image copied to clipboard');
+          if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) showNotice('Sharing unavailable; image copied to clipboard');
         }
       }
       haptic.success();
     } catch {
-      setShareFailed(true);
+      if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) {
+        setShareFailed(true);
+        showNotice('Could not share this image · try again');
+      }
       haptic.error();
-      showNotice('Could not share this image · try again');
     } finally {
       try {
         await cleanupTemporaryFile(temporaryFileUri, (uri) => FileSystem.deleteAsync(uri, { idempotent: true }));
