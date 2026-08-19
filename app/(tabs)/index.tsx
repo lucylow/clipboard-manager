@@ -124,7 +124,11 @@ export default function HistoryScreen() {
     try {
       const result = await ocrMutation.mutateAsync({ imageData });
       const updated = { ...next, ocrText: result.text || undefined };
-      persist([updated, ...items]);
+      const metadataSaved = await persist([updated, ...items]);
+      if (!metadataSaved) {
+        showNotice('Image saved · extracted text could not be saved');
+        return;
+      }
       void trackUsage('ocrCount');
       showNotice(result.text ? 'Image saved · text extracted' : 'Image saved · no text found');
     } catch { showNotice('Image saved · text extraction unavailable'); }
@@ -137,7 +141,11 @@ export default function HistoryScreen() {
     try {
       const result = await ocrMutation.mutateAsync({ imageData: item.imageData });
       const updated = items.map((candidate) => candidate.id === item.id ? { ...candidate, ocrText: result.text || undefined } : candidate);
-      await persist(updated);
+      const metadataSaved = await persist(updated);
+      if (!metadataSaved) {
+        showNotice('Text extracted · could not save the updated image');
+        return;
+      }
       setLightboxItem(updated.find((candidate) => candidate.id === item.id) ?? item);
       void trackUsage('ocrCount');
       showNotice(result.text ? 'Text extracted' : 'No readable text found');

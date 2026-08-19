@@ -449,3 +449,7 @@
 - [x] Make clear-history success feedback depend on persistence success
 - [x] Make single-item deletion and favorite mutations expose failed-save feedback consistently
 - [x] Add regression coverage and rerun TypeScript, lint, and tests
+
+- [x] Await OCR metadata persistence and surface follow-up save failures
+- [x] Keep the image preview and list state consistent when OCR metadata cannot be saved
+- [x] Add regression coverage and rerun TypeScript, lint, and tests
