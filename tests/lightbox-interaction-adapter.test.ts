@@ -776,3 +776,32 @@ describe('notification registration ordering', () => {
     adapter.release();
   });
 });
+
+
+describe('no-op transition stability', () => {
+  it('does not notify or queue repeated state-incompatible actions', () => {
+    const adapter = createLightboxInteractionAdapter();
+    let notifications = 0;
+    adapter.subscribe(() => {
+      notifications += 1;
+    });
+
+    for (let index = 0; index < 64; index += 1) {
+      adapter.startAction();
+      adapter.fail();
+      adapter.succeed();
+      adapter.close();
+    }
+
+    expect(notifications).toBe(0);
+    expect(adapter.getDiagnostics()).toMatchObject({
+      pendingEventCount: 0,
+      listenerCount: 1,
+      notifying: false,
+      released: false,
+    });
+    expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+    expect(notifications).toBe(1);
+    adapter.release();
+  });
+});

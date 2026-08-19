@@ -894,3 +894,7 @@
 - [x] Audit bounded re-entrant queue reset and ordering behavior
 - [x] Add targeted coverage for queue saturation and post-drain recovery
 - [x] Re-run validation and save the bounded-queue checkpoint
+
+- [x] Audit no-op diagnostics transitions for phantom notifications or queue growth
+- [x] Add targeted coverage for repeated state-incompatible actions
+- [x] Re-run validation and save the no-op-transition checkpoint
