@@ -420,6 +420,31 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
   });
 
+  it('keeps diagnostics stable when an event is rejected at the queue cap', () => {
+    const adapter = createLightboxInteractionAdapter();
+    let attempted = false;
+    let atCap = 0;
+    let afterRejected = 0;
+    adapter.subscribe((state) => {
+      if (!attempted && state.visible) {
+        attempted = true;
+        for (let index = 0; index < LIGHTBOX_MAX_PENDING_EVENTS + 1; index += 1) {
+          adapter[index % 2 === 0 ? 'close' : 'open']();
+        }
+        atCap = adapter.getDiagnostics().pendingEventCount;
+        adapter.close();
+        afterRejected = adapter.getDiagnostics().pendingEventCount;
+      }
+    });
+
+    adapter.open();
+
+    expect(atCap).toBe(LIGHTBOX_MAX_PENDING_EVENTS);
+    expect(afterRejected).toBe(LIGHTBOX_MAX_PENDING_EVENTS);
+    expect(adapter.getDiagnostics()).toMatchObject({ pendingEventCount: 0, notifying: false });
+    expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+  });
+
   it('caps pathological re-entrant event growth and recovers for later dispatches', () => {
     const adapter = createLightboxInteractionAdapter();
     let notifications = 0;

@@ -742,3 +742,7 @@
 - [x] Audit diagnostic pending-event counts at the queue cap boundary
 - [x] Preserve accurate cap-boundary diagnostics and recovery dispatch behavior
 - [x] Add cap-boundary diagnostics coverage, rerun validation, and save the checkpoint
+
+- [x] Audit rejected lightbox events at the queue boundary for stale diagnostics
+- [x] Preserve clean cap-recovery behavior for the next user-driven transition
+- [x] Add rejection-recovery coverage, rerun validation, and save the checkpoint
