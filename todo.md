@@ -646,3 +646,7 @@
 - [x] Audit re-entrant and unsubscribe-during-notification adapter behavior
 - [x] Preserve deterministic listener delivery with subscription changes during a transition
 - [x] Add deterministic re-entrancy coverage, rerun validation, and save the checkpoint
+
+- [x] Audit queued lightbox event growth during re-entrant notifications
+- [x] Bound redundant queued events without changing valid transition order
+- [x] Add deterministic boundedness coverage, rerun validation, and save the checkpoint

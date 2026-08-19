@@ -12,6 +12,13 @@ const CLOSED_STATE: LightboxInteractionState = {
   retryAvailable: false,
 };
 
+/**
+ * Bounds work created by pathological re-entrant listeners. Events already in
+ * the queue retain FIFO order; only events arriving after the cap is reached
+ * are discarded until the current notification drain makes progress.
+ */
+export const LIGHTBOX_MAX_PENDING_EVENTS = 64;
+
 export function createLightboxInteractionAdapter(initialState: LightboxInteractionState = CLOSED_STATE) {
   let state = { ...initialState };
   const listeners = new Set<LightboxInteractionListener>();
@@ -19,14 +26,21 @@ export function createLightboxInteractionAdapter(initialState: LightboxInteracti
   let isNotifying = false;
 
   const dispatch = (event: LightboxInteractionEvent) => {
+    if (pendingEvents.length >= LIGHTBOX_MAX_PENDING_EVENTS) return state;
     pendingEvents.push(event);
     if (isNotifying) return state;
 
     isNotifying = true;
+    let processedEvents = 0;
     try {
       while (pendingEvents.length > 0) {
+        if (processedEvents >= LIGHTBOX_MAX_PENDING_EVENTS) {
+          pendingEvents.length = 0;
+          break;
+        }
         const nextEvent = pendingEvents.shift();
         if (!nextEvent) continue;
+        processedEvents += 1;
         const nextState = reduceLightboxInteraction(state, nextEvent);
         if (nextState === state) continue;
         state = nextState;

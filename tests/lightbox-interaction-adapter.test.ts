@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { createLightboxInteractionAdapter } from '../lib/lightbox-interaction-adapter';
+import {
+  createLightboxInteractionAdapter,
+  LIGHTBOX_MAX_PENDING_EVENTS,
+} from '../lib/lightbox-interaction-adapter';
 
 describe('createLightboxInteractionAdapter', () => {
   it('publishes open, busy, failure, retry, and success transitions in order', () => {
@@ -69,5 +72,19 @@ describe('createLightboxInteractionAdapter', () => {
 
     expect(unsubscribe()).toBe(true);
     expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+  });
+
+  it('caps pathological re-entrant event growth', () => {
+    const adapter = createLightboxInteractionAdapter();
+    let notifications = 0;
+    adapter.subscribe((state) => {
+      notifications += 1;
+      adapter[state.visible ? 'close' : 'open']();
+    });
+
+    adapter.open();
+
+    expect(notifications).toBe(LIGHTBOX_MAX_PENDING_EVENTS);
+    expect(adapter.getState()).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
   });
 });
