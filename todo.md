@@ -890,3 +890,7 @@
 - [x] Audit notification ordering during listener removal and replacement
 - [x] Add targeted coverage for skipped or duplicated notifications
 - [x] Re-run validation and save the notification-ordering checkpoint
+
+- [x] Audit bounded re-entrant queue reset and ordering behavior
+- [x] Add targeted coverage for queue saturation and post-drain recovery
+- [x] Re-run validation and save the bounded-queue checkpoint

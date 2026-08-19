@@ -679,6 +679,29 @@ describe('createLightboxInteractionAdapter', () => {
 
     expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
   });
+
+  it('keeps a rejected re-entrant event from corrupting later user dispatches', () => {
+    const adapter = createLightboxInteractionAdapter();
+    let attempted = false;
+    adapter.subscribe((state) => {
+      if (!state.visible || attempted) return;
+      attempted = true;
+      for (let index = 0; index < LIGHTBOX_MAX_PENDING_EVENTS + 4; index += 1) {
+        adapter[index % 2 === 0 ? 'close' : 'open']();
+      }
+    });
+
+    adapter.open();
+
+    expect(adapter.getDiagnostics()).toMatchObject({
+      pendingEventCount: 0,
+      notifying: false,
+      released: false,
+    });
+    expect(adapter.close()).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
+    expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+    adapter.release();
+  });
 });
 
 
