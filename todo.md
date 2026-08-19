@@ -481,3 +481,7 @@
 - [x] Coordinate native app resume with the existing single-flight cache cleanup
 - [x] Prevent duplicate History hydration when app resume and tab focus occur together
 - [x] Add regression coverage and rerun TypeScript, lint, and tests
+
+- [x] Extract a testable lifecycle recovery coordinator for focus and app resume
+- [x] Cover repeated lifecycle events without duplicate cleanup or hydration work
+- [x] Rerun TypeScript, lint, and the full deterministic test suite

@@ -17,6 +17,7 @@ import { removeClipboardItems, updateClipboardItem, updateClipboardItems } from 
 import { cleanupTemporaryFile } from '@/lib/temporary-file-cleanup';
 import { cleanupManagedTemporaryFiles } from '@/lib/temporary-cache-cleanup';
 import { createSingleFlight } from '@/lib/single-flight';
+import { createHistoryRecoveryCoordinator } from '@/lib/history-recovery-coordinator';
 
 type Filter = 'All' | 'Text' | 'Images' | 'Favorites' | 'Work' | 'Personal';
 type Category = 'Work' | 'Personal';
@@ -120,17 +121,21 @@ export default function HistoryScreen() {
     await runCacheCleanup();
     await loadItems();
   }, [loadItems, runCacheCleanup]);
+  const recoveryCoordinator = useMemo(
+    () => createHistoryRecoveryCoordinator(recoverAfterResume),
+    [recoverAfterResume],
+  );
   useFocusEffect(useCallback(() => {
-    void recoverAfterResume();
-  }, [recoverAfterResume]));
+    void recoveryCoordinator.run();
+  }, [recoveryCoordinator]));
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {
       const previousState = appStateRef.current;
       appStateRef.current = nextState;
-      if (nextState === 'active' && previousState !== 'active') void recoverAfterResume();
+      if (nextState === 'active' && previousState !== 'active') void recoveryCoordinator.run();
     });
     return () => subscription.remove();
-  }, [recoverAfterResume]);
+  }, [recoveryCoordinator]);
   useEffect(() => { setSelectedIds((current) => current.filter((id) => items.some((item) => item.id === id))); }, [items]);
 
   const visibleItems = useMemo(() => items.filter((item) => {
