@@ -722,3 +722,7 @@
 - [x] Audit listener-driven re-entrant mutations and callback ordering
 - [x] Preserve subscriber isolation and FIFO queue bounds during callback mutations
 - [x] Add callback-order coverage, rerun validation, and save the checkpoint
+
+- [x] Audit subscribe, unsubscribe, and resubscribe behavior during notification snapshots
+- [x] Preserve deterministic delivery and token-safe cleanup during listener changes
+- [x] Add subscription-lifecycle coverage, rerun validation, and save the checkpoint

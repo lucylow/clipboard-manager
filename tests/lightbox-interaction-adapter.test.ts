@@ -127,6 +127,29 @@ describe('createLightboxInteractionAdapter', () => {
     ]);
   });
 
+  it('defers resubscribed listeners until the next committed transition', () => {
+    const adapter = createLightboxInteractionAdapter();
+    const received: string[] = [];
+    let unsubscribeFirst = () => false;
+    let resubscribed = false;
+    const first = () => {
+      received.push('first');
+      unsubscribeFirst();
+      if (!resubscribed) {
+        resubscribed = true;
+        adapter.subscribe(() => received.push('replacement'));
+      }
+    };
+    unsubscribeFirst = adapter.subscribe(first);
+    adapter.subscribe(() => received.push('second'));
+
+    adapter.open();
+    expect(received).toEqual(['first', 'second']);
+    adapter.close();
+
+    expect(received).toEqual(['first', 'second', 'second', 'replacement']);
+  });
+
   it('keeps diagnostic listener counts aligned with independent cleanup handles', () => {
     const adapter = createLightboxInteractionAdapter();
     const listener = () => undefined;
