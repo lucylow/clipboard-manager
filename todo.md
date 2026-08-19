@@ -570,3 +570,7 @@
 - [x] Audit cleanup failure boundaries in all guarded image-share and export flows
 - [x] Ensure cleanup failures cannot strand operation locks or busy UI state
 - [x] Add deterministic cleanup-failure recovery coverage, rerun validation, and save the checkpoint
+
+- [x] Audit lightbox modal accessibility labels, roles, and close behavior
+- [x] Improve safe mobile interaction feedback without changing core image actions
+- [x] Add deterministic accessibility-state coverage, rerun validation, and save the checkpoint
