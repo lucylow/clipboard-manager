@@ -525,3 +525,7 @@
 - [x] Warm the managed preview and capture the History screen at a narrow mobile viewport
 - [x] Fix only verified app-owned mobile clipping, overflow, or accessibility issues
 - [x] Rerun TypeScript, lint, tests, and save the stable mobile validation checkpoint
+
+- [x] Capture Favorites and Settings at a narrow mobile viewport
+- [x] Fix only verified app-owned clipping, overflow, or accessibility issues
+- [x] Rerun TypeScript, lint, tests, and save the mobile validation checkpoint
