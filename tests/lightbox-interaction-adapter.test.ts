@@ -633,6 +633,35 @@ describe('createLightboxInteractionAdapter', () => {
     });
   });
 
+  it('drains queued re-entrant work after listener churn removes the active subscriber', () => {
+    const adapter = createLightboxInteractionAdapter();
+    let unsubscribe = () => false;
+    let queued = false;
+    unsubscribe = adapter.subscribe((state) => {
+      if (state.visible && !queued) {
+        queued = true;
+        unsubscribe();
+        adapter.startAction();
+      }
+    });
+
+    adapter.open();
+
+    expect(adapter.getState()).toEqual({ visible: true, actionBusy: true, retryAvailable: false });
+    expect(adapter.getDiagnostics()).toMatchObject({
+      pendingEventCount: 0,
+      listenerCount: 0,
+      notifying: false,
+      released: false,
+    });
+
+    const lateStates: string[] = [];
+    adapter.subscribe((state) => lateStates.push(stateLabel(state)));
+    adapter.succeed();
+    expect(lateStates).toEqual(['true:false:false']);
+    adapter.release();
+  });
+
   it('keeps resubscribed listeners isolated from stale unsubscribe handles', () => {
     const adapter = createLightboxInteractionAdapter();
     let notifications = 0;

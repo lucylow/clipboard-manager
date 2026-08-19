@@ -1010,3 +1010,7 @@
 - [x] Audit notification snapshot behavior during listener churn
 - [x] Add deterministic churn regression coverage for listener additions and removals
 - [x] Re-run validation and save the notification-churn checkpoint
+
+- [x] Audit re-entrant queue recovery after listener churn
+- [x] Add deterministic queue cleanup regression coverage
+- [x] Re-run validation and save the queue-recovery checkpoint
