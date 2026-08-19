@@ -7,12 +7,13 @@ import {
 import {
   diagnosticsEqual,
   lightboxStateEqual,
+  type ReadonlyLightboxDiagnostics,
 } from "../lib/lightbox-diagnostics";
 
 type DiagnosticsAdapter = ReturnType<typeof createLightboxInteractionAdapter>;
 type DiagnosticsMutationCase = readonly [
   label: string,
-  mutate: (value: LightboxInteractionDiagnostics) => LightboxInteractionDiagnostics,
+  mutate: (value: ReadonlyLightboxDiagnostics) => LightboxInteractionDiagnostics,
 ];
 
 const diagnosticsMutationCases: readonly DiagnosticsMutationCase[] = [
@@ -34,7 +35,7 @@ function withDiagnosticsAdapter<T>(work: (adapter: DiagnosticsAdapter) => T): T 
   }
 }
 
-function readDiagnosticsSnapshot(): LightboxInteractionDiagnostics {
+function readDiagnosticsSnapshot(): ReadonlyLightboxDiagnostics {
   return withDiagnosticsAdapter((adapter) => adapter.getDiagnostics());
 }
 

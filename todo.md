@@ -930,3 +930,7 @@
 - [x] Audit diagnostics test-helper input and return contracts
 - [x] Make helper typing explicit without changing runtime behavior
 - [x] Re-run validation and save the helper-contract checkpoint
+
+- [x] Audit diagnostics snapshot fixture contracts for accidental mutation
+- [x] Add read-only test-facing snapshot typing where safe
+- [x] Re-run validation and save the snapshot-contract checkpoint

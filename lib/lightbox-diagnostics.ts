@@ -1,10 +1,13 @@
 import type { LightboxInteractionDiagnostics } from "@/lib/lightbox-interaction-adapter";
 
 export type LightboxDiagnosticsState = LightboxInteractionDiagnostics["state"];
+export type ReadonlyLightboxDiagnostics = Readonly<LightboxInteractionDiagnostics> & {
+  readonly state: Readonly<LightboxDiagnosticsState>;
+};
 
 export function lightboxStateEqual(
-  previous: LightboxDiagnosticsState,
-  next: LightboxDiagnosticsState,
+  previous: Readonly<LightboxDiagnosticsState>,
+  next: Readonly<LightboxDiagnosticsState>,
 ): boolean {
   return (
     previous.visible === next.visible &&
@@ -14,8 +17,8 @@ export function lightboxStateEqual(
 }
 
 export function diagnosticsEqual(
-  previous: LightboxInteractionDiagnostics,
-  next: LightboxInteractionDiagnostics,
+  previous: ReadonlyLightboxDiagnostics,
+  next: ReadonlyLightboxDiagnostics,
 ): boolean {
   return (
     previous.pendingEventCount === next.pendingEventCount &&
