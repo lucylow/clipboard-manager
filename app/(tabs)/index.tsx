@@ -18,6 +18,7 @@ import { cleanupTemporaryFile } from '@/lib/temporary-file-cleanup';
 import { cleanupManagedTemporaryFiles } from '@/lib/temporary-cache-cleanup';
 import { createSingleFlight } from '@/lib/single-flight';
 import { createHistoryRecoveryCoordinator } from '@/lib/history-recovery-coordinator';
+import { createRecoveryFailureCounter } from '@/lib/recovery-failure-counter';
 
 type Filter = 'All' | 'Text' | 'Images' | 'Favorites' | 'Work' | 'Personal';
 type Category = 'Work' | 'Personal';
@@ -86,6 +87,7 @@ export default function HistoryScreen() {
   const [failedImageShareId, setFailedImageShareId] = useState<string | null>(null);
   const [isPremium, setIsPremium] = useState(false);
   const cacheCleanupFlightRef = useRef(createSingleFlight<number>());
+  const recoveryFailureCounterRef = useRef(createRecoveryFailureCounter());
   const appStateRef = useRef<AppStateStatus>(AppState.currentState);
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -120,22 +122,30 @@ export default function HistoryScreen() {
   const recoverAfterResume = useCallback(async () => {
     await runCacheCleanup();
     await loadItems();
+    recoveryFailureCounterRef.current.reset();
+    setRefreshError(false);
   }, [loadItems, runCacheCleanup]);
+  const handleRecoveryFailure = useCallback(() => {
+    if (recoveryFailureCounterRef.current.recordFailure() >= 3) {
+      setRefreshError(true);
+      showNotice('History recovery is still unavailable · pull to refresh to retry');
+    }
+  }, [showNotice]);
   const recoveryCoordinator = useMemo(
     () => createHistoryRecoveryCoordinator(recoverAfterResume),
     [recoverAfterResume],
   );
   useFocusEffect(useCallback(() => {
-    void recoveryCoordinator.run().catch(() => undefined);
-  }, [recoveryCoordinator]));
+    void recoveryCoordinator.run().catch(() => { handleRecoveryFailure(); });
+  }, [handleRecoveryFailure, recoveryCoordinator]));
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {
       const previousState = appStateRef.current;
       appStateRef.current = nextState;
-      if (nextState === 'active' && previousState !== 'active') void recoveryCoordinator.run().catch(() => undefined);
+      if (nextState === 'active' && previousState !== 'active') void recoveryCoordinator.run().catch(() => { handleRecoveryFailure(); });
     });
     return () => subscription.remove();
-  }, [recoveryCoordinator]);
+  }, [handleRecoveryFailure, recoveryCoordinator]);
   useEffect(() => { setSelectedIds((current) => current.filter((id) => items.some((item) => item.id === id))); }, [items]);
 
   const visibleItems = useMemo(() => items.filter((item) => {

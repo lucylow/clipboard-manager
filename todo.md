@@ -493,3 +493,7 @@
 - [x] Identify whether preview noise can be reduced through app configuration without hiding real errors
 - [x] Keep dependency warnings documented as external rather than masking them in app code
 - [x] Rerun TypeScript, lint, tests, and preview validation
+
+- [x] Add local-only tracking for repeated lifecycle recovery failures
+- [x] Show a concise actionable notice only after repeated failures without exposing sensitive data
+- [x] Add deterministic coverage and rerun TypeScript, lint, and tests
