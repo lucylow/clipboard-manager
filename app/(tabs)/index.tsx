@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenContainer } from '@/components/screen-container';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { haptic } from '@/lib/haptics';
+import { createNoticeController, type NoticeController } from '@/lib/notice-controller';
 import { trpc } from '@/lib/trpc';
 import { queueClipboardWrite } from '@/lib/clipboard-storage';
 
@@ -65,7 +66,7 @@ export default function HistoryScreen() {
   const [lastRefreshedAt, setLastRefreshedAt] = useState<number | null>(null);
   const [isPasting, setIsPasting] = useState(false);
   const [notice, setNotice] = useState('');
-  const noticeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const noticeControllerRef = useRef<NoticeController | null>(null);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [lightboxItem, setLightboxItem] = useState<Item | null>(null);
   const [isSavingMedia, setIsSavingMedia] = useState(false);
@@ -76,6 +77,7 @@ export default function HistoryScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const ocrMutation = trpc.ocr.extract.useMutation();
+  if (!noticeControllerRef.current) noticeControllerRef.current = createNoticeController(setNotice);
   useEffect(() => {
     let active = true;
     AsyncStorage.getItem(PREMIUM_KEY)
@@ -83,7 +85,7 @@ export default function HistoryScreen() {
       .catch(() => { if (active) setIsPremium(false); });
     return () => { active = false; };
   }, []);
-  useEffect(() => () => { if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current); }, []);
+  useEffect(() => () => { noticeControllerRef.current?.dispose(); }, []);
 
   const loadItems = useCallback(async (): Promise<boolean> => {
     try {
@@ -119,12 +121,7 @@ export default function HistoryScreen() {
   }), [items, query, filter]);
 
   const showNotice = (message: string) => {
-    if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);
-    setNotice(message);
-    noticeTimerRef.current = setTimeout(() => {
-      noticeTimerRef.current = null;
-      setNotice('');
-    }, 2200);
+    noticeControllerRef.current?.show(message);
   };
 
   const saveImageWithOcr = async (imageData: string, imageSize?: { width: number; height: number }, source = 'Clipboard') => {

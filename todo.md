@@ -382,3 +382,9 @@
 - [x] Run automated checks and verify core behavior before checkpointing
 - [x] Make History notice timers cleanup-safe and prevent stale timer overwrites
 - [x] Handle local premium-state hydration failures with a safe Free-plan fallback
+
+- [x] Audit the latest code for the next high-impact reliability gap
+- [x] Implement a targeted maintainability or resilience improvement
+- [x] Add deterministic tests and rerun all project checks before checkpointing
+- [x] Extract latest-notice timer behavior into a reusable cleanup-safe controller
+- [x] Add deterministic tests for notice replacement and disposal
