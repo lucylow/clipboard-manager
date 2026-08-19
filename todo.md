@@ -766,3 +766,7 @@
 - [x] Audit mixed no-op and state-changing events during bounded drains
 - [x] Verify meaningful transitions retain FIFO ordering around redundant events
 - [x] Add mixed-event ordering coverage, rerun validation, and save the checkpoint
+
+- [x] Audit processing-budget exhaustion while listeners continue enqueueing work
+- [x] Verify the adapter settles cleanly and accepts later user-driven recovery
+- [x] Add exhaustion-recovery coverage, rerun validation, and save the checkpoint
