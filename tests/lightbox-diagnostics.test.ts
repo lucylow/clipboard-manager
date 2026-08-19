@@ -72,7 +72,7 @@ describe("lightbox diagnostics equality", () => {
     }
   });
 
-  it("accepts adapter diagnostics through the read-only boundary contract", () => {
+  it("keeps the canonical snapshot export consumable at the adapter boundary", () => {
     const adapter = createLightboxInteractionAdapter();
     try {
       const snapshot: LightboxDiagnosticsSnapshot = adapter.getDiagnostics();

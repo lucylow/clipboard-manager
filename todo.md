@@ -962,3 +962,7 @@
 - [x] Audit canonical and deprecated diagnostics snapshot type equivalence
 - [x] Add focused alias-equivalence compatibility coverage
 - [x] Re-run validation and save the alias-equivalence checkpoint
+
+- [x] Audit canonical diagnostics snapshot export and consumer consistency
+- [x] Add targeted export-consistency compatibility coverage
+- [x] Re-run validation and save the export-consistency checkpoint
