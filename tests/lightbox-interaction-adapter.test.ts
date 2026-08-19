@@ -74,11 +74,16 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
   });
 
-  it('caps pathological re-entrant event growth', () => {
+  it('caps pathological re-entrant event growth and recovers for later dispatches', () => {
     const adapter = createLightboxInteractionAdapter();
     let notifications = 0;
-    adapter.subscribe((state) => {
+    let unsubscribe = () => false;
+    unsubscribe = adapter.subscribe((state) => {
       notifications += 1;
+      if (notifications === LIGHTBOX_MAX_PENDING_EVENTS) {
+        unsubscribe();
+        return;
+      }
       adapter[state.visible ? 'close' : 'open']();
     });
 
@@ -86,5 +91,7 @@ describe('createLightboxInteractionAdapter', () => {
 
     expect(notifications).toBe(LIGHTBOX_MAX_PENDING_EVENTS);
     expect(adapter.getState()).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
+
+    expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
   });
 });

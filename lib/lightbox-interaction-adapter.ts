@@ -14,8 +14,9 @@ const CLOSED_STATE: LightboxInteractionState = {
 
 /**
  * Bounds work created by pathological re-entrant listeners. Events already in
- * the queue retain FIFO order; only events arriving after the cap is reached
- * are discarded until the current notification drain makes progress.
+ * the queue retain FIFO order; once the per-drain budget is exhausted, pending
+ * re-entrant work is discarded and the adapter is immediately ready for a
+ * later user-driven dispatch.
  */
 export const LIGHTBOX_MAX_PENDING_EVENTS = 64;
 
