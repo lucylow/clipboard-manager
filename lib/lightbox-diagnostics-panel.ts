@@ -30,6 +30,7 @@ export function resetLightboxAdapter(
   adapter: LightboxInteractionAdapter,
   createAdapter: () => LightboxInteractionAdapter,
 ): LightboxInteractionAdapter {
+  const replacement = createAdapter();
   adapter.release();
-  return createAdapter();
+  return replacement;
 }

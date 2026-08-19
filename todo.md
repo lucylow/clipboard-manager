@@ -858,3 +858,7 @@
 - [x] Inspect diagnostics panel reset and disabled-action behavior
 - [x] Add deterministic UI-level coverage for reset and disabled controls
 - [x] Re-run validation and save the diagnostics-panel test checkpoint
+
+- [x] Audit repeated diagnostics-panel reset lifecycle behavior
+- [x] Add regression coverage for stale subscriptions and duplicate synchronization
+- [x] Re-run validation and save the reset-lifecycle checkpoint

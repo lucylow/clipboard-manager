@@ -58,4 +58,36 @@ describe("lightbox diagnostics panel controls", () => {
 
     replacement.release();
   });
+
+  it("does not notify stale subscribers after repeated resets", () => {
+    const notifications: string[] = [];
+    const first = createLightboxInteractionAdapter();
+    const firstUnsubscribe = first.subscribe((state) => notifications.push(`first:${state.visible}`));
+    const second = resetLightboxAdapter(first, createLightboxInteractionAdapter);
+    const secondUnsubscribe = second.subscribe((state) => notifications.push(`second:${state.visible}`));
+    const third = resetLightboxAdapter(second, createLightboxInteractionAdapter);
+
+    third.open();
+
+    expect(notifications).toEqual([]);
+    expect(firstUnsubscribe()).toBe(false);
+    expect(secondUnsubscribe()).toBe(false);
+    expect(third.getDiagnostics().listenerCount).toBe(0);
+
+    third.release();
+  });
+
+  it("keeps the current adapter usable when replacement creation fails", () => {
+    const adapter = createLightboxInteractionAdapter();
+    const createReplacement = () => {
+      throw new Error("replacement unavailable");
+    };
+
+    expect(() => resetLightboxAdapter(adapter, createReplacement)).toThrow("replacement unavailable");
+    expect(adapter.getDiagnostics().released).toBe(false);
+
+    adapter.open();
+    expect(adapter.getDiagnostics().state.visible).toBe(true);
+    adapter.release();
+  });
 });
