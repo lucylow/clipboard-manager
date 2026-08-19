@@ -458,6 +458,36 @@ describe('createLightboxInteractionAdapter', () => {
     expect(notifications).toBe(1);
   });
 
+  it('blocks queued and follow-up dispatches when release races with notification', () => {
+    const adapter = createLightboxInteractionAdapter();
+    const notifications: string[] = [];
+    let queuedResult: ReturnType<typeof adapter.startAction> | undefined;
+    let afterRelease: ReturnType<typeof adapter.close> | undefined;
+    adapter.subscribe((state) => {
+      notifications.push(`first:${state.visible}:${state.actionBusy}`);
+      if (state.visible && !state.actionBusy) {
+        queuedResult = adapter.startAction();
+        adapter.release();
+        afterRelease = adapter.close();
+      }
+    });
+    adapter.subscribe((state) => notifications.push(`second:${state.visible}:${state.actionBusy}`));
+
+    adapter.open();
+
+    expect(notifications).toEqual(['first:true:false']);
+    expect(queuedResult).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+    expect(afterRelease).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+    expect(adapter.getDiagnostics()).toEqual({
+      state: { visible: true, actionBusy: false, retryAvailable: false },
+      pendingEventCount: 0,
+      listenerCount: 0,
+      notifying: false,
+      released: true,
+    });
+    expect(adapter.startAction()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+  });
+
   it('stops delivering the current notification cycle after release', () => {
     const adapter = createLightboxInteractionAdapter();
     const notifications: string[] = [];

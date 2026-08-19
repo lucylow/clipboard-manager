@@ -774,3 +774,7 @@
 - [x] Audit dispatch return snapshots across no-op and queued actions
 - [x] Verify returned state mutations cannot affect committed adapter state
 - [x] Add return-value isolation coverage, rerun validation, and save the checkpoint
+
+- [x] Audit release invoked from queued lightbox work
+- [x] Verify post-release queued callbacks and actions remain blocked
+- [x] Add release-race coverage, rerun validation, and save the checkpoint
