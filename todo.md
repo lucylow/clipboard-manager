@@ -606,3 +606,7 @@
 - [x] Centralize the lightbox session guard into a shared reusable utility
 - [x] Preserve History and Favorites cleanup, retry, and accessibility behavior during migration
 - [x] Add deterministic shared-guard coverage, rerun validation, and save the checkpoint
+
+- [x] Define a pure shared lightbox session-guard contract for direct testing
+- [x] Add deterministic coverage for close, replacement, reopen, and matching-session behavior
+- [x] Rerun bounded TypeScript, lint, tests, and save the checkpoint

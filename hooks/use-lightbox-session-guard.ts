@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { isCurrentLightboxAction } from '@/lib/lightbox-async-state';
+import { canApplyLightboxFeedback } from '@/lib/lightbox-async-state';
 
 export function useLightboxSessionGuard(itemId: string | null) {
   const itemIdRef = useRef<string | null>(null);
@@ -11,13 +11,11 @@ export function useLightboxSessionGuard(itemId: string | null) {
   }, [itemId]);
 
   const canApplyFeedback = useCallback((actionItemId: string, actionToken: number) => {
-    return isCurrentLightboxAction({
+    return canApplyLightboxFeedback({
       activeItemId: itemIdRef.current,
-      actionItemId,
-      isVisible: itemIdRef.current !== null,
-      actionToken,
-      currentToken: sessionRef.current,
-    });
+      sessionToken: sessionRef.current,
+      visible: itemIdRef.current !== null,
+    }, actionItemId, actionToken);
   }, []);
 
   return { itemIdRef, sessionRef, canApplyFeedback };
