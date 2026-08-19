@@ -40,4 +40,26 @@ describe('history recovery coordinator', () => {
     await expect(coordinator.run()).resolves.toBeUndefined();
     expect(operation).toHaveBeenCalledTimes(2);
   });
+
+  it('coalesces manual refresh and AppState resume, then permits a later retry', async () => {
+    let resolveRecovery!: () => void;
+    const operation = vi.fn(() => new Promise<void>((resolve) => { resolveRecovery = resolve; }));
+    const coordinator = createHistoryRecoveryCoordinator(operation);
+
+    const manualRefresh = coordinator.run();
+    const appResume = coordinator.run();
+    expect(appResume).toBe(manualRefresh);
+
+    await Promise.resolve();
+    expect(operation).toHaveBeenCalledTimes(1);
+    resolveRecovery();
+    await manualRefresh;
+
+    const laterRetry = coordinator.run();
+    expect(laterRetry).not.toBe(manualRefresh);
+    await Promise.resolve();
+    expect(operation).toHaveBeenCalledTimes(2);
+    resolveRecovery();
+    await laterRetry;
+  });
 });

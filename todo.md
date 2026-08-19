@@ -505,3 +505,7 @@
 - [x] Inspect and recover the managed preview service after its temporary outage
 - [x] Preserve the latest guarded History retry behavior during service recovery
 - [x] Rerun TypeScript, lint, tests, and capture a fresh preview
+
+- [x] Add deterministic coverage for manual refresh racing with AppState resume
+- [x] Verify one recovery operation and one retry path are preserved after the race
+- [x] Rerun TypeScript, lint, tests, and preview validation
