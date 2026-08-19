@@ -521,3 +521,7 @@
 - [x] Inspect the warm preview endpoint and attempt mobile viewport validation; no app-owned layout issue was verified
 - [x] Make no layout change when the visual probe does not establish an app-owned regression
 - [ ] Capture a stable mobile screenshot after the managed preview remains warm
+
+- [x] Warm the managed preview and capture the History screen at a narrow mobile viewport
+- [x] Fix only verified app-owned mobile clipping, overflow, or accessibility issues
+- [x] Rerun TypeScript, lint, tests, and save the stable mobile validation checkpoint
