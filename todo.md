@@ -718,3 +718,7 @@
 - [x] Audit every lightbox action after release and across closed-state no-ops
 - [x] Preserve safe post-release return snapshots for all public methods
 - [x] Add public-action safety coverage, rerun validation, and save the checkpoint
+
+- [x] Audit listener-driven re-entrant mutations and callback ordering
+- [x] Preserve subscriber isolation and FIFO queue bounds during callback mutations
+- [x] Add callback-order coverage, rerun validation, and save the checkpoint
