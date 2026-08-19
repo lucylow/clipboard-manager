@@ -610,3 +610,7 @@
 - [x] Define a pure shared lightbox session-guard contract for direct testing
 - [x] Add deterministic coverage for close, replacement, reopen, and matching-session behavior
 - [x] Rerun bounded TypeScript, lint, tests, and save the checkpoint
+
+- [x] Audit remaining asynchronous image-action entry points for session-guard consistency
+- [x] Apply the shared lightbox session contract where stale UI feedback remains possible
+- [x] Add targeted coverage, rerun bounded validation, and save the checkpoint

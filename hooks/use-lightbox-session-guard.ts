@@ -18,5 +18,5 @@ export function useLightboxSessionGuard(itemId: string | null) {
     }, actionItemId, actionToken);
   }, []);
 
-  return { itemIdRef, sessionRef, canApplyFeedback };
+  return { sessionRef, canApplyFeedback };
 }
