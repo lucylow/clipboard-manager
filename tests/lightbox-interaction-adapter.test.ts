@@ -702,7 +702,6 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
     adapter.release();
   });
-});
 
 
 describe('released callback error isolation', () => {
@@ -822,4 +821,6 @@ describe('nested snapshot isolation', () => {
     expect(adapter.getDiagnostics().state).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
     adapter.release();
   });
+});
+
 });

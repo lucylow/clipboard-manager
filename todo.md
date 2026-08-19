@@ -902,3 +902,7 @@
 - [x] Audit nested diagnostics snapshot isolation across repeated reads and callback paths
 - [x] Add targeted coverage for nested snapshot mutation attempts
 - [x] Re-run validation and save the nested-snapshot checkpoint
+
+- [x] Audit diagnostics lifecycle test organization for clarity
+- [x] Refine test grouping and cleanup structure without changing coverage
+- [x] Re-run validation and save the test-organization checkpoint
