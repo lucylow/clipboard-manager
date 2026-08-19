@@ -614,3 +614,7 @@
 - [x] Audit remaining asynchronous image-action entry points for session-guard consistency
 - [x] Apply the shared lightbox session contract where stale UI feedback remains possible
 - [x] Add targeted coverage, rerun bounded validation, and save the checkpoint
+
+- [x] Inspect current preview health and the outstanding mobile lightbox validation items
+- [x] Run a bounded mobile visual validation pass without increasing memory pressure
+- [x] Apply only verified app-owned fixes, rerun validation, and save the checkpoint
