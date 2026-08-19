@@ -37,3 +37,23 @@ describe("lightbox diagnostics equality", () => {
     expect(diagnosticsEqual(previous, next)).toBe(false);
   });
 });
+
+  it("does not mutate compared snapshots", () => {
+    const previous = diagnostics();
+    const next = diagnostics();
+    const previousBefore = JSON.stringify(previous);
+    const nextBefore = JSON.stringify(next);
+
+    expect(diagnosticsEqual(previous, next)).toBe(true);
+    expect(JSON.stringify(previous)).toBe(previousBefore);
+    expect(JSON.stringify(next)).toBe(nextBefore);
+  });
+
+  it("remains stable across repeated equal-snapshot checks", () => {
+    const previous = diagnostics();
+    const next = diagnostics();
+
+    expect(Array.from({ length: 10 }, () => diagnosticsEqual(previous, next))).toEqual(
+      Array.from({ length: 10 }, () => true),
+    );
+  });

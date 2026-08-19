@@ -822,3 +822,7 @@
 - [x] Identify a pure module boundary for diagnostics snapshot comparison
 - [x] Extract the helper and add deterministic equality/inequality coverage
 - [x] Re-run validation and save the helper-extraction checkpoint
+
+- [x] Audit helper behavior when callers mutate compared snapshots
+- [x] Add deterministic mutation-resistance and equal-snapshot coverage
+- [x] Re-run validation and save the diagnostics-coverage checkpoint
