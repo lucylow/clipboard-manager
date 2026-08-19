@@ -798,3 +798,7 @@
 - [x] Audit diagnostics route render-time allocations and action typing
 - [x] Apply a lightweight memoization and type-safety refinement
 - [x] Re-run validation and save the code-quality checkpoint
+
+- [x] Audit adapter creation and subscription churn during repeated diagnostics resets
+- [x] Apply a safe lifecycle refinement without changing production behavior
+- [x] Re-run validation and save the lifecycle checkpoint
