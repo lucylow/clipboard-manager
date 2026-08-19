@@ -922,3 +922,7 @@
 - [x] Audit diagnostics fixture isolation after cleanup and fresh creation
 - [x] Add targeted coverage for detached states across fixture boundaries
 - [x] Re-run validation and save the fixture-isolation checkpoint
+
+- [x] Audit diagnostics fixture cleanup assertions for repeated patterns
+- [x] Extract an explicit cleanup assertion helper without weakening coverage
+- [x] Re-run validation and save the cleanup-helper checkpoint

@@ -38,6 +38,10 @@ function readDiagnosticsSnapshot(): LightboxInteractionDiagnostics {
   return withDiagnosticsAdapter((adapter) => adapter.getDiagnostics());
 }
 
+function expectReleased(adapter: DiagnosticsAdapter | undefined) {
+  expect(adapter?.getDiagnostics().released).toBe(true);
+}
+
 describe("lightbox diagnostics equality", () => {
   it("treats equivalent state snapshots as equal", () => {
     const previous = readDiagnosticsSnapshot();
@@ -100,7 +104,7 @@ describe("lightbox diagnostics equality", () => {
     });
 
     expect(result).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
-    expect(createdAdapter?.getDiagnostics().released).toBe(true);
+    expectReleased(createdAdapter);
   });
 
   it("releases the fixture adapter when test work throws", () => {
@@ -113,7 +117,7 @@ describe("lightbox diagnostics equality", () => {
       }),
     ).toThrow("fixture failure");
 
-    expect(createdAdapter?.getDiagnostics().released).toBe(true);
+    expectReleased(createdAdapter);
   });
 
   it("supports repeated callback execution before final fixture cleanup", () => {
