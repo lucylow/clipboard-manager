@@ -866,3 +866,7 @@
 - [x] Audit callback error isolation during reset interactions
 - [x] Add targeted regression coverage for subscriber failures and released transitions
 - [x] Re-run validation and save the callback-isolation checkpoint
+
+- [x] Audit diagnostics snapshot isolation across reset and callback failures
+- [x] Add a distinct regression test for detached diagnostics snapshots if needed
+- [x] Re-run validation and save the snapshot-isolation checkpoint

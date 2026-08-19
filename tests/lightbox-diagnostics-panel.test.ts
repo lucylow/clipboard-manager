@@ -41,6 +41,23 @@ describe("lightbox diagnostics panel controls", () => {
     expect(diagnostics.state.visible).toBe(false);
   });
 
+  it("returns detached diagnostics that cannot mutate the live adapter", () => {
+    const adapter = createLightboxInteractionAdapter();
+
+    try {
+      const diagnostics = runLightboxAction(adapter, "open");
+      diagnostics.state.visible = false;
+      diagnostics.released = true;
+
+      expect(adapter.getDiagnostics()).toMatchObject({
+        released: false,
+        state: { visible: true },
+      });
+    } finally {
+      adapter.release();
+    }
+  });
+
   it("releases the old adapter and returns a fresh replacement", () => {
     const adapter = createLightboxInteractionAdapter();
     adapter.open();
