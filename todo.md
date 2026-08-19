@@ -1018,3 +1018,7 @@
 - [x] Audit queue-cap recovery and duplicate re-entrant actions
 - [x] Add deterministic queue-cap regression coverage for rejected duplicate work
 - [x] Re-run validation and save the queue-cap checkpoint
+
+- [x] Audit adapter release behavior during queued callback overlap
+- [x] Add deterministic release-overlap regression coverage
+- [x] Re-run validation and save the release-overlap checkpoint

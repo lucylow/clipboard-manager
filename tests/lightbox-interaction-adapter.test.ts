@@ -835,6 +835,29 @@ describe('createLightboxInteractionAdapter', () => {
 
 
 describe('released callback error isolation', () => {
+  it('clears queued work when a queued callback releases and throws', () => {
+    const adapter = createLightboxInteractionAdapter();
+    let scheduled = false;
+    adapter.subscribe((state) => {
+      if (!state.visible || scheduled) return;
+      scheduled = true;
+      adapter.startAction();
+      adapter.release();
+      throw new Error('release after queued work');
+    });
+
+    expect(() => adapter.open()).not.toThrow();
+    expect(adapter.getDiagnostics()).toEqual({
+      state: { visible: true, actionBusy: false, retryAvailable: false },
+      pendingEventCount: 0,
+      listenerCount: 0,
+      notifying: false,
+      released: true,
+    });
+    expect(adapter.startAction()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+  });
+
+
   it('keeps release stable when a subscriber releases and then throws', () => {
     const adapter = createLightboxInteractionAdapter();
     const received: string[] = [];
