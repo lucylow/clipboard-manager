@@ -413,3 +413,9 @@
 - [x] Add deterministic tests and rerun all project checks before checkpointing
 - [x] Prevent ignored storage-write promises from producing unhandled rejection noise
 - [x] Add deterministic coverage for serialized write recovery after failure
+
+- [x] Audit the latest code for the next high-impact reliability gap
+- [x] Implement a targeted maintainability or resilience improvement
+- [x] Add deterministic tests and rerun all project checks before checkpointing
+- [x] Add bounded History storage-read recovery through a reusable timeout helper
+- [x] Add deterministic coverage for timeout success, rejection, and stall recovery

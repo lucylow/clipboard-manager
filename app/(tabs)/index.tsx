@@ -12,6 +12,7 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { haptic } from '@/lib/haptics';
 import { createNoticeController, type NoticeController } from '@/lib/notice-controller';
 import { createSingleFlight } from '@/lib/single-flight';
+import { withTimeout } from '@/lib/with-timeout';
 import { trpc } from '@/lib/trpc';
 import { queueClipboardWrite } from '@/lib/clipboard-storage';
 
@@ -91,7 +92,7 @@ export default function HistoryScreen() {
 
   const loadItems = useCallback(() => loadItemsFlightRef.current.run(async (): Promise<boolean> => {
     try {
-      const saved = await AsyncStorage.getItem(STORAGE_KEY);
+      const saved = await withTimeout(AsyncStorage.getItem(STORAGE_KEY), 5000, 'History storage read timed out');
       if (!saved) { setItems(initialItems); await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(initialItems)); return true; }
       const parsed = JSON.parse(saved);
       const normalized = normalizeItems(Array.isArray(parsed) ? parsed : []);
