@@ -666,3 +666,7 @@
 - [x] Audit combined lightbox closed, busy, retry, and success transitions
 - [x] Apply the safest state-transition refinement without changing valid flows
 - [x] Add combined-state coverage, rerun validation, and save the checkpoint
+
+- [x] Audit remaining lightbox transition invariants for busy/retry mutual exclusion
+- [x] Apply the safest invariant refinement without changing valid OCR/share flows
+- [x] Add invariant coverage, rerun validation, and save the checkpoint

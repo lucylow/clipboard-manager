@@ -74,6 +74,23 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
   });
 
+  it('isolates public and listener state snapshots from internal mutation', () => {
+    const adapter = createLightboxInteractionAdapter();
+    let listenerState: ReturnType<typeof adapter.getState> | undefined;
+    adapter.subscribe((state) => {
+      listenerState = state;
+      state.visible = false;
+    });
+
+    const result = adapter.open();
+    result.visible = false;
+    const current = adapter.getState();
+    current.visible = false;
+
+    expect(listenerState).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
+    expect(adapter.getState()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+  });
+
   it('caps pathological re-entrant event growth and recovers for later dispatches', () => {
     const adapter = createLightboxInteractionAdapter();
     let notifications = 0;
