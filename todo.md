@@ -562,3 +562,7 @@
 - [x] Bring Favorites image sharing to the same guarded, cleanup-safe flow as History
 - [x] Add deterministic coverage for Favorites image-share guard and recovery behavior
 - [x] Rerun bounded TypeScript, lint, tests, and save the checkpoint
+
+- [x] Audit remaining image-share entry points for guard and cleanup consistency
+- [x] Unify any remaining share failure and temporary-file cleanup behavior
+- [x] Add targeted regression coverage, rerun validation, and save the checkpoint

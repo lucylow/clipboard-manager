@@ -294,6 +294,10 @@ export default function HistoryScreen() {
     if (!selectedIds.length) return showNotice('Select at least one item');
     const selected = items.filter((item) => selectedIds.includes(item.id));
     const exportText = selected.map((item, index) => `${index + 1}. ${item.type === 'image' ? '[Image]' : item.content}${item.ocrText ? `\nOCR: ${item.ocrText}` : ''}${item.category ? `\nCategory: ${item.category}` : ''}${item.source ? `\nSource: ${item.source}` : ''}`).join('\n\n');
+    if (!lightboxOperationGuardRef.current.acquire('share')) {
+      showNotice('Another image action is already in progress');
+      return;
+    }
     setIsExporting(true);
     let temporaryFileUri: string | null = null;
     try {
@@ -314,6 +318,7 @@ export default function HistoryScreen() {
     finally {
       await cleanupTemporaryFile(temporaryFileUri, (uri) => FileSystem.deleteAsync(uri, { idempotent: true }));
       setIsExporting(false);
+      lightboxOperationGuardRef.current.release('share');
     }
   };
   const shareImageItem = async (item: Item) => {
