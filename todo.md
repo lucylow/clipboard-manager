@@ -433,3 +433,7 @@
 - [x] Extract rollback-safe History persistence into a reusable hook
 - [x] Preserve visible write-failure feedback and stale-operation protection during extraction
 - [x] Add focused regression coverage and rerun TypeScript, lint, and tests
+
+- [x] Extract typed History item mutation helpers for favorite, category, and deletion updates
+- [x] Preserve optimistic persistence and failure feedback across the helper migration
+- [x] Add focused regression coverage and rerun TypeScript, lint, and tests

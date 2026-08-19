@@ -13,6 +13,7 @@ import { haptic } from '@/lib/haptics';
 import { createNoticeController, type NoticeController } from '@/lib/notice-controller';
 import { trpc } from '@/lib/trpc';
 import { useHistoryPersistence } from '@/hooks/use-history-persistence';
+import { removeClipboardItems, updateClipboardItem, updateClipboardItems } from '@/lib/clipboard-item-mutations';
 
 type Filter = 'All' | 'Text' | 'Images' | 'Favorites' | 'Work' | 'Personal';
 type Category = 'Work' | 'Personal';
@@ -190,11 +191,11 @@ export default function HistoryScreen() {
     } catch { haptic.error(); showNotice('Could not copy this item'); }
   };
 
-  const toggleFavorite = (id: string) => { haptic.light(); persist(items.map((item) => item.id === id ? { ...item, favorite: !item.favorite } : item)); };
-  const setCategory = (id: string, category: Category) => { haptic.light(); persist(items.map((item) => item.id === id ? { ...item, category } : item)); };
+  const toggleFavorite = (id: string) => { haptic.light(); persist(updateClipboardItem(items, id, (item) => ({ ...item, favorite: !item.favorite }))); };
+  const setCategory = (id: string, category: Category) => { haptic.light(); persist(updateClipboardItem(items, id, (item) => ({ ...item, category }))); };
   const toggleSelection = (id: string) => setSelectedIds((current) => current.includes(id) ? current.filter((selectedId) => selectedId !== id) : [...current, id]);
   const exitSelectionMode = () => { setSelectionMode(false); setSelectedIds([]); };
-  const batchFavorite = () => { if (!selectedIds.length) return showNotice('Select at least one item'); persist(items.map((item) => selectedIds.includes(item.id) ? { ...item, favorite: true } : item)); haptic.light(); showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} added to favorites`); exitSelectionMode(); };
+  const batchFavorite = () => { if (!selectedIds.length) return showNotice('Select at least one item'); persist(updateClipboardItems(items, new Set(selectedIds), (item) => ({ ...item, favorite: true }))); haptic.light(); showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} added to favorites`); exitSelectionMode(); };
   const batchCategory = () => { if (!selectedIds.length) return showNotice('Select at least one item'); Alert.alert('Assign category', 'Choose a category for the selected items.', [{ text: 'Work', onPress: () => { persist(items.map((item) => selectedIds.includes(item.id) ? { ...item, category: 'Work' } : item)); haptic.light(); showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} moved to Work`); exitSelectionMode(); } }, { text: 'Personal', onPress: () => { persist(items.map((item) => selectedIds.includes(item.id) ? { ...item, category: 'Personal' } : item)); haptic.light(); showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} moved to Personal`); exitSelectionMode(); } }, { text: 'Cancel', style: 'cancel' }]); };
   const exportSelected = async () => {
     if (!isPremium) return showNotice('Batch export is a Clipboard Pro feature · your history remains free');
@@ -235,9 +236,9 @@ export default function HistoryScreen() {
     } catch { haptic.error(); showNotice('Could not share this image'); }
     finally { setIsExporting(false); }
   };
-  const batchDelete = () => { if (!selectedIds.length) return showNotice('Select at least one item'); Alert.alert('Delete selected items?', `${selectedIds.length} saved item${selectedIds.length === 1 ? '' : 's'} will be removed.`, [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: () => { persist(items.filter((item) => !selectedIds.includes(item.id))); haptic.medium(); showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} deleted`); exitSelectionMode(); } }]); };
+  const batchDelete = () => { if (!selectedIds.length) return showNotice('Select at least one item'); Alert.alert('Delete selected items?', `${selectedIds.length} saved item${selectedIds.length === 1 ? '' : 's'} will be removed.`, [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: () => { persist(removeClipboardItems(items, new Set(selectedIds))); haptic.medium(); showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} deleted`); exitSelectionMode(); } }]); };
   const clearAll = () => Alert.alert('Clear all history?', 'Every saved clipboard item will be removed.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Clear all', style: 'destructive', onPress: () => { persist([]); setSelectedItem(null); haptic.medium(); showNotice('History cleared'); } }]);
-  const deleteItem = (id: string) => { haptic.medium(); persist(items.filter((item) => item.id !== id)); };
+  const deleteItem = (id: string) => { haptic.medium(); persist(removeClipboardItems(items, new Set([id]))); };
   const deleteSelected = () => {
     if (!selectedItem) return;
     Alert.alert('Delete item?', 'This will remove it from your history.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: () => { deleteItem(selectedItem.id); setSelectedItem(null); showNotice('Item deleted'); } }]);
