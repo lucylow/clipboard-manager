@@ -106,6 +106,23 @@ describe("lightbox diagnostics equality", () => {
     );
   });
 
+  it("detects combined changes in frozen snapshots as one meaningful update", () => {
+    const previous = Object.freeze({
+      ...readDiagnosticsSnapshot(),
+      state: Object.freeze({ visible: false, actionBusy: false, retryAvailable: false }),
+    });
+    const next = Object.freeze({
+      ...previous,
+      state: Object.freeze({ visible: true, actionBusy: true, retryAvailable: true }),
+      pendingEventCount: 2,
+      listenerCount: 3,
+      notifying: true,
+      released: true,
+    });
+
+    expect(diagnosticsEqual(previous, next)).toBe(false);
+  });
+
   it("detects combined lifecycle and state changes as one meaningful update", () => {
     const previous = readDiagnosticsSnapshot();
     const next = {

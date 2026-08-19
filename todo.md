@@ -946,3 +946,7 @@
 - [x] Audit comparator equality for equivalent frozen snapshots and repeated reads
 - [x] Add targeted frozen equality regression coverage
 - [x] Re-run validation and save the comparator-stability checkpoint
+
+- [x] Audit combined diagnostics comparison coverage across snapshot shapes
+- [x] Add targeted full-field comparison regression coverage
+- [x] Re-run validation and save the combined-comparison checkpoint
