@@ -810,3 +810,7 @@
 - [x] Audit identical diagnostics snapshots from repeated subscriptions
 - [x] Deduplicate equal snapshots without delaying genuine adapter changes
 - [x] Re-run validation and save the snapshot-deduplication checkpoint
+
+- [x] Audit diagnostics equality coverage against the full diagnostics contract
+- [x] Make snapshot comparison maintainable as diagnostics fields evolve
+- [x] Re-run validation and save the diagnostics-comparison checkpoint

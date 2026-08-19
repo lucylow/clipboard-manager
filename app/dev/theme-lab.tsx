@@ -51,6 +51,17 @@ function diagnosticsLabel(diagnostics: LightboxInteractionDiagnostics) {
   return diagnostics.released ? "Released" : diagnostics.notifying ? "Draining" : "Idle";
 }
 
+function lightboxStateEqual(
+  previous: LightboxInteractionDiagnostics["state"],
+  next: LightboxInteractionDiagnostics["state"],
+) {
+  return (
+    previous.visible === next.visible &&
+    previous.actionBusy === next.actionBusy &&
+    previous.retryAvailable === next.retryAvailable
+  );
+}
+
 function diagnosticsEqual(
   previous: LightboxInteractionDiagnostics,
   next: LightboxInteractionDiagnostics,
@@ -60,9 +71,7 @@ function diagnosticsEqual(
     previous.listenerCount === next.listenerCount &&
     previous.notifying === next.notifying &&
     previous.released === next.released &&
-    previous.state.visible === next.state.visible &&
-    previous.state.actionBusy === next.state.actionBusy &&
-    previous.state.retryAvailable === next.state.retryAvailable
+    lightboxStateEqual(previous.state, next.state)
   );
 }
 
