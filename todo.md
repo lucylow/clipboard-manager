@@ -814,3 +814,7 @@
 - [x] Audit diagnostics equality coverage against the full diagnostics contract
 - [x] Make snapshot comparison maintainable as diagnostics fields evolve
 - [x] Re-run validation and save the diagnostics-comparison checkpoint
+
+- [x] Audit diagnostics helper input types and comparison assumptions
+- [x] Apply a type-safe maintainability refinement without changing runtime behavior
+- [x] Re-run validation and save the helper-typing checkpoint

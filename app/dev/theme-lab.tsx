@@ -51,10 +51,12 @@ function diagnosticsLabel(diagnostics: LightboxInteractionDiagnostics) {
   return diagnostics.released ? "Released" : diagnostics.notifying ? "Draining" : "Idle";
 }
 
+type LightboxDiagnosticsState = LightboxInteractionDiagnostics["state"];
+
 function lightboxStateEqual(
-  previous: LightboxInteractionDiagnostics["state"],
-  next: LightboxInteractionDiagnostics["state"],
-) {
+  previous: LightboxDiagnosticsState,
+  next: LightboxDiagnosticsState,
+): boolean {
   return (
     previous.visible === next.visible &&
     previous.actionBusy === next.actionBusy &&
@@ -65,7 +67,7 @@ function lightboxStateEqual(
 function diagnosticsEqual(
   previous: LightboxInteractionDiagnostics,
   next: LightboxInteractionDiagnostics,
-) {
+): boolean {
   return (
     previous.pendingEventCount === next.pendingEventCount &&
     previous.listenerCount === next.listenerCount &&
