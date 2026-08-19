@@ -926,3 +926,7 @@
 - [x] Audit diagnostics fixture cleanup assertions for repeated patterns
 - [x] Extract an explicit cleanup assertion helper without weakening coverage
 - [x] Re-run validation and save the cleanup-helper checkpoint
+
+- [x] Audit diagnostics test-helper input and return contracts
+- [x] Make helper typing explicit without changing runtime behavior
+- [x] Re-run validation and save the helper-contract checkpoint

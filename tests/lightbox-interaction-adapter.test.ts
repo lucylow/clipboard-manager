@@ -6,7 +6,7 @@ import {
 
 type AdapterState = ReturnType<ReturnType<typeof createLightboxInteractionAdapter>['getState']>;
 
-function stateLabel(state: AdapterState) {
+function stateLabel(state: AdapterState): string {
   return `${state.visible}:${state.actionBusy}:${state.retryAvailable}`;
 }
 

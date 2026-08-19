@@ -38,7 +38,7 @@ function readDiagnosticsSnapshot(): LightboxInteractionDiagnostics {
   return withDiagnosticsAdapter((adapter) => adapter.getDiagnostics());
 }
 
-function expectReleased(adapter: DiagnosticsAdapter | undefined) {
+function expectReleased(adapter: DiagnosticsAdapter | undefined): void {
   expect(adapter?.getDiagnostics().released).toBe(true);
 }
 
