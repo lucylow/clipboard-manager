@@ -1,6 +1,14 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import { parseStoredArray } from '../lib/clipboard-storage';
+vi.mock('@react-native-async-storage/async-storage', () => ({
+  default: {
+    getItem: vi.fn(),
+    setItem: vi.fn(),
+  },
+}));
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { parseStoredArray, queueClipboardWrite } from '../lib/clipboard-storage';
 
 describe('parseStoredArray', () => {
   it('returns an empty list for missing storage', () => {
@@ -17,5 +25,15 @@ describe('parseStoredArray', () => {
 
   it('preserves valid array payloads', () => {
     expect(parseStoredArray<{ id: string }>(JSON.stringify([{ id: 'one' }]))).toEqual([{ id: 'one' }]);
+  });
+
+  it('continues serialized writes after a rejected storage write', async () => {
+    const setItem = vi.mocked(AsyncStorage.setItem);
+    setItem.mockReset();
+    setItem.mockRejectedValueOnce(new Error('storage locked')).mockResolvedValue(undefined);
+
+    await expect(queueClipboardWrite([{ id: 'first' }])).rejects.toThrow('storage locked');
+    await expect(queueClipboardWrite([{ id: 'second' }])).resolves.toBeUndefined();
+    expect(setItem).toHaveBeenCalledTimes(2);
   });
 });

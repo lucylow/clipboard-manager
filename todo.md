@@ -407,3 +407,9 @@
 - [x] Convert synchronous single-flight operation throws into recoverable promise rejections
 - [x] Add deterministic coverage for synchronous failure recovery
 
+
+- [x] Audit the latest code for the next high-impact reliability gap
+- [x] Implement a targeted maintainability or resilience improvement
+- [x] Add deterministic tests and rerun all project checks before checkpointing
+- [x] Prevent ignored storage-write promises from producing unhandled rejection noise
+- [x] Add deterministic coverage for serialized write recovery after failure

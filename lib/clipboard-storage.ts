@@ -21,6 +21,7 @@ export function queueClipboardWrite<T>(items: T[]): Promise<void> {
     .then(async () => {
       await AsyncStorage.setItem(CLIPBOARD_STORAGE_KEY, JSON.stringify(items));
     });
+  writeQueue.catch(() => undefined);
   return writeQueue;
 }
 
@@ -39,5 +40,6 @@ export function updateClipboardStorage<T>(updater: (items: T[]) => T[]): Promise
       }
       await AsyncStorage.setItem(CLIPBOARD_STORAGE_KEY, JSON.stringify(next));
     });
+  writeQueue.catch(() => undefined);
   return writeQueue;
 }
