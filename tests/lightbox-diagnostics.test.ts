@@ -8,6 +8,7 @@ import {
   diagnosticsEqual,
   lightboxStateEqual,
   type LightboxDiagnosticsSnapshot,
+  type ReadonlyLightboxDiagnostics,
 } from "../lib/lightbox-diagnostics";
 
 type DiagnosticsAdapter = ReturnType<typeof createLightboxInteractionAdapter>;
@@ -57,6 +58,17 @@ describe("lightbox diagnostics equality", () => {
     const next = mutate(previous);
 
     expect(diagnosticsEqual(previous, next)).toBe(false);
+  });
+
+  it("preserves compatibility for the deprecated readonly snapshot alias", () => {
+    const adapter = createLightboxInteractionAdapter();
+    try {
+      const canonical: LightboxDiagnosticsSnapshot = adapter.getDiagnostics();
+      const legacy: ReadonlyLightboxDiagnostics = canonical;
+      expect(diagnosticsEqual(legacy, canonical)).toBe(true);
+    } finally {
+      adapter.release();
+    }
   });
 
   it("accepts adapter diagnostics through the read-only boundary contract", () => {

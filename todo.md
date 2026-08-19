@@ -954,3 +954,7 @@
 - [x] Audit readonly diagnostics type naming and fixture clarity
 - [x] Refine readonly type names without changing behavior
 - [x] Re-run validation and save the readonly-naming checkpoint
+
+- [x] Audit deprecated diagnostics snapshot alias usage
+- [x] Ensure canonical snapshot naming is used consistently without breaking compatibility
+- [x] Re-run validation and save the canonical-naming checkpoint
