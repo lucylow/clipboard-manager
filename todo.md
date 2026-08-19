@@ -994,3 +994,7 @@
 - [x] Audit the next interaction-adapter boundary for stale or duplicate lifecycle actions
 - [x] Add deterministic defensive regression coverage for the boundary
 - [x] Re-run validation and save the interaction-hardening checkpoint
+
+- [x] Audit initial interaction-adapter state for malformed runtime values
+- [x] Add deterministic normalization regression coverage for invalid initial state
+- [x] Re-run validation and save the initial-state hardening checkpoint

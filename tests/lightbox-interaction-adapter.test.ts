@@ -11,6 +11,30 @@ function stateLabel(state: AdapterState): string {
 }
 
 describe('createLightboxInteractionAdapter', () => {
+  it('normalizes malformed initial state values at the adapter boundary', () => {
+    const malformed = {
+      visible: 'yes',
+      actionBusy: 1,
+      retryAvailable: 'yes',
+    } as unknown as Parameters<typeof createLightboxInteractionAdapter>[0];
+    const adapter = createLightboxInteractionAdapter(malformed);
+
+    expect(adapter.getState()).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
+    expect(adapter.getDiagnostics()).toMatchObject({ pendingEventCount: 0, listenerCount: 0, released: false });
+    expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+  });
+
+  it('preserves valid initial state while enforcing retry and visibility invariants', () => {
+    const adapter = createLightboxInteractionAdapter({
+      visible: true,
+      actionBusy: false,
+      retryAvailable: true,
+    });
+
+    expect(adapter.getState()).toEqual({ visible: true, actionBusy: false, retryAvailable: true });
+    expect(adapter.close()).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
+  });
+
   it('publishes open, busy, failure, retry, and success transitions in order', () => {
     const adapter = createLightboxInteractionAdapter();
     const states: string[] = [];

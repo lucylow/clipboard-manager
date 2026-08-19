@@ -33,6 +33,16 @@ const CLOSED_STATE: LightboxInteractionState = {
   retryAvailable: false,
 };
 
+function normalizeInitialState(candidate: unknown): LightboxInteractionState {
+  if (!candidate || typeof candidate !== 'object') return { ...CLOSED_STATE };
+  const input = candidate as Partial<LightboxInteractionState>;
+  return {
+    visible: input.visible === true,
+    actionBusy: input.actionBusy === true,
+    retryAvailable: input.retryAvailable === true,
+  };
+}
+
 /**
  * Bounds work created by pathological re-entrant listeners. Events already in
  * the queue retain FIFO order; once the per-drain budget is exhausted, pending
@@ -44,7 +54,7 @@ export const LIGHTBOX_MAX_PENDING_EVENTS = 64;
 export function createLightboxInteractionAdapter(
   initialState: LightboxInteractionState = CLOSED_STATE,
 ): LightboxInteractionAdapter {
-  let state = { ...initialState };
+  let state = normalizeInitialState(initialState);
   const listeners = new Set<LightboxInteractionSubscription>();
   const pendingEvents: LightboxInteractionEvent[] = [];
   let pendingEventHead = 0;
