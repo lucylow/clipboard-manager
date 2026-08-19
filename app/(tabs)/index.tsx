@@ -104,7 +104,6 @@ export default function HistoryScreen() {
       return false;
     }
   }, []);
-  useEffect(() => { void loadItems(); }, [loadItems]);
   useFocusEffect(useCallback(() => { void loadItems(); }, [loadItems]));
   useEffect(() => { setSelectedIds((current) => current.filter((id) => items.some((item) => item.id === id))); }, [items]);
 

@@ -388,3 +388,9 @@
 - [x] Add deterministic tests and rerun all project checks before checkpointing
 - [x] Extract latest-notice timer behavior into a reusable cleanup-safe controller
 - [x] Add deterministic tests for notice replacement and disposal
+
+- [x] Audit the latest code and resource usage for the next high-impact reliability gap
+- [x] Implement a targeted maintainability or resilience improvement
+- [x] Add deterministic tests and rerun all project checks before checkpointing
+- [x] Remove duplicate initial History hydration to reduce overlapping storage reads
+- [x] Re-run TypeScript, lint, and tests after the hydration cleanup
