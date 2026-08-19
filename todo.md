@@ -918,3 +918,7 @@
 - [x] Audit diagnostics fixture cleanup symmetry on success and failure paths
 - [x] Add explicit cleanup-path regression coverage where useful
 - [x] Re-run validation and save the cleanup-symmetry checkpoint
+
+- [x] Audit diagnostics fixture isolation after cleanup and fresh creation
+- [x] Add targeted coverage for detached states across fixture boundaries
+- [x] Re-run validation and save the fixture-isolation checkpoint

@@ -130,6 +130,28 @@ describe("lightbox diagnostics equality", () => {
     ]);
   });
 
+  it("keeps a cleaned-up fixture snapshot detached from a fresh adapter", () => {
+    const cleanedSnapshot = withDiagnosticsAdapter((adapter) => {
+      adapter.open();
+      return adapter.getDiagnostics();
+    });
+    cleanedSnapshot.state.visible = false;
+    cleanedSnapshot.released = true;
+
+    const fresh = createLightboxInteractionAdapter();
+    try {
+      expect(fresh.getDiagnostics()).toEqual({
+        state: { visible: false, actionBusy: false, retryAvailable: false },
+        pendingEventCount: 0,
+        listenerCount: 0,
+        notifying: false,
+        released: false,
+      });
+    } finally {
+      fresh.release();
+    }
+  });
+
   it("keeps repeated fixture cleanup isolated from a fresh adapter", () => {
     const first = createLightboxInteractionAdapter();
     const firstSnapshot = first.getDiagnostics();
