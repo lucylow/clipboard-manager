@@ -550,3 +550,7 @@
 - [x] Extract pure lightbox transition rules for close, share, and OCR retry actions
 - [x] Add deterministic coverage for busy guards and post-failure retry recovery
 - [x] Rerun bounded TypeScript, lint, tests, and save the checkpoint
+
+- [x] Consolidate lightbox control-state derivation so share and OCR controls use one consistent snapshot
+- [x] Add deterministic regression coverage for shared lightbox control decisions
+- [x] Rerun bounded TypeScript, lint, tests, and save the checkpoint
