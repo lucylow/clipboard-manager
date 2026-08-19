@@ -83,6 +83,7 @@ export default function HistoryScreen() {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [lightboxItem, setLightboxItem] = useState<Item | null>(null);
   const lightboxItemIdRef = useRef<string | null>(null);
+  const lightboxSessionRef = useRef(0);
   const [isSavingMedia, setIsSavingMedia] = useState(false);
   const [ocrSaveFailures, setOcrSaveFailures] = useState<string[]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
@@ -152,7 +153,10 @@ export default function HistoryScreen() {
     return () => subscription.remove();
   }, [handleRecoveryFailure, recoveryCoordinator]);
   useEffect(() => { setSelectedIds((current) => current.filter((id) => items.some((item) => item.id === id))); }, [items]);
-  useEffect(() => { lightboxItemIdRef.current = lightboxItem?.id ?? null; }, [lightboxItem?.id]);
+  useEffect(() => {
+    lightboxItemIdRef.current = lightboxItem?.id ?? null;
+    lightboxSessionRef.current += 1;
+  }, [lightboxItem]);
 
   const visibleItems = useMemo(() => items.filter((item) => {
     const searchableText = [item.content, item.ocrText, item.source, item.category, item.type === 'image' ? 'image' : 'text'].filter(Boolean).join(' ').toLowerCase();
@@ -192,6 +196,7 @@ export default function HistoryScreen() {
       showNotice('Another image action is already in progress');
       return;
     }
+    const actionToken = lightboxSessionRef.current;
     showNotice('Extracting text…');
     try {
       const result = await ocrMutation.mutateAsync({ imageData: item.imageData });
@@ -203,7 +208,7 @@ export default function HistoryScreen() {
         return;
       }
       setOcrSaveFailures((current) => current.filter((id) => id !== item.id));
-      if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null })) {
+      if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) {
         setLightboxItem(updated.find((candidate) => candidate.id === item.id) ?? item);
         showNotice(result.text ? 'Text extracted' : 'No readable text found');
       }
@@ -337,6 +342,7 @@ export default function HistoryScreen() {
       return;
     }
     setIsExporting(true);
+    const actionToken = lightboxSessionRef.current;
     let temporaryFileUri: string | null = null;
     try {
       if (Platform.OS === 'web') {
@@ -349,9 +355,15 @@ export default function HistoryScreen() {
         if (await Sharing.isAvailableAsync()) { await Sharing.shareAsync(fileUri, { dialogTitle: 'Share saved image', mimeType: 'image/png' }); showNotice('Image ready to share'); }
         else { await Clipboard.setImageAsync(item.imageData); showNotice('Sharing unavailable; image copied to clipboard'); }
       }
-      setFailedImageShareId(null);
+      if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) setFailedImageShareId(null);
       haptic.success();
-    } catch { setFailedImageShareId(item.id); haptic.error(); showNotice('Could not share this image · try again'); }
+    } catch {
+      if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) {
+        setFailedImageShareId(item.id);
+        showNotice('Could not share this image · try again');
+      }
+      haptic.error();
+    }
     finally {
       try {
         await cleanupTemporaryFile(temporaryFileUri, (uri) => FileSystem.deleteAsync(uri, { idempotent: true }));

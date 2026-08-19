@@ -590,3 +590,7 @@
 - [x] Audit stale OCR and share results after lightbox close or item replacement
 - [x] Prevent stale async results from updating the wrong lightbox item
 - [x] Add deterministic stale-result coverage, rerun validation, and save the checkpoint
+
+- [x] Audit asynchronous image-share completion feedback after lightbox close or item replacement
+- [x] Prevent stale share success or failure state from affecting a different preview
+- [x] Add deterministic stale-share coverage, rerun validation, and save the checkpoint

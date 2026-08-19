@@ -10,7 +10,11 @@ describe('isCurrentLightboxAction', () => {
     expect(isCurrentLightboxAction({ activeItemId: 'image-2', actionItemId: 'image-1', isVisible: true })).toBe(false);
   });
 
-  it('accepts a result for the still-visible active item', () => {
-    expect(isCurrentLightboxAction({ activeItemId: 'image-1', actionItemId: 'image-1', isVisible: true })).toBe(true);
+  it('rejects a result from an earlier session when the same item was reopened', () => {
+    expect(isCurrentLightboxAction({ activeItemId: 'image-1', actionItemId: 'image-1', isVisible: true, actionToken: 2, currentToken: 3 })).toBe(false);
+  });
+
+  it('accepts a result for the still-visible active item in the same session', () => {
+    expect(isCurrentLightboxAction({ activeItemId: 'image-1', actionItemId: 'image-1', isVisible: true, actionToken: 3, currentToken: 3 })).toBe(true);
   });
 });
