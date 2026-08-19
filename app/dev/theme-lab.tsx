@@ -51,6 +51,21 @@ function diagnosticsLabel(diagnostics: LightboxInteractionDiagnostics) {
   return diagnostics.released ? "Released" : diagnostics.notifying ? "Draining" : "Idle";
 }
 
+function diagnosticsEqual(
+  previous: LightboxInteractionDiagnostics,
+  next: LightboxInteractionDiagnostics,
+) {
+  return (
+    previous.pendingEventCount === next.pendingEventCount &&
+    previous.listenerCount === next.listenerCount &&
+    previous.notifying === next.notifying &&
+    previous.released === next.released &&
+    previous.state.visible === next.state.visible &&
+    previous.state.actionBusy === next.state.actionBusy &&
+    previous.state.retryAvailable === next.state.retryAvailable
+  );
+}
+
 export default function ThemeLabScreen() {
   const [pressCount, setPressCount] = useState(0);
   const [lastAction, setLastAction] = useState<string>("None yet");
@@ -66,7 +81,11 @@ export default function ThemeLabScreen() {
   useEffect(() => {
     let active = true;
     const sync = () => {
-      if (active) setLightboxDiagnostics(lightboxAdapter.getDiagnostics());
+      if (!active) return;
+      const nextDiagnostics = lightboxAdapter.getDiagnostics();
+      setLightboxDiagnostics((previous) =>
+        diagnosticsEqual(previous, nextDiagnostics) ? previous : nextDiagnostics,
+      );
     };
     const unsubscribe = lightboxAdapter.subscribe(sync);
     sync();
@@ -85,7 +104,10 @@ export default function ThemeLabScreen() {
     lightboxAdapter.release();
     const nextAdapter = createLightboxInteractionAdapter();
     setLightboxAdapter(nextAdapter);
-    setLightboxDiagnostics(nextAdapter.getDiagnostics());
+    const nextDiagnostics = nextAdapter.getDiagnostics();
+    setLightboxDiagnostics((previous) =>
+      diagnosticsEqual(previous, nextDiagnostics) ? previous : nextDiagnostics,
+    );
   }, [lightboxAdapter]);
 
   const swatches = useMemo(

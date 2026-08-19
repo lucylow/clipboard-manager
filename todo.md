@@ -806,3 +806,7 @@
 - [x] Audit redundant diagnostics state updates from adapter notifications
 - [x] Apply a safe UI refresh refinement without changing adapter semantics
 - [x] Re-run validation and save the notification-refresh checkpoint
+
+- [x] Audit identical diagnostics snapshots from repeated subscriptions
+- [x] Deduplicate equal snapshots without delaying genuine adapter changes
+- [x] Re-run validation and save the snapshot-deduplication checkpoint
