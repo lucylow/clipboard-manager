@@ -626,3 +626,7 @@
 - [x] Align lightbox presentation busy and retry semantics with the interaction reducer
 - [x] Preserve existing OCR/share accessibility labels and mutual-exclusion behavior
 - [x] Add deterministic integration coverage, rerun validation, and save the checkpoint
+
+- [x] Audit unavailable-image, retry, and action-visibility edge cases in lightbox presentation
+- [x] Apply consistent presentation rules without weakening existing accessibility or retry behavior
+- [x] Add targeted regression coverage, rerun bounded validation, and save the checkpoint

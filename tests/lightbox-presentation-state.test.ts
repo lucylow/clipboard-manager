@@ -26,7 +26,7 @@ describe('getLightboxPresentationState', () => {
 
   it('keeps the interaction state closed when the image payload is unavailable', () => {
     const state = getLightboxPresentationState({ ...base, hasImage: false, hasOcrSaveFailure: true });
-    expect(state.interaction).toEqual({ visible: false, actionBusy: false, retryAvailable: true });
+    expect(state.interaction).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
     expect(state.visibility.visible).toBe(false);
     expect(state.controls.ocrVisible).toBe(false);
   });

@@ -18,10 +18,11 @@ export function getLightboxInteractionState(options: {
   hasShareFailure: boolean;
   hasOcrSaveFailure: boolean;
 }): LightboxInteractionState {
+  const visible = options.hasImage;
   return {
-    visible: options.hasImage,
-    actionBusy: options.isSharing || options.isOcrPending,
-    retryAvailable: options.hasShareFailure || options.hasOcrSaveFailure,
+    visible,
+    actionBusy: visible && (options.isSharing || options.isOcrPending),
+    retryAvailable: visible && (options.hasShareFailure || options.hasOcrSaveFailure),
   };
 }
 
