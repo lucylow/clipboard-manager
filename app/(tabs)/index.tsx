@@ -11,10 +11,8 @@ import { ScreenContainer } from '@/components/screen-container';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { haptic } from '@/lib/haptics';
 import { createNoticeController, type NoticeController } from '@/lib/notice-controller';
-import { createSingleFlight } from '@/lib/single-flight';
-import { withTimeout } from '@/lib/with-timeout';
 import { trpc } from '@/lib/trpc';
-import { queueClipboardWrite } from '@/lib/clipboard-storage';
+import { useHistoryPersistence } from '@/hooks/use-history-persistence';
 
 type Filter = 'All' | 'Text' | 'Images' | 'Favorites' | 'Work' | 'Personal';
 type Category = 'Work' | 'Personal';
@@ -46,7 +44,12 @@ async function trackUsage(kind: 'exportCount' | 'ocrCount') {
   } catch { /* usage tracking is informational and must never block clipboard work */ }
 }
 
-function normalizeItems(items: Item[]) { return items.filter((item) => item && typeof item.id === 'string' && (item.type === 'text' || item.type === 'image') && typeof item.content === 'string').map((item) => item.category ? item : { ...item, category: item.id === '1' || item.id === '2' ? 'Work' as Category : item.id === '4' || item.id === '5' ? 'Personal' as Category : undefined }); }
+function normalizeItems(value: unknown): Item[] {
+  const items = Array.isArray(value) ? value as Item[] : [];
+  return items
+    .filter((item) => item && typeof item.id === 'string' && (item.type === 'text' || item.type === 'image') && typeof item.content === 'string')
+    .map((item) => item.category ? item : { ...item, category: item.id === '1' || item.id === '2' ? 'Work' as Category : item.id === '4' || item.id === '5' ? 'Personal' as Category : undefined });
+}
 
 function formatTime(timestamp: number) {
   const diff = Math.max(0, Date.now() - timestamp);
@@ -59,9 +62,6 @@ function formatTime(timestamp: number) {
 }
 
 export default function HistoryScreen() {
-  const [items, setItems] = useState<Item[]>(initialItems);
-  const itemsRef = useRef<Item[]>(initialItems);
-  const persistRevisionRef = useRef(0);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('All');
   const [refreshing, setRefreshing] = useState(false);
@@ -71,7 +71,6 @@ export default function HistoryScreen() {
   const [isPasting, setIsPasting] = useState(false);
   const [notice, setNotice] = useState('');
   const noticeControllerRef = useRef<NoticeController | null>(null);
-  const loadItemsFlightRef = useRef(createSingleFlight<boolean>());
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [lightboxItem, setLightboxItem] = useState<Item | null>(null);
   const [isSavingMedia, setIsSavingMedia] = useState(false);
@@ -92,48 +91,18 @@ export default function HistoryScreen() {
   }, []);
   useEffect(() => () => { noticeControllerRef.current?.dispose(); }, []);
 
-  const loadItems = useCallback(() => loadItemsFlightRef.current.run(async (): Promise<boolean> => {
-    try {
-      const saved = await withTimeout(AsyncStorage.getItem(STORAGE_KEY), 5000, 'History storage read timed out');
-      if (!saved) { setItems(initialItems); await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(initialItems)); return true; }
-      const parsed = JSON.parse(saved);
-      const normalized = normalizeItems(Array.isArray(parsed) ? parsed : []);
-      setItems(normalized);
-      if (!Array.isArray(parsed) || normalized.length !== parsed.length) setNotice('History repaired: invalid entries were removed');
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
-      return true;
-    } catch {
-      setItems(initialItems);
-      try { await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(initialItems)); } catch { /* keep the in-memory fallback */ }
-      setNotice('Saved history could not be read, so starter items were restored');
-      return false;
-    }
-  }), []);
-  useFocusEffect(useCallback(() => { void loadItems(); }, [loadItems]));
-  useEffect(() => { setSelectedIds((current) => current.filter((id) => items.some((item) => item.id === id))); }, [items]);
-
   const showNotice = useCallback((message: string) => {
     noticeControllerRef.current?.show(message);
   }, []);
 
-  const persist = useCallback(async (next: Item[]) => {
-    const previous = itemsRef.current;
-    const revision = persistRevisionRef.current + 1;
-    persistRevisionRef.current = revision;
-    itemsRef.current = next;
-    setItems(next);
-    try {
-      await queueClipboardWrite(next);
-      return true;
-    } catch {
-      if (persistRevisionRef.current === revision) {
-        itemsRef.current = previous;
-        setItems(previous);
-      }
-      showNotice('Could not save the latest history change. Your previous saved history is still available.');
-      return false;
-    }
-  }, [showNotice]);
+  const { items, loadItems, persist } = useHistoryPersistence<Item>({
+    storageKey: STORAGE_KEY,
+    initialValue: initialItems,
+    normalize: normalizeItems,
+    onNotice: showNotice,
+  });
+  useFocusEffect(useCallback(() => { void loadItems(); }, [loadItems]));
+  useEffect(() => { setSelectedIds((current) => current.filter((id) => items.some((item) => item.id === id))); }, [items]);
 
   const visibleItems = useMemo(() => items.filter((item) => {
     const searchableText = [item.content, item.ocrText, item.source, item.category, item.type === 'image' ? 'image' : 'text'].filter(Boolean).join(' ').toLowerCase();
@@ -142,17 +111,14 @@ export default function HistoryScreen() {
     return matchesQuery && matchesFilter;
   }), [items, query, filter]);
 
-  useEffect(() => {
-    itemsRef.current = items;
-  }, [items]);
-
   const saveImageWithOcr = async (imageData: string, imageSize?: { width: number; height: number }, source = 'Clipboard') => {
     if (isSavingMedia || ocrMutation.isPending) return showNotice('Media processing is already in progress');
     if (imageData.length > 4_500_000) return showNotice('This image is too large to save locally');
     if (items.some((item) => item.type === 'image' && item.imageData === imageData)) return showNotice('That image is already in your history');
     setIsSavingMedia(true);
     const next: Item = { id: `${Date.now()}`, type: 'image', content: 'Image from clipboard', imageData, imageSize, timestamp: Date.now(), favorite: false, category: 'Personal', source };
-    try { await persist([next, ...items]); } catch { setItems(items); setIsSavingMedia(false); return showNotice('Could not save this image'); }
+    const saved = await persist([next, ...items]);
+    if (!saved) { setIsSavingMedia(false); return; }
     haptic.success(); showNotice('Image saved · extracting text');
     try {
       const result = await ocrMutation.mutateAsync({ imageData });

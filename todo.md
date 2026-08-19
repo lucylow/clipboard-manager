@@ -429,3 +429,7 @@
 - [x] Add visible, rollback-safe feedback when History persistence writes time out or fail
 - [x] Prevent stale failed writes from reverting newer optimistic History mutations
 - [x] Validate the persistence feedback change with TypeScript, lint, and deterministic tests
+
+- [x] Extract rollback-safe History persistence into a reusable hook
+- [x] Preserve visible write-failure feedback and stale-operation protection during extraction
+- [x] Add focused regression coverage and rerun TypeScript, lint, and tests
