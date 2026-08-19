@@ -389,6 +389,41 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.startAction()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
   });
 
+  it('isolates diagnostics snapshots mutated during active notification', () => {
+    const adapter = createLightboxInteractionAdapter();
+    let captured: ReturnType<typeof adapter.getDiagnostics> | undefined;
+    let inspected = false;
+    adapter.subscribe((state) => {
+      if (!state.visible || inspected) return;
+      inspected = true;
+      captured = adapter.getDiagnostics();
+      captured.state.visible = false;
+      captured.pendingEventCount = 999;
+      captured.listenerCount = 999;
+      captured.notifying = false;
+      captured.released = true;
+      adapter.close();
+    });
+
+    adapter.open();
+
+    expect(captured).toBeDefined();
+    expect(adapter.getDiagnostics()).toEqual({
+      state: { visible: false, actionBusy: false, retryAvailable: false },
+      pendingEventCount: 0,
+      listenerCount: 1,
+      notifying: false,
+      released: false,
+    });
+    expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+    expect(adapter.getDiagnostics()).toMatchObject({
+      state: { visible: true, actionBusy: false, retryAvailable: false },
+      pendingEventCount: 0,
+      notifying: false,
+      released: false,
+    });
+  });
+
   it('keeps resubscribed listeners isolated from stale unsubscribe handles', () => {
     const adapter = createLightboxInteractionAdapter();
     let notifications = 0;

@@ -750,3 +750,7 @@
 - [x] Audit repeated lightbox release and resubscription lifecycle behavior
 - [x] Verify post-release dispatches cannot reactivate listeners or queued work
 - [x] Add lifecycle coverage, rerun validation, and save the checkpoint
+
+- [x] Audit diagnostics snapshot isolation during active notification cycles
+- [x] Verify mutated diagnostics snapshots cannot affect adapter internals
+- [x] Add mutation-resistance coverage, rerun validation, and save the checkpoint
