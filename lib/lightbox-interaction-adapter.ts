@@ -15,6 +15,18 @@ export type LightboxInteractionDiagnostics = {
   released: boolean;
 };
 
+export interface LightboxInteractionAdapter {
+  getState: () => LightboxInteractionState;
+  getDiagnostics: () => LightboxInteractionDiagnostics;
+  release: () => boolean;
+  subscribe: (listener: LightboxInteractionListener) => () => boolean;
+  open: () => LightboxInteractionState;
+  close: () => LightboxInteractionState;
+  startAction: () => LightboxInteractionState;
+  succeed: () => LightboxInteractionState;
+  fail: () => LightboxInteractionState;
+}
+
 const CLOSED_STATE: LightboxInteractionState = {
   visible: false,
   actionBusy: false,
@@ -29,7 +41,9 @@ const CLOSED_STATE: LightboxInteractionState = {
  */
 export const LIGHTBOX_MAX_PENDING_EVENTS = 64;
 
-export function createLightboxInteractionAdapter(initialState: LightboxInteractionState = CLOSED_STATE) {
+export function createLightboxInteractionAdapter(
+  initialState: LightboxInteractionState = CLOSED_STATE,
+): LightboxInteractionAdapter {
   let state = { ...initialState };
   const listeners = new Set<LightboxInteractionSubscription>();
   const pendingEvents: LightboxInteractionEvent[] = [];
