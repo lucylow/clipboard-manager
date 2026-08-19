@@ -674,3 +674,7 @@
 - [x] Audit lightbox subscription cleanup during repeated subscribe/unsubscribe cycles
 - [x] Ensure repeated unsubscribe and listener removal remain deterministic
 - [x] Add lifecycle coverage, rerun validation, and save the checkpoint
+
+- [x] Audit lightbox adapter release behavior and retained listener state
+- [x] Implement safe idempotent adapter release without affecting active transitions
+- [x] Add release coverage, rerun validation, and save the checkpoint

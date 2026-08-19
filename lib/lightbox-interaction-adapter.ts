@@ -27,9 +27,11 @@ export function createLightboxInteractionAdapter(initialState: LightboxInteracti
   const pendingEvents: LightboxInteractionEvent[] = [];
   let pendingEventHead = 0;
   let isNotifying = false;
+  let released = false;
   const readState = () => ({ ...state });
 
   const dispatch = (event: LightboxInteractionEvent) => {
+    if (released) return readState();
     if (pendingEvents.length - pendingEventHead >= LIGHTBOX_MAX_PENDING_EVENTS) return readState();
     pendingEvents.push(event);
     if (isNotifying) return readState();
@@ -48,6 +50,7 @@ export function createLightboxInteractionAdapter(initialState: LightboxInteracti
         if (nextState === state) continue;
         state = nextState;
         [...listeners].forEach((subscription) => {
+          if (released) return;
           try {
             subscription.listener(readState());
           } catch {
@@ -65,7 +68,16 @@ export function createLightboxInteractionAdapter(initialState: LightboxInteracti
 
   return {
     getState: readState,
+    release: () => {
+      if (released) return false;
+      released = true;
+      listeners.clear();
+      pendingEvents.length = 0;
+      pendingEventHead = 0;
+      return true;
+    },
     subscribe: (listener: LightboxInteractionListener) => {
+      if (released) return () => false;
       const subscription = { listener };
       listeners.add(subscription);
       let active = true;

@@ -74,6 +74,34 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
   });
 
+  it('releases listeners and blocks future dispatches idempotently', () => {
+    const adapter = createLightboxInteractionAdapter();
+    let notifications = 0;
+    const unsubscribe = adapter.subscribe(() => { notifications += 1; });
+
+    expect(adapter.release()).toBe(true);
+    expect(adapter.release()).toBe(false);
+    expect(unsubscribe()).toBe(false);
+    expect(adapter.open()).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
+    expect(notifications).toBe(0);
+    expect(adapter.subscribe(() => { notifications += 1; })()).toBe(false);
+  });
+
+  it('stops delivering the current notification cycle after release', () => {
+    const adapter = createLightboxInteractionAdapter();
+    const notifications: string[] = [];
+    adapter.subscribe(() => {
+      notifications.push('first');
+      adapter.release();
+    });
+    adapter.subscribe(() => notifications.push('second'));
+
+    adapter.open();
+
+    expect(notifications).toEqual(['first']);
+    expect(adapter.getState()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+  });
+
   it('keeps resubscribed listeners isolated from stale unsubscribe handles', () => {
     const adapter = createLightboxInteractionAdapter();
     let notifications = 0;
