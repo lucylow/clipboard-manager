@@ -758,3 +758,7 @@
 - [x] Audit thrown lightbox listener isolation during queued transitions
 - [x] Verify subscriber errors cannot corrupt diagnostics or later dispatches
 - [x] Add thrown-listener recovery coverage, rerun validation, and save the checkpoint
+
+- [x] Audit listener removal during an active notification snapshot
+- [x] Verify removed listeners do not receive later queued transitions in the cycle
+- [x] Add snapshot-removal coverage, rerun validation, and save the checkpoint

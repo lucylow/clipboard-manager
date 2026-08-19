@@ -224,6 +224,32 @@ describe('createLightboxInteractionAdapter', () => {
     expect(received).toEqual(['first', 'second', 'second', 'replacement']);
   });
 
+  it('does not notify a listener again after removal during a queued cycle', () => {
+    const adapter = createLightboxInteractionAdapter();
+    const firstSeen: string[] = [];
+    const secondSeen: string[] = [];
+    let unsubscribeFirst = () => false;
+    unsubscribeFirst = adapter.subscribe((state) => {
+      firstSeen.push(`${state.visible}:${state.actionBusy}`);
+      if (state.visible && !state.actionBusy) {
+        unsubscribeFirst();
+        adapter.startAction();
+      }
+    });
+    adapter.subscribe((state) => secondSeen.push(`${state.visible}:${state.actionBusy}`));
+
+    adapter.open();
+
+    expect(firstSeen).toEqual(['true:false']);
+    expect(secondSeen).toEqual(['true:false', 'true:true']);
+    expect(adapter.getDiagnostics()).toMatchObject({
+      pendingEventCount: 0,
+      listenerCount: 1,
+      notifying: false,
+      released: false,
+    });
+  });
+
   it('cleans replaced subscriptions when release occurs in the same notification', () => {
     const adapter = createLightboxInteractionAdapter();
     let unsubscribeReplacement = () => false;
