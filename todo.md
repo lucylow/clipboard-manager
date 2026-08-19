@@ -453,3 +453,7 @@
 - [x] Await OCR metadata persistence and surface follow-up save failures
 - [x] Keep the image preview and list state consistent when OCR metadata cannot be saved
 - [x] Add regression coverage and rerun TypeScript, lint, and tests
+
+- [x] Track images whose OCR metadata could not be persisted
+- [x] Add an accessible retry action for failed OCR metadata saves
+- [x] Add regression coverage and rerun TypeScript, lint, and tests
