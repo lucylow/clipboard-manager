@@ -44,6 +44,15 @@ function expectReleased(adapter: DiagnosticsAdapter | undefined): void {
   expect(adapter?.getDiagnostics().released).toBe(true);
 }
 
+function freezeDiagnosticsSnapshot(
+  snapshot: LightboxDiagnosticsSnapshot,
+): LightboxDiagnosticsSnapshot {
+  return Object.freeze({
+    ...snapshot,
+    state: Object.freeze({ ...snapshot.state }),
+  });
+}
+
 describe("lightbox diagnostics equality", () => {
   it("treats equivalent state snapshots as equal", () => {
     const previous = readDiagnosticsSnapshot();
@@ -83,14 +92,8 @@ describe("lightbox diagnostics equality", () => {
   });
 
   it("accepts frozen nested snapshots without mutation", () => {
-    const previous = Object.freeze({
-      ...readDiagnosticsSnapshot(),
-      state: Object.freeze({ visible: false, actionBusy: false, retryAvailable: false }),
-    });
-    const next = Object.freeze({
-      ...readDiagnosticsSnapshot(),
-      state: Object.freeze({ visible: false, actionBusy: false, retryAvailable: false }),
-    });
+    const previous = freezeDiagnosticsSnapshot(readDiagnosticsSnapshot());
+    const next = freezeDiagnosticsSnapshot(readDiagnosticsSnapshot());
 
     expect(Array.from({ length: 16 }, () => diagnosticsEqual(previous, next))).toEqual(
       Array.from({ length: 16 }, () => true),
@@ -120,10 +123,7 @@ describe("lightbox diagnostics equality", () => {
   });
 
   it("detects combined changes in frozen snapshots as one meaningful update", () => {
-    const previous = Object.freeze({
-      ...readDiagnosticsSnapshot(),
-      state: Object.freeze({ visible: false, actionBusy: false, retryAvailable: false }),
-    });
+    const previous = freezeDiagnosticsSnapshot(readDiagnosticsSnapshot());
     const next = Object.freeze({
       ...previous,
       state: Object.freeze({ visible: true, actionBusy: true, retryAvailable: true }),

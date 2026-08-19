@@ -970,3 +970,7 @@
 - [x] Audit diagnostics compatibility assertions for redundancy and clarity
 - [x] Refine canonical contract assertions without changing coverage
 - [x] Re-run validation and save the assertion-quality checkpoint
+
+- [x] Audit repeated adapter fixture setup in diagnostics tests
+- [x] Refine fixture readability without weakening cleanup guarantees
+- [x] Re-run validation and save the fixture-readability checkpoint
