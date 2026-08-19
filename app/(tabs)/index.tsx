@@ -16,6 +16,7 @@ import { useHistoryPersistence } from '@/hooks/use-history-persistence';
 import { removeClipboardItems, updateClipboardItem, updateClipboardItems } from '@/lib/clipboard-item-mutations';
 import { cleanupTemporaryFile } from '@/lib/temporary-file-cleanup';
 import { cleanupManagedTemporaryFiles } from '@/lib/temporary-cache-cleanup';
+import { createSingleFlight } from '@/lib/single-flight';
 
 type Filter = 'All' | 'Text' | 'Images' | 'Favorites' | 'Work' | 'Personal';
 type Category = 'Work' | 'Personal';
@@ -83,6 +84,7 @@ export default function HistoryScreen() {
   const [isExporting, setIsExporting] = useState(false);
   const [failedImageShareId, setFailedImageShareId] = useState<string | null>(null);
   const [isPremium, setIsPremium] = useState(false);
+  const cacheCleanupFlightRef = useRef(createSingleFlight<number>());
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const ocrMutation = trpc.ocr.extract.useMutation();
@@ -95,15 +97,6 @@ export default function HistoryScreen() {
     return () => { active = false; };
   }, []);
   useEffect(() => () => { noticeControllerRef.current?.dispose(); }, []);
-  useEffect(() => {
-    if (Platform.OS === 'web' || !FileSystem.cacheDirectory) return;
-    void cleanupManagedTemporaryFiles(
-      FileSystem.cacheDirectory,
-      (directory) => FileSystem.readDirectoryAsync(directory),
-      (uri) => FileSystem.deleteAsync(uri, { idempotent: true }),
-    );
-  }, []);
-
   const showNotice = useCallback((message: string) => {
     noticeControllerRef.current?.show(message);
   }, []);
@@ -114,7 +107,19 @@ export default function HistoryScreen() {
     normalize: normalizeItems,
     onNotice: showNotice,
   });
-  useFocusEffect(useCallback(() => { void loadItems(); }, [loadItems]));
+  const runCacheCleanup = useCallback(() => {
+    if (Platform.OS === 'web' || !FileSystem.cacheDirectory) return Promise.resolve(0);
+    return cacheCleanupFlightRef.current.run(() => cleanupManagedTemporaryFiles(
+      FileSystem.cacheDirectory!,
+      (directory) => FileSystem.readDirectoryAsync(directory),
+      (uri) => FileSystem.deleteAsync(uri, { idempotent: true }),
+    ));
+  }, []);
+  useFocusEffect(useCallback(() => {
+    let active = true;
+    void runCacheCleanup().then(() => { if (active) return loadItems(); });
+    return () => { active = false; };
+  }, [loadItems, runCacheCleanup]));
   useEffect(() => { setSelectedIds((current) => current.filter((id) => items.some((item) => item.id === id))); }, [items]);
 
   const visibleItems = useMemo(() => items.filter((item) => {

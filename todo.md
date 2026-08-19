@@ -473,3 +473,7 @@
 - [x] Add safe cleanup for abandoned export and image-share cache files
 - [x] Bound cleanup work and avoid deleting unrelated user files
 - [x] Add regression coverage and rerun TypeScript, lint, and tests
+
+- [x] Coordinate foreground cache cleanup with focus-based History hydration
+- [x] Prevent overlapping resume maintenance and persisted History reads
+- [x] Add regression coverage and rerun TypeScript, lint, and tests
