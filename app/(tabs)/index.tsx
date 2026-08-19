@@ -126,13 +126,13 @@ export default function HistoryScreen() {
     [recoverAfterResume],
   );
   useFocusEffect(useCallback(() => {
-    void recoveryCoordinator.run();
+    void recoveryCoordinator.run().catch(() => undefined);
   }, [recoveryCoordinator]));
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {
       const previousState = appStateRef.current;
       appStateRef.current = nextState;
-      if (nextState === 'active' && previousState !== 'active') void recoveryCoordinator.run();
+      if (nextState === 'active' && previousState !== 'active') void recoveryCoordinator.run().catch(() => undefined);
     });
     return () => subscription.remove();
   }, [recoveryCoordinator]);

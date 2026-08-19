@@ -489,3 +489,7 @@
 - [x] Identify whether the remaining pointerEvents warning comes from app code or an Expo dependency
 - [x] Remove or isolate any app-owned deprecated pointerEvents usage without changing interaction behavior
 - [x] Rerun TypeScript, lint, tests, and preview validation
+
+- [x] Identify whether preview noise can be reduced through app configuration without hiding real errors
+- [x] Keep dependency warnings documented as external rather than masking them in app code
+- [x] Rerun TypeScript, lint, tests, and preview validation
