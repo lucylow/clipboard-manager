@@ -172,6 +172,24 @@ describe('createLightboxInteractionAdapter', () => {
     });
   });
 
+  it('keeps released diagnostics stable across repeated cleanup calls', () => {
+    const adapter = createLightboxInteractionAdapter();
+    adapter.subscribe(() => undefined);
+    adapter.open();
+
+    expect(adapter.release()).toBe(true);
+    const released = adapter.getDiagnostics();
+    expect(adapter.release()).toBe(false);
+    expect(adapter.getDiagnostics()).toEqual(released);
+    expect(adapter.getDiagnostics()).toEqual({
+      state: { visible: true, actionBusy: false, retryAvailable: false },
+      pendingEventCount: 0,
+      listenerCount: 0,
+      notifying: false,
+      released: true,
+    });
+  });
+
   it('releases listeners and blocks future dispatches idempotently', () => {
     const adapter = createLightboxInteractionAdapter();
     let notifications = 0;

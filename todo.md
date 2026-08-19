@@ -710,3 +710,7 @@
 - [x] Audit lightbox adapter allocations during frequent dispatch and diagnostics reads
 - [x] Apply a safe performance refinement without weakening snapshot isolation
 - [x] Add performance coverage, rerun validation, and save the checkpoint
+
+- [x] Audit diagnostic reads after release and repeated cleanup calls
+- [x] Preserve stable released-state diagnostics without changing lifecycle behavior
+- [x] Add post-release cleanup coverage, rerun validation, and save the checkpoint
