@@ -878,3 +878,7 @@
 - [x] Audit diagnostics action dispatch for stale or invalid inputs
 - [x] Add defensive boundary coverage without changing valid UI actions
 - [x] Re-run validation and save the action-boundary checkpoint
+
+- [x] Audit diagnostics control descriptors against adapter capabilities
+- [x] Add consistency coverage for every exposed control
+- [x] Re-run validation and save the capability-alignment checkpoint

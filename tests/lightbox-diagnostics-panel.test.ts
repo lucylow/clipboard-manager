@@ -19,6 +19,20 @@ describe("lightbox diagnostics panel controls", () => {
     ]);
   });
 
+  it("keeps every exposed control aligned with an adapter method", () => {
+    const adapter = createLightboxInteractionAdapter();
+
+    try {
+      const actions = LIGHTBOX_ACTION_CONTROLS.map(({ action }) => action);
+      const uniqueActions = new Set(actions);
+
+      expect(uniqueActions.size).toBe(actions.length);
+      actions.forEach((action) => expect(typeof adapter[action]).toBe("function"));
+    } finally {
+      adapter.release();
+    }
+  });
+
   it("recognizes only actions exposed by the control model", () => {
     expect(isLightboxAction("open")).toBe(true);
     expect(isLightboxAction("fail")).toBe(true);
