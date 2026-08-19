@@ -978,3 +978,7 @@
 - [x] Audit frozen diagnostics fixture independence across repeated creation
 - [x] Add targeted coverage for independent nested frozen state
 - [x] Re-run validation and save the fixture-independence checkpoint
+
+- [x] Audit full frozen diagnostics snapshot coverage
+- [x] Add lifecycle-field preservation coverage for frozen fixtures
+- [x] Re-run validation and save the full-snapshot checkpoint

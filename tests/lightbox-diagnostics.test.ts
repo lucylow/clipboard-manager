@@ -102,6 +102,23 @@ describe("lightbox diagnostics equality", () => {
     expect(next.state).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
   });
 
+  it("preserves lifecycle fields in frozen diagnostics fixtures", () => {
+    const frozen = freezeDiagnosticsSnapshot({
+      ...readDiagnosticsSnapshot(),
+      pendingEventCount: 3,
+      listenerCount: 2,
+      notifying: true,
+      released: true,
+    });
+
+    expect(frozen).toMatchObject({
+      pendingEventCount: 3,
+      listenerCount: 2,
+      notifying: true,
+      released: true,
+    });
+  });
+
   it("creates independent nested state for repeated frozen fixtures", () => {
     const first = freezeDiagnosticsSnapshot(readDiagnosticsSnapshot());
     const second = freezeDiagnosticsSnapshot(readDiagnosticsSnapshot());
