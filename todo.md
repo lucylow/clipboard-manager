@@ -958,3 +958,7 @@
 - [x] Audit deprecated diagnostics snapshot alias usage
 - [x] Ensure canonical snapshot naming is used consistently without breaking compatibility
 - [x] Re-run validation and save the canonical-naming checkpoint
+
+- [x] Audit canonical and deprecated diagnostics snapshot type equivalence
+- [x] Add focused alias-equivalence compatibility coverage
+- [x] Re-run validation and save the alias-equivalence checkpoint

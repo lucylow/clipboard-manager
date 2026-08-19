@@ -65,7 +65,8 @@ describe("lightbox diagnostics equality", () => {
     try {
       const canonical: LightboxDiagnosticsSnapshot = adapter.getDiagnostics();
       const legacy: ReadonlyLightboxDiagnostics = canonical;
-      expect(diagnosticsEqual(legacy, canonical)).toBe(true);
+      const canonicalAgain: LightboxDiagnosticsSnapshot = legacy;
+      expect(diagnosticsEqual(canonicalAgain, canonical)).toBe(true);
     } finally {
       adapter.release();
     }
