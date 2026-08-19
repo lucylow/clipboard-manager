@@ -20,6 +20,7 @@ import { createSingleFlight } from '@/lib/single-flight';
 import { createHistoryRecoveryCoordinator } from '@/lib/history-recovery-coordinator';
 import { createRecoveryFailureCounter } from '@/lib/recovery-failure-counter';
 import { getLightboxControlState } from '@/lib/lightbox-control-state';
+import { createLightboxOperationGuard } from '@/lib/lightbox-operation-guard';
 
 type Filter = 'All' | 'Text' | 'Images' | 'Favorites' | 'Work' | 'Personal';
 type Category = 'Work' | 'Personal';
@@ -86,6 +87,7 @@ export default function HistoryScreen() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isExporting, setIsExporting] = useState(false);
   const [failedImageShareId, setFailedImageShareId] = useState<string | null>(null);
+  const lightboxOperationGuardRef = useRef(createLightboxOperationGuard());
   const [isPremium, setIsPremium] = useState(false);
   const cacheCleanupFlightRef = useRef(createSingleFlight<number>());
   const recoveryFailureCounterRef = useRef(createRecoveryFailureCounter());
@@ -183,6 +185,10 @@ export default function HistoryScreen() {
 
   const retryOcr = async (item: Item) => {
     if (!item.imageData || ocrMutation.isPending) return;
+    if (!lightboxOperationGuardRef.current.acquire('ocr')) {
+      showNotice('Another image action is already in progress');
+      return;
+    }
     showNotice('Extracting text…');
     try {
       const result = await ocrMutation.mutateAsync({ imageData: item.imageData });
@@ -198,6 +204,7 @@ export default function HistoryScreen() {
       void trackUsage('ocrCount');
       showNotice(result.text ? 'Text extracted' : 'No readable text found');
     } catch { showNotice('Text extraction failed · try again'); }
+    finally { lightboxOperationGuardRef.current.release('ocr'); }
   };
 
   const handleDrop = (event: any) => {
@@ -312,6 +319,10 @@ export default function HistoryScreen() {
   const shareImageItem = async (item: Item) => {
     if (isExporting) return showNotice('Another share or export is already in progress');
     if (!item.imageData) return showNotice('This image is no longer available');
+    if (!lightboxOperationGuardRef.current.acquire('share')) {
+      showNotice('Another image action is already in progress');
+      return;
+    }
     setIsExporting(true);
     let temporaryFileUri: string | null = null;
     try {
@@ -331,6 +342,7 @@ export default function HistoryScreen() {
     finally {
       await cleanupTemporaryFile(temporaryFileUri, (uri) => FileSystem.deleteAsync(uri, { idempotent: true }));
       setIsExporting(false);
+      lightboxOperationGuardRef.current.release('share');
     }
   };
   const batchDelete = () => {

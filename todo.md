@@ -554,3 +554,7 @@
 - [x] Consolidate lightbox control-state derivation so share and OCR controls use one consistent snapshot
 - [x] Add deterministic regression coverage for shared lightbox control decisions
 - [x] Rerun bounded TypeScript, lint, tests, and save the checkpoint
+
+- [x] Enforce OCR/share mutual exclusion inside the underlying lightbox action handlers
+- [x] Add deterministic race coverage for handler-level busy guards and recovery
+- [x] Rerun bounded TypeScript, lint, tests, and save the checkpoint
