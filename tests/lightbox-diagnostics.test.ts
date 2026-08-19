@@ -119,6 +119,26 @@ describe("lightbox diagnostics equality", () => {
     });
   });
 
+  it("keeps custom lifecycle fixtures independently nested", () => {
+    const first = freezeDiagnosticsSnapshot({
+      ...readDiagnosticsSnapshot(),
+      pendingEventCount: 1,
+      listenerCount: 1,
+      notifying: true,
+      released: true,
+    });
+    const second = freezeDiagnosticsSnapshot({
+      ...readDiagnosticsSnapshot(),
+      pendingEventCount: 1,
+      listenerCount: 1,
+      notifying: true,
+      released: true,
+    });
+
+    expect(first.state).not.toBe(second.state);
+    expect(diagnosticsEqual(first, second)).toBe(true);
+  });
+
   it("creates independent nested state for repeated frozen fixtures", () => {
     const first = freezeDiagnosticsSnapshot(readDiagnosticsSnapshot());
     const second = freezeDiagnosticsSnapshot(readDiagnosticsSnapshot());

@@ -982,3 +982,7 @@
 - [x] Audit full frozen diagnostics snapshot coverage
 - [x] Add lifecycle-field preservation coverage for frozen fixtures
 - [x] Re-run validation and save the full-snapshot checkpoint
+
+- [x] Audit custom lifecycle-field frozen fixture ownership
+- [x] Add nested-state independence coverage for custom lifecycle fixtures
+- [x] Re-run validation and save the custom-fixture checkpoint
