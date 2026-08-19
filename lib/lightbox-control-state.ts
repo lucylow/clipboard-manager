@@ -19,10 +19,12 @@ export function getLightboxControlState(options: {
     closeLabel: 'Close image preview',
     share: getImageActionPresentation('share', {
       busy: options.isSharing,
+      blocked: options.isOcrPending,
       failed: options.hasShareFailure,
     }),
     ocr: getImageActionPresentation('ocr', {
       busy: options.isOcrPending,
+      blocked: options.isSharing,
       failed: options.hasOcrSaveFailure,
     }),
     ocrVisible: options.hasImage && (!options.hasOcrText || options.hasOcrSaveFailure),

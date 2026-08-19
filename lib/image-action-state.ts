@@ -9,9 +9,9 @@ export type ImageActionPresentation = {
 
 export function getImageActionPresentation(
   kind: ImageActionKind,
-  options: { busy: boolean; failed: boolean },
+  options: { busy: boolean; failed: boolean; blocked?: boolean },
 ): ImageActionPresentation {
-  const { busy, failed } = options;
+  const { busy, failed, blocked = false } = options;
 
   if (kind === 'ocr') {
     return {
@@ -21,7 +21,7 @@ export function getImageActionPresentation(
         : failed
           ? 'Retry saving extracted text'
           : 'Extract text from image',
-      disabled: busy,
+      disabled: busy || blocked,
       busy,
     };
   }
@@ -33,7 +33,7 @@ export function getImageActionPresentation(
       : failed
         ? 'Retry sharing saved image'
         : 'Share saved image',
-    disabled: busy,
+    disabled: busy || blocked,
     busy,
   };
 }

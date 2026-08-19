@@ -60,6 +60,54 @@ describe('getLightboxControlState', () => {
     expect(state.ocr).toMatchObject({ label: 'Extracting text…', disabled: true, busy: true });
   });
 
+  it('blocks sharing while OCR is pending and restores sharing after OCR completes', () => {
+    const pending = getLightboxControlState({
+      hasOcrText: false,
+      hasOcrSaveFailure: false,
+      isSharing: false,
+      hasShareFailure: false,
+      isOcrPending: true,
+      hasImage: true,
+    });
+
+    expect(pending.share).toMatchObject({ disabled: true, busy: false });
+
+    const recovered = getLightboxControlState({
+      hasOcrText: true,
+      hasOcrSaveFailure: false,
+      isSharing: false,
+      hasShareFailure: false,
+      isOcrPending: false,
+      hasImage: true,
+    });
+
+    expect(recovered.share).toMatchObject({ disabled: false, busy: false });
+  });
+
+  it('blocks OCR while sharing and restores OCR retry after sharing fails', () => {
+    const sharing = getLightboxControlState({
+      hasOcrText: false,
+      hasOcrSaveFailure: true,
+      isSharing: true,
+      hasShareFailure: false,
+      isOcrPending: false,
+      hasImage: true,
+    });
+
+    expect(sharing.ocr).toMatchObject({ disabled: true, busy: false, label: 'Retry saving text' });
+
+    const failedShare = getLightboxControlState({
+      hasOcrText: false,
+      hasOcrSaveFailure: true,
+      isSharing: false,
+      hasShareFailure: true,
+      isOcrPending: false,
+      hasImage: true,
+    });
+
+    expect(failedShare.ocr).toMatchObject({ disabled: false, busy: false });
+  });
+
   it('does not show OCR retry when the image payload is unavailable', () => {
     expect(getLightboxControlState({
       hasOcrText: false,
