@@ -574,3 +574,7 @@
 - [x] Audit lightbox modal accessibility labels, roles, and close behavior
 - [x] Improve safe mobile interaction feedback without changing core image actions
 - [x] Add deterministic accessibility-state coverage, rerun validation, and save the checkpoint
+
+- [x] Inspect current preview logs and process health under memory pressure
+- [x] Apply only an app-owned stability fix if the runtime evidence supports one
+- [x] Rerun bounded validation and save the checkpoint with remaining external noise documented
