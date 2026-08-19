@@ -57,3 +57,21 @@ describe("lightbox diagnostics equality", () => {
       Array.from({ length: 10 }, () => true),
     );
   });
+
+  it("detects combined lifecycle and state changes as one meaningful update", () => {
+    const previous = diagnostics();
+    const next = {
+      ...previous,
+      state: {
+        visible: true,
+        actionBusy: true,
+        retryAvailable: true,
+      },
+      pendingEventCount: 2,
+      listenerCount: 3,
+      notifying: true,
+      released: true,
+    };
+
+    expect(diagnosticsEqual(previous, next)).toBe(false);
+  });

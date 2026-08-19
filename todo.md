@@ -826,3 +826,7 @@
 - [x] Audit helper behavior when callers mutate compared snapshots
 - [x] Add deterministic mutation-resistance and equal-snapshot coverage
 - [x] Re-run validation and save the diagnostics-coverage checkpoint
+
+- [x] Audit combined lifecycle and state field combinations
+- [x] Add deterministic coverage for multi-field diagnostics changes
+- [x] Re-run validation and save the combined-coverage checkpoint
