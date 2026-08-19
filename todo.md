@@ -838,3 +838,7 @@
 - [x] Audit fixture cleanup behavior when assertions or setup steps fail
 - [x] Add deterministic exceptional-path cleanup coverage without leaking adapters
 - [x] Re-run validation and save the exceptional-cleanup checkpoint
+
+- [x] Audit generic typing and callback reuse for diagnostics fixtures
+- [x] Apply a type-safe helper refinement without weakening cleanup guarantees
+- [x] Re-run validation and save the fixture-helper checkpoint

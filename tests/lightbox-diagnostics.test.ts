@@ -9,7 +9,9 @@ import {
   lightboxStateEqual,
 } from "../lib/lightbox-diagnostics";
 
-function withDiagnosticsAdapter<T>(work: (adapter: ReturnType<typeof createLightboxInteractionAdapter>) => T): T {
+type DiagnosticsAdapter = ReturnType<typeof createLightboxInteractionAdapter>;
+
+function withDiagnosticsAdapter<T>(work: (adapter: DiagnosticsAdapter) => T): T {
   const adapter = createLightboxInteractionAdapter();
   try {
     return work(adapter);
@@ -85,7 +87,7 @@ describe("lightbox diagnostics equality", () => {
   });
 
   it("releases the fixture adapter when test work throws", () => {
-    let createdAdapter: ReturnType<typeof createLightboxInteractionAdapter> | undefined;
+    let createdAdapter: DiagnosticsAdapter | undefined;
 
     expect(() =>
       withDiagnosticsAdapter((adapter) => {
