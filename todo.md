@@ -529,3 +529,10 @@
 - [x] Capture Favorites and Settings at a narrow mobile viewport
 - [x] Fix only verified app-owned clipping, overflow, or accessibility issues
 - [x] Rerun TypeScript, lint, tests, and save the mobile validation checkpoint
+
+- [x] Add deterministic coverage for accessible retry labels, busy state, and recovery completion
+- [x] Cover image lightbox retry behavior without duplicating or losing the saved image
+- [x] Rerun TypeScript, lint, tests, and save the recovery-coverage checkpoint
+
+- [x] Diagnose and contain the latest Metro heap-limit failure without hiding app errors
+- [x] Preserve the retry and lightbox coverage work after memory stabilization
