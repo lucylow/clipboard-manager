@@ -501,3 +501,7 @@
 - [x] Add a visible inline retry action for repeated History recovery failures
 - [x] Keep retry state accessible and protected against overlapping recovery runs
 - [x] Rerun TypeScript, lint, tests, and preview validation
+
+- [x] Inspect and recover the managed preview service after its temporary outage
+- [x] Preserve the latest guarded History retry behavior during service recovery
+- [x] Rerun TypeScript, lint, tests, and capture a fresh preview
