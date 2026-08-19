@@ -195,12 +195,20 @@ export default function HistoryScreen() {
   const setCategory = (id: string, category: Category) => { haptic.light(); persist(updateClipboardItem(items, id, (item) => ({ ...item, category }))); };
   const toggleSelection = (id: string) => setSelectedIds((current) => current.includes(id) ? current.filter((selectedId) => selectedId !== id) : [...current, id]);
   const exitSelectionMode = () => { setSelectionMode(false); setSelectedIds([]); };
-  const batchFavorite = () => { if (!selectedIds.length) return showNotice('Select at least one item'); persist(updateClipboardItems(items, new Set(selectedIds), (item) => ({ ...item, favorite: true }))); haptic.light(); showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} added to favorites`); exitSelectionMode(); };
+  const batchFavorite = async () => {
+    if (!selectedIds.length) return showNotice('Select at least one item');
+    const saved = await persist(updateClipboardItems(items, new Set(selectedIds), (item) => ({ ...item, favorite: true })));
+    if (!saved) return;
+    haptic.light();
+    showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} added to favorites`);
+    exitSelectionMode();
+  };
   const batchCategory = () => {
     if (!selectedIds.length) return showNotice('Select at least one item');
     const selectedIdSet = new Set(selectedIds);
-    const applyCategory = (category: Category) => {
-      persist(updateClipboardItems(items, selectedIdSet, (item) => ({ ...item, category })));
+    const applyCategory = async (category: Category) => {
+      const saved = await persist(updateClipboardItems(items, selectedIdSet, (item) => ({ ...item, category })));
+      if (!saved) return;
       haptic.light();
       showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} moved to ${category}`);
       exitSelectionMode();
@@ -250,7 +258,19 @@ export default function HistoryScreen() {
     } catch { haptic.error(); showNotice('Could not share this image'); }
     finally { setIsExporting(false); }
   };
-  const batchDelete = () => { if (!selectedIds.length) return showNotice('Select at least one item'); Alert.alert('Delete selected items?', `${selectedIds.length} saved item${selectedIds.length === 1 ? '' : 's'} will be removed.`, [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: () => { persist(removeClipboardItems(items, new Set(selectedIds))); haptic.medium(); showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} deleted`); exitSelectionMode(); } }]); };
+  const batchDelete = () => {
+    if (!selectedIds.length) return showNotice('Select at least one item');
+    Alert.alert('Delete selected items?', `${selectedIds.length} saved item${selectedIds.length === 1 ? '' : 's'} will be removed.`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: async () => {
+        const saved = await persist(removeClipboardItems(items, new Set(selectedIds)));
+        if (!saved) return;
+        haptic.medium();
+        showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} deleted`);
+        exitSelectionMode();
+      } },
+    ]);
+  };
   const clearAll = () => Alert.alert('Clear all history?', 'Every saved clipboard item will be removed.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Clear all', style: 'destructive', onPress: () => { persist([]); setSelectedItem(null); haptic.medium(); showNotice('History cleared'); } }]);
   const deleteItem = (id: string) => { haptic.medium(); persist(removeClipboardItems(items, new Set([id]))); };
   const deleteSelected = () => {

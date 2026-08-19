@@ -441,3 +441,7 @@
 - [x] Migrate batch category mutations to the typed item mutation helper
 - [x] Preserve category feedback and optimistic persistence behavior
 - [x] Add or update regression coverage and rerun TypeScript, lint, and tests
+
+- [x] Make batch mutation handlers observe persistence failure results
+- [x] Keep selection cleanup and success notices from masking failed saves
+- [x] Add regression coverage and rerun TypeScript, lint, and tests
