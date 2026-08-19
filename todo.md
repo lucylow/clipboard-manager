@@ -734,3 +734,7 @@
 - [x] Audit duplicate re-entrant lightbox events for safe coalescing boundaries
 - [x] Preserve meaningful transition order and recovery semantics while bounding redundant work
 - [x] Add queue-coalescing coverage, rerun validation, and save the checkpoint
+
+- [x] Audit queue compaction and per-drain-cap interactions after coalescing
+- [x] Preserve bounded FIFO behavior at queue-head and cap boundaries
+- [x] Add queue-boundary coverage, rerun validation, and save the checkpoint
