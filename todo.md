@@ -938,3 +938,7 @@
 - [x] Audit read-only diagnostics contract consumers and nested state usage
 - [x] Add targeted nested read-only contract coverage
 - [x] Re-run validation and save the read-only-consumer checkpoint
+
+- [x] Audit read-only diagnostics contract at the adapter boundary
+- [x] Add targeted structural-typing coverage for comparator inputs
+- [x] Re-run validation and save the boundary-contract checkpoint

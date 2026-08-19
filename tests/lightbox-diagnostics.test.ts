@@ -59,6 +59,16 @@ describe("lightbox diagnostics equality", () => {
     expect(diagnosticsEqual(previous, next)).toBe(false);
   });
 
+  it("accepts adapter diagnostics through the read-only boundary contract", () => {
+    const adapter = createLightboxInteractionAdapter();
+    try {
+      const snapshot: ReadonlyLightboxDiagnostics = adapter.getDiagnostics();
+      expect(diagnosticsEqual(snapshot, adapter.getDiagnostics())).toBe(true);
+    } finally {
+      adapter.release();
+    }
+  });
+
   it("accepts frozen nested snapshots without mutation", () => {
     const previous = Object.freeze({
       ...readDiagnosticsSnapshot(),
