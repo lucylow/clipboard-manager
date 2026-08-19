@@ -566,3 +566,7 @@
 - [x] Audit remaining image-share entry points for guard and cleanup consistency
 - [x] Unify any remaining share failure and temporary-file cleanup behavior
 - [x] Add targeted regression coverage, rerun validation, and save the checkpoint
+
+- [x] Audit cleanup failure boundaries in all guarded image-share and export flows
+- [x] Ensure cleanup failures cannot strand operation locks or busy UI state
+- [x] Add deterministic cleanup-failure recovery coverage, rerun validation, and save the checkpoint

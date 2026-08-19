@@ -68,9 +68,12 @@ export default function FavoritesScreen() {
       haptic.error();
       showNotice('Could not share this image · try again');
     } finally {
-      await cleanupTemporaryFile(temporaryFileUri, (uri) => FileSystem.deleteAsync(uri, { idempotent: true }));
-      setIsSharing(false);
-      lightboxOperationGuardRef.current.release('share');
+      try {
+        await cleanupTemporaryFile(temporaryFileUri, (uri) => FileSystem.deleteAsync(uri, { idempotent: true }));
+      } finally {
+        setIsSharing(false);
+        lightboxOperationGuardRef.current.release('share');
+      }
     }
   };
   const shareAction = getImageActionPresentation('share', { busy: isSharing, failed: shareFailed });

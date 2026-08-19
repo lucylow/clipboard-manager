@@ -316,9 +316,12 @@ export default function HistoryScreen() {
       exitSelectionMode();
     } catch { haptic.error(); showNotice('Could not export selected items'); }
     finally {
-      await cleanupTemporaryFile(temporaryFileUri, (uri) => FileSystem.deleteAsync(uri, { idempotent: true }));
-      setIsExporting(false);
-      lightboxOperationGuardRef.current.release('share');
+      try {
+        await cleanupTemporaryFile(temporaryFileUri, (uri) => FileSystem.deleteAsync(uri, { idempotent: true }));
+      } finally {
+        setIsExporting(false);
+        lightboxOperationGuardRef.current.release('share');
+      }
     }
   };
   const shareImageItem = async (item: Item) => {
@@ -345,9 +348,12 @@ export default function HistoryScreen() {
       haptic.success();
     } catch { setFailedImageShareId(item.id); haptic.error(); showNotice('Could not share this image · try again'); }
     finally {
-      await cleanupTemporaryFile(temporaryFileUri, (uri) => FileSystem.deleteAsync(uri, { idempotent: true }));
-      setIsExporting(false);
-      lightboxOperationGuardRef.current.release('share');
+      try {
+        await cleanupTemporaryFile(temporaryFileUri, (uri) => FileSystem.deleteAsync(uri, { idempotent: true }));
+      } finally {
+        setIsExporting(false);
+        lightboxOperationGuardRef.current.release('share');
+      }
     }
   };
   const batchDelete = () => {
