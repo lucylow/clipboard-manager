@@ -536,3 +536,9 @@
 
 - [x] Diagnose and contain the latest Metro heap-limit failure without hiding app errors
 - [x] Preserve the retry and lightbox coverage work after memory stabilization
+
+- [x] Capture the History image entry at a narrow mobile viewport; the lightbox affordance remains visible
+- [x] Make no lightbox change when the available visual probe does not establish an app-owned issue
+- [ ] Capture the opened lightbox modal after an interactive preview probe
+
+- [x] Rerun bounded TypeScript, lint, and deterministic tests after mobile lightbox-entry validation
