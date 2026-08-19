@@ -654,3 +654,7 @@
 - [x] Audit lightbox queue-overflow recovery and post-cap dispatch behavior
 - [x] Ensure bounded drains recover cleanly for later user actions
 - [x] Add overflow-recovery coverage, rerun validation, and save the checkpoint
+
+- [x] Audit lightbox adapter public dispatch behavior for no-op and edge-state transitions
+- [x] Apply a defensive refinement without changing valid transition ordering
+- [x] Add edge-transition coverage, rerun validation, and save the checkpoint
