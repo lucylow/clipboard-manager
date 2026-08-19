@@ -23,4 +23,11 @@ describe('single-flight loader', () => {
     await expect(flight.run(() => Promise.resolve(7))).resolves.toBe(7);
     expect(flight.isRunning()).toBe(false);
   });
+
+  it('converts synchronous throws into recoverable rejections', async () => {
+    const flight = createSingleFlight<number>();
+    await expect(flight.run(() => { throw new Error('unexpected storage failure'); })).rejects.toThrow('unexpected storage failure');
+    await expect(flight.run(() => Promise.resolve(8))).resolves.toBe(8);
+    expect(flight.isRunning()).toBe(false);
+  });
 });

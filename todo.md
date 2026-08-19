@@ -400,3 +400,10 @@
 - [x] Add deterministic tests and rerun all project checks before checkpointing
 - [x] Share concurrent History hydration requests through a single in-flight promise
 - [x] Add tests for concurrent sharing and post-failure recovery
+
+- [x] Audit the latest code for the next high-impact reliability gap
+- [x] Implement a targeted maintainability or resilience improvement
+- [x] Add deterministic tests and rerun all project checks before checkpointing
+- [x] Convert synchronous single-flight operation throws into recoverable promise rejections
+- [x] Add deterministic coverage for synchronous failure recovery
+

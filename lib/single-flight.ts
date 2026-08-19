@@ -6,10 +6,14 @@ export function createSingleFlight<T>() {
   return {
     run(operation: AsyncOperation<T>): Promise<T> {
       if (inFlight) return inFlight;
-      inFlight = operation().finally(() => {
-        inFlight = null;
-      });
-      return inFlight;
+      try {
+        inFlight = Promise.resolve(operation()).finally(() => {
+          inFlight = null;
+        });
+        return inFlight;
+      } catch (error) {
+        return Promise.reject(error);
+      }
     },
     isRunning() {
       return inFlight !== null;
