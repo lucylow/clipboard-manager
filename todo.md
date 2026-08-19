@@ -618,3 +618,7 @@
 - [x] Inspect current preview health and the outstanding mobile lightbox validation items
 - [x] Run a bounded mobile visual validation pass without increasing memory pressure
 - [x] Apply only verified app-owned fixes, rerun validation, and save the checkpoint
+
+- [x] Define deterministic lightbox open, close, and retry interaction transitions
+- [x] Add coverage for rapid dismissal and retry-state recovery transitions
+- [x] Rerun bounded TypeScript, lint, tests, and save the checkpoint
