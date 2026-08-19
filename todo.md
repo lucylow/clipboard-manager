@@ -966,3 +966,7 @@
 - [x] Audit canonical diagnostics snapshot export and consumer consistency
 - [x] Add targeted export-consistency compatibility coverage
 - [x] Re-run validation and save the export-consistency checkpoint
+
+- [x] Audit diagnostics compatibility assertions for redundancy and clarity
+- [x] Refine canonical contract assertions without changing coverage
+- [x] Re-run validation and save the assertion-quality checkpoint

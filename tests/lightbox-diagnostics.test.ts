@@ -63,10 +63,10 @@ describe("lightbox diagnostics equality", () => {
   it("preserves compatibility for the deprecated readonly snapshot alias", () => {
     const adapter = createLightboxInteractionAdapter();
     try {
-      const canonical: LightboxDiagnosticsSnapshot = adapter.getDiagnostics();
-      const legacy: ReadonlyLightboxDiagnostics = canonical;
-      const canonicalAgain: LightboxDiagnosticsSnapshot = legacy;
-      expect(diagnosticsEqual(canonicalAgain, canonical)).toBe(true);
+      const canonicalSnapshot: LightboxDiagnosticsSnapshot = adapter.getDiagnostics();
+      const deprecatedSnapshot: ReadonlyLightboxDiagnostics = canonicalSnapshot;
+      const canonicalFromDeprecated: LightboxDiagnosticsSnapshot = deprecatedSnapshot;
+      expect(diagnosticsEqual(canonicalFromDeprecated, canonicalSnapshot)).toBe(true);
     } finally {
       adapter.release();
     }
