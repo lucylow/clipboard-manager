@@ -485,3 +485,7 @@
 - [x] Extract a testable lifecycle recovery coordinator for focus and app resume
 - [x] Cover repeated lifecycle events without duplicate cleanup or hydration work
 - [x] Rerun TypeScript, lint, and the full deterministic test suite
+
+- [x] Identify whether the remaining pointerEvents warning comes from app code or an Expo dependency
+- [x] Remove or isolate any app-owned deprecated pointerEvents usage without changing interaction behavior
+- [x] Rerun TypeScript, lint, tests, and preview validation

@@ -29,4 +29,15 @@ describe('history recovery coordinator', () => {
     await expect(coordinator.run()).resolves.toBeUndefined();
     expect(operation).toHaveBeenCalledTimes(2);
   });
+
+  it('recovers when the operation throws synchronously', async () => {
+    const operation = vi.fn()
+      .mockImplementationOnce(() => { throw new Error('sync resume failure'); })
+      .mockResolvedValueOnce(undefined);
+    const coordinator = createHistoryRecoveryCoordinator(operation);
+
+    await expect(coordinator.run()).rejects.toThrow('sync resume failure');
+    await expect(coordinator.run()).resolves.toBeUndefined();
+    expect(operation).toHaveBeenCalledTimes(2);
+  });
 });
