@@ -786,3 +786,7 @@
 - [x] Audit stale adapter callbacks across repeated diagnostics resets
 - [x] Verify reset lifecycle values cannot be overwritten by an old adapter
 - [x] Add stale-adapter coverage, rerun validation, and save the checkpoint
+
+- [x] Set a balanced 512 MB Metro development heap cap after validating the lower 384 MB cap was insufficient
+- [x] Restart services and confirm the development processes remain alive after the cap change
+- [ ] Save the final 512 MB memory-stability checkpoint
