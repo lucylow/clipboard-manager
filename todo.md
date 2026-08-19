@@ -906,3 +906,7 @@
 - [x] Audit diagnostics lifecycle test organization for clarity
 - [x] Refine test grouping and cleanup structure without changing coverage
 - [x] Re-run validation and save the test-organization checkpoint
+
+- [x] Audit repeated diagnostics test setup and assertion patterns
+- [x] Simplify safe repeated patterns without weakening cleanup or coverage
+- [x] Re-run validation and save the test-helper checkpoint

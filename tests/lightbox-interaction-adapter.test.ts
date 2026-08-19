@@ -4,11 +4,17 @@ import {
   LIGHTBOX_MAX_PENDING_EVENTS,
 } from '../lib/lightbox-interaction-adapter';
 
+type AdapterState = ReturnType<ReturnType<typeof createLightboxInteractionAdapter>['getState']>;
+
+function stateLabel(state: AdapterState) {
+  return `${state.visible}:${state.actionBusy}:${state.retryAvailable}`;
+}
+
 describe('createLightboxInteractionAdapter', () => {
   it('publishes open, busy, failure, retry, and success transitions in order', () => {
     const adapter = createLightboxInteractionAdapter();
     const states: string[] = [];
-    const unsubscribe = adapter.subscribe((state) => states.push(`${state.visible}:${state.actionBusy}:${state.retryAvailable}`));
+    const unsubscribe = adapter.subscribe((state) => states.push(stateLabel(state)));
 
     adapter.open();
     adapter.startAction();
@@ -23,7 +29,7 @@ describe('createLightboxInteractionAdapter', () => {
   it('does not publish a closed action start or a late failure after close', () => {
     const adapter = createLightboxInteractionAdapter();
     const states: string[] = [];
-    adapter.subscribe((state) => states.push(`${state.visible}:${state.actionBusy}:${state.retryAvailable}`));
+    adapter.subscribe((state) => states.push(stateLabel(state)));
 
     adapter.startAction();
     adapter.fail();
@@ -59,7 +65,7 @@ describe('createLightboxInteractionAdapter', () => {
         throw new Error('subscriber failure after dispatch');
       }
     });
-    adapter.subscribe((state) => received.push(`${state.visible}:${state.actionBusy}:${state.retryAvailable}`));
+    adapter.subscribe((state) => received.push(stateLabel(state)));
 
     expect(() => adapter.open()).not.toThrow();
 
@@ -129,7 +135,7 @@ describe('createLightboxInteractionAdapter', () => {
     const seen: string[] = [];
     let queued = false;
     adapter.subscribe((state) => {
-      seen.push(`${state.visible}:${state.actionBusy}:${state.retryAvailable}`);
+      seen.push(stateLabel(state));
       if (!queued && state.visible && !state.actionBusy) {
         queued = true;
         adapter.close();
@@ -155,7 +161,7 @@ describe('createLightboxInteractionAdapter', () => {
     const seen: string[] = [];
     let queued = false;
     adapter.subscribe((state) => {
-      seen.push(`${state.visible}:${state.actionBusy}:${state.retryAvailable}`);
+      seen.push(stateLabel(state));
       if (!queued && state.visible && !state.actionBusy) {
         queued = true;
         adapter.startAction();
@@ -179,7 +185,7 @@ describe('createLightboxInteractionAdapter', () => {
     const seen: string[] = [];
     let queued = false;
     adapter.subscribe((state) => {
-      seen.push(`${state.visible}:${state.actionBusy}:${state.retryAvailable}`);
+      seen.push(stateLabel(state));
       if (!queued && state.visible && !state.actionBusy) {
         queued = true;
         adapter.startAction();
