@@ -48,6 +48,32 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.getState()).toEqual({ visible: true, actionBusy: true, retryAvailable: false });
   });
 
+  it('preserves queued recovery when a subscriber throws after dispatching', () => {
+    const adapter = createLightboxInteractionAdapter();
+    const received: string[] = [];
+    let scheduled = false;
+    adapter.subscribe((state) => {
+      if (state.visible && !state.actionBusy && !scheduled) {
+        scheduled = true;
+        adapter.startAction();
+        throw new Error('subscriber failure after dispatch');
+      }
+    });
+    adapter.subscribe((state) => received.push(`${state.visible}:${state.actionBusy}:${state.retryAvailable}`));
+
+    expect(() => adapter.open()).not.toThrow();
+
+    expect(received).toEqual(['true:false:false', 'true:true:false']);
+    expect(adapter.getDiagnostics()).toMatchObject({
+      pendingEventCount: 0,
+      listenerCount: 2,
+      notifying: false,
+      released: false,
+    });
+    expect(() => adapter.succeed()).not.toThrow();
+    expect(adapter.getState()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+  });
+
   it('queues re-entrant events until every listener sees the current transition', () => {
     const adapter = createLightboxInteractionAdapter();
     const first: string[] = [];

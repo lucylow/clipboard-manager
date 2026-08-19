@@ -754,3 +754,7 @@
 - [x] Audit diagnostics snapshot isolation during active notification cycles
 - [x] Verify mutated diagnostics snapshots cannot affect adapter internals
 - [x] Add mutation-resistance coverage, rerun validation, and save the checkpoint
+
+- [x] Audit thrown lightbox listener isolation during queued transitions
+- [x] Verify subscriber errors cannot corrupt diagnostics or later dispatches
+- [x] Add thrown-listener recovery coverage, rerun validation, and save the checkpoint
