@@ -805,3 +805,21 @@ describe('no-op transition stability', () => {
     adapter.release();
   });
 });
+
+
+describe('nested snapshot isolation', () => {
+  it('returns independent nested state objects across repeated diagnostics reads', () => {
+    const adapter = createLightboxInteractionAdapter();
+    adapter.open();
+
+    const first = adapter.getDiagnostics();
+    const second = adapter.getDiagnostics();
+    first.state.visible = false;
+    first.state.actionBusy = true;
+    first.state.retryAvailable = true;
+
+    expect(second.state).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+    expect(adapter.getDiagnostics().state).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+    adapter.release();
+  });
+});

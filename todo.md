@@ -898,3 +898,7 @@
 - [x] Audit no-op diagnostics transitions for phantom notifications or queue growth
 - [x] Add targeted coverage for repeated state-incompatible actions
 - [x] Re-run validation and save the no-op-transition checkpoint
+
+- [x] Audit nested diagnostics snapshot isolation across repeated reads and callback paths
+- [x] Add targeted coverage for nested snapshot mutation attempts
+- [x] Re-run validation and save the nested-snapshot checkpoint
