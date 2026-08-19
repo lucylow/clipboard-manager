@@ -15,6 +15,7 @@ import { trpc } from '@/lib/trpc';
 import { useHistoryPersistence } from '@/hooks/use-history-persistence';
 import { removeClipboardItems, updateClipboardItem, updateClipboardItems } from '@/lib/clipboard-item-mutations';
 import { cleanupTemporaryFile } from '@/lib/temporary-file-cleanup';
+import { cleanupManagedTemporaryFiles } from '@/lib/temporary-cache-cleanup';
 
 type Filter = 'All' | 'Text' | 'Images' | 'Favorites' | 'Work' | 'Personal';
 type Category = 'Work' | 'Personal';
@@ -94,6 +95,14 @@ export default function HistoryScreen() {
     return () => { active = false; };
   }, []);
   useEffect(() => () => { noticeControllerRef.current?.dispose(); }, []);
+  useEffect(() => {
+    if (Platform.OS === 'web' || !FileSystem.cacheDirectory) return;
+    void cleanupManagedTemporaryFiles(
+      FileSystem.cacheDirectory,
+      (directory) => FileSystem.readDirectoryAsync(directory),
+      (uri) => FileSystem.deleteAsync(uri, { idempotent: true }),
+    );
+  }, []);
 
   const showNotice = useCallback((message: string) => {
     noticeControllerRef.current?.show(message);

@@ -469,3 +469,7 @@
 - [x] Extract a testable temporary-file cleanup helper
 - [x] Cover cleanup success, deletion failure, and timeout without masking share results
 - [x] Validate interrupted-operation recovery with TypeScript, lint, and tests
+
+- [x] Add safe cleanup for abandoned export and image-share cache files
+- [x] Bound cleanup work and avoid deleting unrelated user files
+- [x] Add regression coverage and rerun TypeScript, lint, and tests
