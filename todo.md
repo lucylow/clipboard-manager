@@ -778,3 +778,7 @@
 - [x] Audit release invoked from queued lightbox work
 - [x] Verify post-release queued callbacks and actions remain blocked
 - [x] Add release-race coverage, rerun validation, and save the checkpoint
+
+- [x] Audit the app integration point for development-only lightbox diagnostics
+- [x] Add an isolated diagnostics panel without changing production behavior
+- [x] Add diagnostics-panel coverage, rerun validation, and save the checkpoint

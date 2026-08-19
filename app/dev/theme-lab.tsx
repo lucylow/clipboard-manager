@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { ScreenContainer } from "@/components/screen-container";
@@ -7,6 +7,11 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { SchemeColors, type ColorScheme } from "@/constants/theme";
 import { useColors } from "@/hooks/use-colors";
 import { useThemeContext } from "@/lib/theme-provider";
+import {
+  createLightboxInteractionAdapter,
+  type LightboxInteractionAdapter,
+  type LightboxInteractionDiagnostics,
+} from "@/lib/lightbox-interaction-adapter";
 
 type PaletteName = keyof typeof SchemeColors.light;
 
@@ -24,11 +29,49 @@ function ColorSwatch({ name, value }: { name: PaletteName; value: string }) {
   );
 }
 
+function DiagnosticRow({ label, value }: { label: string; value: string }) {
+  return (
+    <View className="flex-row items-center justify-between border-b border-border py-2 last:border-b-0">
+      <Text className="text-sm text-muted">{label}</Text>
+      <Text className="text-sm font-semibold text-foreground">{value}</Text>
+    </View>
+  );
+}
+
+function diagnosticsLabel(diagnostics: LightboxInteractionDiagnostics) {
+  return diagnostics.released ? "Released" : diagnostics.notifying ? "Draining" : "Idle";
+}
+
 export default function ThemeLabScreen() {
   const [pressCount, setPressCount] = useState(0);
   const [lastAction, setLastAction] = useState<string>("None yet");
   const { colorScheme, setColorScheme } = useThemeContext();
   const colors = useColors();
+  const [lightboxAdapter, setLightboxAdapter] = useState<LightboxInteractionAdapter>(() =>
+    createLightboxInteractionAdapter(),
+  );
+  const [lightboxDiagnostics, setLightboxDiagnostics] = useState<LightboxInteractionDiagnostics>(() =>
+    lightboxAdapter.getDiagnostics(),
+  );
+
+  useEffect(() => {
+    const sync = () => setLightboxDiagnostics(lightboxAdapter.getDiagnostics());
+    const unsubscribe = lightboxAdapter.subscribe(sync);
+    sync();
+    return () => {
+      unsubscribe();
+    };
+  }, [lightboxAdapter]);
+
+  const runLightboxAction = (action: keyof Pick<LightboxInteractionAdapter, "open" | "close" | "startAction" | "succeed" | "fail">) => {
+    lightboxAdapter[action]();
+    setLightboxDiagnostics(lightboxAdapter.getDiagnostics());
+  };
+
+  const resetLightboxAdapter = () => {
+    lightboxAdapter.release();
+    setLightboxAdapter(createLightboxInteractionAdapter());
+  };
 
   const swatches = useMemo(
     () =>
@@ -204,6 +247,64 @@ export default function ThemeLabScreen() {
           </ThemedView>
 
           <ThemedView className="rounded-2xl border border-border p-4">
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1 pr-3">
+                <Text className="text-lg font-bold text-foreground">Lightbox diagnostics</Text>
+                <Text className="mt-1 text-sm text-muted">
+                  Development-only adapter probe. Changes here do not affect saved clipboard data.
+                </Text>
+              </View>
+              <View className="rounded-full bg-warning px-2 py-1">
+                <Text className="text-xs font-bold text-background">DEV</Text>
+              </View>
+            </View>
+
+            <View className="mt-4 rounded-xl bg-background p-3 border border-border">
+              <DiagnosticRow label="Lifecycle" value={diagnosticsLabel(lightboxDiagnostics)} />
+              <DiagnosticRow label="Visible" value={lightboxDiagnostics.state.visible ? "Yes" : "No"} />
+              <DiagnosticRow label="Action busy" value={lightboxDiagnostics.state.actionBusy ? "Yes" : "No"} />
+              <DiagnosticRow label="Retry available" value={lightboxDiagnostics.state.retryAvailable ? "Yes" : "No"} />
+              <DiagnosticRow label="Pending events" value={String(lightboxDiagnostics.pendingEventCount)} />
+              <DiagnosticRow label="Listeners" value={String(lightboxDiagnostics.listenerCount)} />
+            </View>
+
+            <View className="mt-3 flex-row flex-wrap gap-2">
+              {([
+                ["open", "Open"],
+                ["close", "Close"],
+                ["startAction", "Start action"],
+                ["succeed", "Succeed"],
+                ["fail", "Fail"],
+              ] as const).map(([action, label]) => (
+                <Pressable
+                  key={action}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Run lightbox ${label.toLowerCase()} action`}
+                  onPress={() => runLightboxAction(action)}
+                  style={({ pressed }) => [
+                    styles.diagnosticButton,
+                    { backgroundColor: colors.tint, opacity: pressed ? 0.72 : 1 },
+                  ]}
+                >
+                  <Text className="text-xs font-semibold text-background">{label}</Text>
+                </Pressable>
+              ))}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Reset lightbox diagnostics adapter"
+                onPress={resetLightboxAdapter}
+                style={({ pressed }) => [
+                  styles.diagnosticButton,
+                  styles.diagnosticResetButton,
+                  { opacity: pressed ? 0.72 : 1 },
+                ]}
+              >
+                <Text className="text-xs font-semibold text-foreground">Reset</Text>
+              </Pressable>
+            </View>
+          </ThemedView>
+
+          <ThemedView className="rounded-2xl border border-border p-4">
             <Text className="text-lg font-bold text-foreground">
               Palette values
             </Text>
@@ -237,5 +338,15 @@ const styles = StyleSheet.create({
   },
   schemeToggleSubtitle: {
     fontSize: 12,
+  },
+  diagnosticButton: {
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  diagnosticResetButton: {
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderColor: "#CBD5E1",
   },
 });
