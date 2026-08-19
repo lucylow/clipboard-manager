@@ -45,6 +45,7 @@ export default function FavoritesScreen() {
     lightboxSessionRef.current += 1;
   }, [lightboxItem]);
   const showNotice = (message: string) => { setNotice(message); setTimeout(() => setNotice(''), 2000); };
+  const canApplyLightboxFeedback = (actionItemId: string, actionToken: number) => isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current });
   const copyItem = async (item: Item) => { try { if (item.type === 'text') await Clipboard.setStringAsync(item.content); else if (item.imageData) await Clipboard.setImageAsync(item.imageData); else return showNotice('This image is no longer available'); haptic.success(); showNotice(item.type === 'image' ? 'Image copied to clipboard' : 'Copied to clipboard'); } catch { haptic.error(); showNotice('Could not copy this item'); } };
   const toggleFavorite = async (id: string) => { try { await updateClipboardStorage<Item>((all) => all.map((item) => item.id === id ? { ...item, favorite: false } : item)); haptic.light(); await loadItems(); showNotice('Removed from favorites'); } catch { showNotice('Could not update this favorite'); } };
   const shareImageItem = async (item: Item) => {
@@ -60,21 +61,21 @@ export default function FavoritesScreen() {
     try {
       if (Platform.OS === 'web') {
         await Clipboard.setStringAsync(item.ocrText ? `Image OCR text:\n${item.ocrText}` : 'Image saved in Clipboard Manager');
-        if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) showNotice('Image context copied to clipboard');
+        if (canApplyLightboxFeedback(item.id, actionToken)) showNotice('Image context copied to clipboard');
       } else {
         temporaryFileUri = `${FileSystem.cacheDirectory}clipboard-favorite-${item.id}.png`;
         await FileSystem.writeAsStringAsync(temporaryFileUri, item.imageData, { encoding: FileSystem.EncodingType.Base64 });
         if (await Sharing.isAvailableAsync()) {
           await Sharing.shareAsync(temporaryFileUri, { dialogTitle: 'Share saved image', mimeType: 'image/png' });
-          if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) showNotice('Image ready to share');
+          if (canApplyLightboxFeedback(item.id, actionToken)) showNotice('Image ready to share');
         } else {
           await Clipboard.setImageAsync(item.imageData);
-          if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) showNotice('Sharing unavailable; image copied to clipboard');
+          if (canApplyLightboxFeedback(item.id, actionToken)) showNotice('Sharing unavailable; image copied to clipboard');
         }
       }
       haptic.success();
     } catch {
-      if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) {
+      if (canApplyLightboxFeedback(item.id, actionToken)) {
         setShareFailed(true);
         showNotice('Could not share this image · try again');
       }

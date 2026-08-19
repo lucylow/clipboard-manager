@@ -598,3 +598,7 @@
 - [x] Audit asynchronous OCR/share notices and retry indicators across History and Favorites
 - [x] Prevent stale notices or retry indicators from affecting a different lightbox session
 - [x] Add deterministic feedback-state coverage, rerun validation, and save the checkpoint
+
+- [x] Extract a reusable session-aware lightbox feedback predicate
+- [x] Replace duplicated OCR/share session checks without changing behavior
+- [x] Add deterministic helper coverage, rerun validation, and save the checkpoint

@@ -158,6 +158,8 @@ export default function HistoryScreen() {
     lightboxSessionRef.current += 1;
   }, [lightboxItem]);
 
+  const canApplyLightboxFeedback = (actionItemId: string, actionToken: number) => isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current });
+
   const visibleItems = useMemo(() => items.filter((item) => {
     const searchableText = [item.content, item.ocrText, item.source, item.category, item.type === 'image' ? 'image' : 'text'].filter(Boolean).join(' ').toLowerCase();
     const matchesQuery = searchableText.includes(query.trim().toLowerCase());
@@ -203,20 +205,20 @@ export default function HistoryScreen() {
       const updated = items.map((candidate) => candidate.id === item.id ? { ...candidate, ocrText: result.text || undefined } : candidate);
       const metadataSaved = await persist(updated);
       if (!metadataSaved) {
-        if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) {
+        if (canApplyLightboxFeedback(item.id, actionToken)) {
           setOcrSaveFailures((current) => current.includes(item.id) ? current : [...current, item.id]);
           showNotice('Text extracted · could not save the updated image');
         }
         return;
       }
       setOcrSaveFailures((current) => current.filter((id) => id !== item.id));
-      if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) {
+      if (canApplyLightboxFeedback(item.id, actionToken)) {
         setLightboxItem(updated.find((candidate) => candidate.id === item.id) ?? item);
         showNotice(result.text ? 'Text extracted' : 'No readable text found');
       }
       void trackUsage('ocrCount');
     } catch {
-      if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) showNotice('Text extraction failed · try again');
+      if (canApplyLightboxFeedback(item.id, actionToken)) showNotice('Text extraction failed · try again');
     }
     finally { lightboxOperationGuardRef.current.release('ocr'); }
   };
@@ -351,18 +353,18 @@ export default function HistoryScreen() {
     try {
       if (Platform.OS === 'web') {
         await Clipboard.setStringAsync(item.ocrText ? `Image OCR text:\n${item.ocrText}` : 'Image saved in Clipboard Manager');
-        if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) showNotice('Image context copied to clipboard');
+        if (canApplyLightboxFeedback(item.id, actionToken)) showNotice('Image context copied to clipboard');
       } else {
         const fileUri = `${FileSystem.cacheDirectory}clipboard-image-${item.id}.png`;
         temporaryFileUri = fileUri;
         await FileSystem.writeAsStringAsync(fileUri, item.imageData, { encoding: FileSystem.EncodingType.Base64 });
-        if (await Sharing.isAvailableAsync()) { await Sharing.shareAsync(fileUri, { dialogTitle: 'Share saved image', mimeType: 'image/png' }); if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) showNotice('Image ready to share'); }
-        else { await Clipboard.setImageAsync(item.imageData); if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) showNotice('Sharing unavailable; image copied to clipboard'); }
+        if (await Sharing.isAvailableAsync()) { await Sharing.shareAsync(fileUri, { dialogTitle: 'Share saved image', mimeType: 'image/png' }); if (canApplyLightboxFeedback(item.id, actionToken)) showNotice('Image ready to share'); }
+        else { await Clipboard.setImageAsync(item.imageData); if (canApplyLightboxFeedback(item.id, actionToken)) showNotice('Sharing unavailable; image copied to clipboard'); }
       }
-      if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) setFailedImageShareId(null);
+      if (canApplyLightboxFeedback(item.id, actionToken)) setFailedImageShareId(null);
       haptic.success();
     } catch {
-      if (isCurrentLightboxAction({ activeItemId: lightboxItemIdRef.current, actionItemId: item.id, isVisible: lightboxItemIdRef.current !== null, actionToken, currentToken: lightboxSessionRef.current })) {
+      if (canApplyLightboxFeedback(item.id, actionToken)) {
         setFailedImageShareId(item.id);
         showNotice('Could not share this image · try again');
       }
