@@ -741,6 +741,30 @@ describe('createLightboxInteractionAdapter', () => {
     expect(adapter.open()).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
   });
 
+  it('recovers later listeners after queue-cap rejection and unsubscribe churn', () => {
+    const adapter = createLightboxInteractionAdapter();
+    let unsubscribe = () => false;
+    let attempted = false;
+    unsubscribe = adapter.subscribe((state) => {
+      if (!attempted && state.visible) {
+        attempted = true;
+        for (let index = 0; index < LIGHTBOX_MAX_PENDING_EVENTS + 1; index += 1) {
+          adapter[index % 2 === 0 ? 'close' : 'open']();
+        }
+        unsubscribe();
+      }
+    });
+
+    adapter.open();
+    expect(adapter.getDiagnostics()).toMatchObject({ pendingEventCount: 0, listenerCount: 0, notifying: false });
+
+    const laterStates: string[] = [];
+    adapter.subscribe((state) => laterStates.push(stateLabel(state)));
+    adapter.open();
+    expect(laterStates).toEqual(['true:false:false']);
+    adapter.release();
+  });
+
   it('settles after processing-budget exhaustion and recovers later', () => {
     const adapter = createLightboxInteractionAdapter();
     let notifications = 0;
