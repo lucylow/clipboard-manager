@@ -1006,3 +1006,7 @@
 - [x] Audit listener lifecycle cleanup and stale unsubscribe behavior
 - [x] Add deterministic cleanup regression coverage for repeated unsubscribe calls
 - [x] Re-run validation and save the listener-cleanup checkpoint
+
+- [x] Audit notification snapshot behavior during listener churn
+- [x] Add deterministic churn regression coverage for listener additions and removals
+- [x] Re-run validation and save the notification-churn checkpoint

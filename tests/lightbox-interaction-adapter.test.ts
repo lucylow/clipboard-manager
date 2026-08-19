@@ -492,6 +492,26 @@ describe('createLightboxInteractionAdapter', () => {
     adapter.release();
   });
 
+  it('defers listeners added during notification until the next transition', () => {
+    const adapter = createLightboxInteractionAdapter();
+    const received: string[] = [];
+    let added = false;
+    adapter.subscribe(() => {
+      received.push('first');
+      if (!added) {
+        added = true;
+        adapter.subscribe(() => received.push('late'));
+      }
+    });
+
+    adapter.open();
+    expect(received).toEqual(['first']);
+    adapter.startAction();
+    expect(received).toEqual(['first', 'first', 'late']);
+    expect(adapter.getDiagnostics()).toMatchObject({ listenerCount: 2, notifying: false, pendingEventCount: 0 });
+    adapter.release();
+  });
+
   it('keeps repeated release safe after resubscription and blocks post-release work', () => {
     const adapter = createLightboxInteractionAdapter();
     let notifications = 0;
