@@ -714,3 +714,7 @@
 - [x] Audit diagnostic reads after release and repeated cleanup calls
 - [x] Preserve stable released-state diagnostics without changing lifecycle behavior
 - [x] Add post-release cleanup coverage, rerun validation, and save the checkpoint
+
+- [x] Audit every lightbox action after release and across closed-state no-ops
+- [x] Preserve safe post-release return snapshots for all public methods
+- [x] Add public-action safety coverage, rerun validation, and save the checkpoint
