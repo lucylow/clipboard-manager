@@ -886,3 +886,7 @@
 - [x] Audit repeated diagnostics subscription and unsubscribe cycles
 - [x] Add targeted coverage for duplicate or stale listeners
 - [x] Re-run validation and save the subscription-lifecycle checkpoint
+
+- [x] Audit notification ordering during listener removal and replacement
+- [x] Add targeted coverage for skipped or duplicated notifications
+- [x] Re-run validation and save the notification-ordering checkpoint

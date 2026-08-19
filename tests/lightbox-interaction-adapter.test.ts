@@ -733,3 +733,23 @@ describe('subscription churn safety', () => {
     adapter.release();
   });
 });
+
+
+describe('notification registration ordering', () => {
+  it('keeps duplicate callback registrations independently removable', () => {
+    const adapter = createLightboxInteractionAdapter();
+    let notifications = 0;
+    const listener = () => {
+      notifications += 1;
+    };
+    const firstUnsubscribe = adapter.subscribe(listener);
+    adapter.subscribe(listener);
+
+    expect(firstUnsubscribe()).toBe(true);
+    adapter.open();
+
+    expect(notifications).toBe(1);
+    expect(adapter.getDiagnostics().listenerCount).toBe(1);
+    adapter.release();
+  });
+});
