@@ -509,3 +509,7 @@
 - [x] Add deterministic coverage for manual refresh racing with AppState resume
 - [x] Verify one recovery operation and one retry path are preserved after the race
 - [x] Rerun TypeScript, lint, tests, and preview validation
+
+- [x] Diagnose whether preview refusal is caused by process churn, port binding, or proxy timing
+- [x] Recover the managed preview without changing app behavior or masking runtime errors
+- [x] Rerun TypeScript, lint, tests, and capture a stable preview
