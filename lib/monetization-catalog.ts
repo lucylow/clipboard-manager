@@ -19,6 +19,22 @@ export function parseEntitlementRecord(candidate: unknown): LocalEntitlement | n
   };
 }
 
+export function resolveRestoreOutcome(legacyPro: boolean, storedEntitlement: LocalEntitlement | null) {
+  const entitlement = storedEntitlement?.plan === 'pro' && storedEntitlement.status === 'active'
+    ? storedEntitlement
+    : legacyPro
+      ? { plan: 'pro', status: 'active', source: 'local-preview', validation: 'unverified' } as const
+      : { plan: 'free', status: 'inactive', source: 'local-preview', validation: 'unverified' } as const;
+  const summary = getEntitlementSummary(entitlement);
+  return {
+    entitlement,
+    isActive: summary.isActive,
+    message: summary.isActive
+      ? `${summary.label} restored · ${summary.sourceLabel} · ${summary.validationLabel}`
+      : 'No active purchase found · free plan remains available',
+  } as const;
+}
+
 export function getEntitlementSummary(entitlement: LocalEntitlement) {
   const isActive = entitlement.plan === 'pro' && entitlement.status === 'active';
   return {

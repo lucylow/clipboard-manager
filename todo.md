@@ -1102,3 +1102,8 @@
 - [x] Implement clearer Pro discovery and interest-state feedback
 - [x] Add deterministic funnel and signal regression coverage
 - [x] Run full validation and save the monetization-funnel checkpoint
+
+- [x] Audit catalog-to-entitlement handoff and restore-state feedback
+- [x] Implement clearer restore outcome and entitlement-source presentation
+- [x] Add deterministic restore and handoff regression coverage
+- [x] Run full validation and save the restore-handoff checkpoint

@@ -7,6 +7,7 @@ import {
   getEntitlementSummary,
   getUpgradePreviewModel,
   parseEntitlementRecord,
+  resolveRestoreOutcome,
   shouldRecordMonetizationSignal,
 } from '../lib/monetization-catalog';
 
@@ -43,6 +44,20 @@ describe('monetization catalog preview', () => {
     });
     expect(parseEntitlementRecord(null)).toBeNull();
     expect(parseEntitlementRecord({ plan: 'trial' })).toBeNull();
+  });
+
+  it('resolves restore outcomes with explicit active and free-plan feedback', () => {
+    const active = resolveRestoreOutcome(false, { plan: 'pro', status: 'active', source: 'store', validation: 'validated' });
+    expect(active.isActive).toBe(true);
+    expect(active.message).toContain('store entitlement');
+    expect(active.message).toContain('validated');
+
+    const legacy = resolveRestoreOutcome(true, null);
+    expect(legacy.entitlement).toEqual({ plan: 'pro', status: 'active', source: 'local-preview', validation: 'unverified' });
+
+    const free = resolveRestoreOutcome(false, { plan: 'pro', status: 'inactive', source: 'store', validation: 'validated' });
+    expect(free.isActive).toBe(false);
+    expect(free.message).toBe('No active purchase found · free plan remains available');
   });
 
   it('records optional monetization signals only when local measurement is enabled', () => {
