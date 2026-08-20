@@ -2,6 +2,7 @@ import { Platform } from "react-native";
 import { getApiBaseUrl } from "@/constants/oauth";
 import * as Auth from "./auth";
 import { getApiErrorMessage, parseApiTextPayload } from "@/lib/api-error-utils";
+import { withTimeout } from "@/lib/with-timeout";
 
 type ApiResponse<T> = {
   data?: T;
@@ -42,11 +43,15 @@ export async function apiCall<T>(endpoint: string, options: RequestInit = {}): P
 
   try {
     console.log("[API] Making request...");
-    const response = await fetch(url, {
-      ...options,
-      headers,
-      credentials: "include",
-    });
+    const response = await withTimeout(
+      fetch(url, {
+        ...options,
+        headers,
+        credentials: "include",
+      }),
+      15000,
+      "The network request timed out. Please check your connection and try again.",
+    );
 
     console.log("[API] Response status:", response.status, response.statusText);
     const responseHeaders = Object.fromEntries(response.headers.entries());
