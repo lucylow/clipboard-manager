@@ -407,23 +407,35 @@ export default function HistoryScreen() {
     if (!selectedIds.length) return showNotice('Select at least one item');
     Alert.alert('Delete selected items?', `${selectedIds.length} saved item${selectedIds.length === 1 ? '' : 's'} will be removed.`, [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: async () => {
-        const saved = await persist(removeClipboardItems(items, new Set(selectedIds)));
-        if (!saved) return;
-        haptic.medium();
-        showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} deleted`);
-        exitSelectionMode();
+      { text: 'Delete', style: 'destructive', onPress: () => {
+        void (async () => {
+          try {
+            const saved = await persist(removeClipboardItems(items, new Set(selectedIds)));
+            if (!saved) return;
+            haptic.medium();
+            showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} deleted`);
+            exitSelectionMode();
+          } catch {
+            showNotice('Could not delete the selected items');
+          }
+        })();
       } },
     ]);
   };
   const clearAll = () => Alert.alert('Clear all history?', 'Every saved clipboard item will be removed.', [
     { text: 'Cancel', style: 'cancel' },
-    { text: 'Clear all', style: 'destructive', onPress: async () => {
-      const saved = await persist([]);
-      if (!saved) return;
-      setSelectedItem(null);
-      haptic.medium();
-      showNotice('History cleared');
+    { text: 'Clear all', style: 'destructive', onPress: () => {
+      void (async () => {
+        try {
+          const saved = await persist([]);
+          if (!saved) return;
+          setSelectedItem(null);
+          haptic.medium();
+          showNotice('History cleared');
+        } catch {
+          showNotice('Could not clear history');
+        }
+      })();
     } },
   ]);
   const deleteItem = async (id: string) => {
