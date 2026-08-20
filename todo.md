@@ -1066,3 +1066,7 @@
 - [x] Audit reducer normalization with null-prototype and inherited-property objects
 - [x] Add deterministic unusual-object-shape regression coverage
 - [x] Re-run validation and save the unusual-shape checkpoint
+
+- [x] Audit reducer normalization failure paths and transition invariants
+- [x] Add deterministic failure-path regression coverage
+- [x] Re-run validation and save the reducer-failure checkpoint

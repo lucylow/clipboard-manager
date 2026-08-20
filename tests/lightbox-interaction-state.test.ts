@@ -121,11 +121,11 @@ describe('reduceLightboxInteraction', () => {
     nullPrototype.retryAvailable = true;
 
     expect(() => reduceLightboxInteraction(hostile, { type: 'close' })).not.toThrow();
-    expect(reduceLightboxInteraction(hostile, { type: 'close' })).toEqual({
-      visible: false,
-      actionBusy: false,
-      retryAvailable: false,
-    });
+    const safeClosed = { visible: false, actionBusy: false, retryAvailable: false };
+    expect(reduceLightboxInteraction(hostile, { type: 'close' })).toEqual(safeClosed);
+    expect(reduceLightboxInteraction(hostile, { type: 'action-start' })).toEqual(safeClosed);
+    expect(reduceLightboxInteraction(hostile, { type: 'action-success' })).toEqual(safeClosed);
+    expect(reduceLightboxInteraction(hostile, { type: 'action-failure' })).toEqual(safeClosed);
     expect(reduceLightboxInteraction(nullPrototype as Parameters<typeof reduceLightboxInteraction>[0], { type: 'action-success' })).toEqual({
       visible: true,
       actionBusy: false,
