@@ -1038,3 +1038,7 @@
 - [x] Audit no-op transition suppression and notification counts
 - [x] Add deterministic no-op regression coverage for all public actions
 - [x] Re-run validation and save the no-op suppression checkpoint
+
+- [x] Audit public action boundary for invalid or stale dispatch attempts
+- [x] Add deterministic invalid-dispatch regression coverage
+- [x] Re-run validation and save the public-boundary checkpoint

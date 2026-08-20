@@ -47,5 +47,7 @@ export function reduceLightboxInteraction(
       return !state.visible || (!state.actionBusy && state.retryAvailable)
         ? state
         : { ...state, actionBusy: false, retryAvailable: true };
+    default:
+      return state;
   }
 }
