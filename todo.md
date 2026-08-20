@@ -1177,3 +1177,8 @@
 - [x] Implement targeted defensive recovery
 - [x] Add deterministic regression coverage
 - [x] Validate and save the recovery checkpoint
+
+- [x] Audit latest diagnostics and remaining failure paths
+- [x] Implement targeted defensive recovery
+- [x] Add deterministic regression coverage
+- [x] Validate and save the recovery checkpoint
