@@ -1,9 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { queueClipboardWrite, repairStoredPayload } from '@/lib/clipboard-storage';
 import { createSingleFlight } from '@/lib/single-flight';
-import { withTimeout } from '@/lib/with-timeout';
+import { readStorageValue, writeStorageValue } from '@/lib/safe-storage';
 
 type HistoryPersistenceOptions<T> = {
   storageKey: string;
@@ -35,11 +34,11 @@ export function useHistoryPersistence<T>({
 
   const loadItems = useCallback(() => loadItemsFlightRef.current.run(async (): Promise<boolean> => {
     try {
-      const saved = await withTimeout(AsyncStorage.getItem(storageKey), 5000, 'History storage read timed out');
+      const saved = await readStorageValue(storageKey, 5000);
       if (!saved) {
         setItems(initialValue);
         itemsRef.current = initialValue;
-        await AsyncStorage.setItem(storageKey, JSON.stringify(initialValue));
+        await writeStorageValue(storageKey, JSON.stringify(initialValue), 5000);
         return true;
       }
 
@@ -50,13 +49,13 @@ export function useHistoryPersistence<T>({
       if (repaired.repaired || normalized.length !== repaired.items.length) {
         onNotice('History repaired: invalid entries were removed');
       }
-      await AsyncStorage.setItem(storageKey, JSON.stringify(normalized));
+      await writeStorageValue(storageKey, JSON.stringify(normalized), 5000);
       return true;
     } catch {
       setItems(initialValue);
       itemsRef.current = initialValue;
       try {
-        await AsyncStorage.setItem(storageKey, JSON.stringify(initialValue));
+        await writeStorageValue(storageKey, JSON.stringify(initialValue), 5000);
       } catch {
         // Keep the in-memory fallback when local recovery also fails.
       }

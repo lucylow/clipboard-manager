@@ -1192,3 +1192,13 @@
 - [x] Implement targeted error recovery
 - [x] Add deterministic regression coverage
 - [x] Validate and save the recovery checkpoint
+
+- [ ] Audit current monetization state and upgrade flow
+- [ ] Implement a focused monetization UX improvement
+- [ ] Add deterministic monetization regression coverage
+- [ ] Validate and save the monetization checkpoint
+
+- [x] Audit React Native lifecycle and component quality
+- [x] Implement focused React Native code improvements
+- [x] Add deterministic component and lifecycle coverage
+- [x] Validate and save the React Native checkpoint
