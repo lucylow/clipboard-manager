@@ -272,36 +272,52 @@ export default function HistoryScreen() {
   };
 
   const toggleFavorite = async (id: string) => {
-    const saved = await persist(updateClipboardItem(items, id, (item) => ({ ...item, favorite: !item.favorite })));
-    if (saved) haptic.light();
+    try {
+      const saved = await persist(updateClipboardItem(items, id, (item) => ({ ...item, favorite: !item.favorite })));
+      if (saved) haptic.light();
+    } catch {
+      showNotice('Could not update favorite status');
+    }
   };
   const setCategory = async (id: string, category: Category) => {
-    const saved = await persist(updateClipboardItem(items, id, (item) => ({ ...item, category })));
-    if (saved) haptic.light();
+    try {
+      const saved = await persist(updateClipboardItem(items, id, (item) => ({ ...item, category })));
+      if (saved) haptic.light();
+    } catch {
+      showNotice('Could not update category');
+    }
   };
   const toggleSelection = (id: string) => setSelectedIds((current) => current.includes(id) ? current.filter((selectedId) => selectedId !== id) : [...current, id]);
   const exitSelectionMode = () => { setSelectionMode(false); setSelectedIds([]); };
   const batchFavorite = async () => {
     if (!selectedIds.length) return showNotice('Select at least one item');
-    const saved = await persist(updateClipboardItems(items, new Set(selectedIds), (item) => ({ ...item, favorite: true })));
-    if (!saved) return;
-    haptic.light();
-    showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} added to favorites`);
-    exitSelectionMode();
+    try {
+      const saved = await persist(updateClipboardItems(items, new Set(selectedIds), (item) => ({ ...item, favorite: true })));
+      if (!saved) return;
+      haptic.light();
+      showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} added to favorites`);
+      exitSelectionMode();
+    } catch {
+      showNotice('Could not update selected favorites');
+    }
   };
   const batchCategory = () => {
     if (!selectedIds.length) return showNotice('Select at least one item');
     const selectedIdSet = new Set(selectedIds);
     const applyCategory = async (category: Category) => {
-      const saved = await persist(updateClipboardItems(items, selectedIdSet, (item) => ({ ...item, category })));
-      if (!saved) return;
-      haptic.light();
-      showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} moved to ${category}`);
-      exitSelectionMode();
+      try {
+        const saved = await persist(updateClipboardItems(items, selectedIdSet, (item) => ({ ...item, category })));
+        if (!saved) return;
+        haptic.light();
+        showNotice(`${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'} moved to ${category}`);
+        exitSelectionMode();
+      } catch {
+        showNotice('Could not update selected categories');
+      }
     };
     Alert.alert('Assign category', 'Choose a category for the selected items.', [
-      { text: 'Work', onPress: () => applyCategory('Work') },
-      { text: 'Personal', onPress: () => applyCategory('Personal') },
+      { text: 'Work', onPress: () => { void applyCategory('Work'); } },
+      { text: 'Personal', onPress: () => { void applyCategory('Personal'); } },
       { text: 'Cancel', style: 'cancel' },
     ]);
   };
