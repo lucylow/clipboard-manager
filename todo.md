@@ -1152,3 +1152,8 @@
 - [x] Implement targeted error-handling fixes
 - [x] Add deterministic regression coverage
 - [x] Validate and save the recovery checkpoint
+
+- [x] Audit latest diagnostics and storage failure paths
+- [x] Implement storage auto-repair and defensive handling
+- [x] Add deterministic storage-recovery coverage
+- [x] Validate and save the recovery checkpoint

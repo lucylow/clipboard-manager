@@ -16,6 +16,24 @@ export function parseStoredArray<T>(saved: string | null): T[] {
   }
 }
 
+/** Salvage valid items from a potentially malformed persisted array. */
+export function repairStoredPayload<T>(saved: string | null, validator: (item: unknown) => item is T): { items: T[]; repaired: boolean } {
+  if (!saved) return { items: [], repaired: false };
+  try {
+    const parsed: unknown = JSON.parse(saved);
+    if (!Array.isArray(parsed)) return { items: [], repaired: true };
+    const items: T[] = [];
+    let repaired = false;
+    for (const item of parsed) {
+      if (validator(item)) items.push(item);
+      else repaired = true;
+    }
+    return { items, repaired };
+  } catch {
+    return { items: [], repaired: true };
+  }
+}
+
 export function queueClipboardWrite<T>(items: T[]): Promise<void> {
   writeQueue = writeQueue
     .catch(() => undefined)
