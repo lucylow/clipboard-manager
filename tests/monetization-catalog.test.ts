@@ -5,6 +5,7 @@ import {
   formatProductPreview,
   getCatalogReadiness,
   getEntitlementSummary,
+  getProBenefitSummary,
   getProUpgradePrompt,
   getStoreReadinessSummary,
   getUpgradePreviewModel,
@@ -46,6 +47,18 @@ describe('monetization catalog preview', () => {
     });
     expect(parseEntitlementRecord(null)).toBeNull();
     expect(parseEntitlementRecord({ plan: 'trial' })).toBeNull();
+  });
+
+  it('keeps the Pro benefit hierarchy clear for free and active plans', () => {
+    expect(getProBenefitSummary(false)).toMatchObject({
+      primary: 'Batch export turns multiple clipboard items into one clean share.',
+      secondary: 'Pro also prepares richer media workflows for the connected-store release.',
+      freeCore: 'History, favorites, OCR, and local storage remain part of the free core.',
+    });
+    expect(getProBenefitSummary(true)).toMatchObject({
+      primary: 'Batch export is unlocked for faster sharing.',
+      freeCore: 'Your entitlement is local preview state until store validation is connected.',
+    });
   });
 
   it('creates contextual Pro prompts for selected exports', () => {

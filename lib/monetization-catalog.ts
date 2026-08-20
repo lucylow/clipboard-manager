@@ -77,6 +77,22 @@ export const MOCK_PRODUCT_CATALOG: readonly MonetizationProductPreview[] = [
   },
 ];
 
+export function getProBenefitSummary(isPremium: boolean) {
+  return isPremium
+    ? {
+        headline: 'Your Pro workflow is ready',
+        primary: 'Batch export is unlocked for faster sharing.',
+        secondary: 'Richer media workflows remain ready on this device.',
+        freeCore: 'Your entitlement is local preview state until store validation is connected.',
+      }
+    : {
+        headline: 'Make selected snippets easier to share',
+        primary: 'Batch export turns multiple clipboard items into one clean share.',
+        secondary: 'Pro also prepares richer media workflows for the connected-store release.',
+        freeCore: 'History, favorites, OCR, and local storage remain part of the free core.',
+      } as const;
+}
+
 export type ProUpgradePrompt = {
   label: string;
   message: string;

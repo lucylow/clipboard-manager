@@ -1117,3 +1117,8 @@
 - [x] Implement clearer Pro comparison and contextual upgrade entry
 - [x] Add deterministic value-presentation regression coverage
 - [x] Run full validation and save the Pro-value checkpoint
+
+- [x] Audit upgrade messaging, benefit hierarchy, and recovery actions
+- [x] Implement clearer Pro benefits and recovery CTA states
+- [x] Add deterministic upgrade-message regression coverage
+- [x] Run full validation and save the monetization-message checkpoint
