@@ -1030,3 +1030,7 @@
 - [x] Audit diagnostics lifecycle transitions across active, notifying, and released states
 - [x] Add deterministic lifecycle transition regression coverage
 - [x] Re-run validation and save the diagnostics-lifecycle checkpoint
+
+- [x] Audit diagnostic callback error isolation and subscriber ordering
+- [x] Add deterministic callback-ordering regression coverage
+- [x] Re-run validation and save the callback-isolation checkpoint

@@ -909,6 +909,25 @@ describe('released callback error isolation', () => {
   });
 
 
+  it('isolates callback errors while honoring same-cycle unsubscribe ordering', () => {
+    const adapter = createLightboxInteractionAdapter();
+    const received: string[] = [];
+    let unsubscribeLater = () => false;
+    adapter.subscribe(() => {
+      received.push('throwing');
+      unsubscribeLater();
+      throw new Error('callback failure');
+    });
+    unsubscribeLater = adapter.subscribe(() => received.push('later'));
+
+    expect(() => adapter.open()).not.toThrow();
+    expect(received).toEqual(['throwing']);
+    expect(adapter.getDiagnostics()).toMatchObject({ listenerCount: 1, notifying: false, pendingEventCount: 0 });
+    adapter.startAction();
+    expect(received).toEqual(['throwing', 'throwing']);
+    adapter.release();
+  });
+
   it('keeps release stable when a subscriber releases and then throws', () => {
     const adapter = createLightboxInteractionAdapter();
     const received: string[] = [];
