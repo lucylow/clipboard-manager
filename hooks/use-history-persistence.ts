@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { queueClipboardWrite } from '@/lib/clipboard-storage';
+import { queueClipboardWrite, repairStoredPayload } from '@/lib/clipboard-storage';
 import { createSingleFlight } from '@/lib/single-flight';
 import { withTimeout } from '@/lib/with-timeout';
 
@@ -43,11 +43,11 @@ export function useHistoryPersistence<T>({
         return true;
       }
 
-      const parsed: unknown = JSON.parse(saved);
-      const normalized = normalize(parsed);
+      const repaired = repairStoredPayload<T>(saved, (item): item is T => normalize([item]).length === 1);
+      const normalized = normalize(repaired.items);
       setItems(normalized);
       itemsRef.current = normalized;
-      if (!Array.isArray(parsed) || normalized.length !== parsed.length) {
+      if (repaired.repaired || normalized.length !== repaired.items.length) {
         onNotice('History repaired: invalid entries were removed');
       }
       await AsyncStorage.setItem(storageKey, JSON.stringify(normalized));

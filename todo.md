@@ -1157,3 +1157,8 @@
 - [x] Implement storage auto-repair and defensive handling
 - [x] Add deterministic storage-recovery coverage
 - [x] Validate and save the recovery checkpoint
+
+- [x] Audit latest diagnostics and history hydration flow
+- [x] Integrate storage repair into hydration
+- [x] Add deterministic recovery coverage
+- [x] Validate and save the recovery checkpoint
