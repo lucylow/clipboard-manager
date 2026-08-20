@@ -250,7 +250,8 @@ export default function HistoryScreen() {
       const normalized = text.trim();
       if (items.some((item) => item.type === 'text' && item.content === normalized)) return showNotice('That item is already in your history');
       const next: Item = { id: `${Date.now()}`, type: 'text', content: normalized, timestamp: Date.now(), favorite: false, category: 'Personal', source: 'Clipboard' };
-      persist([next, ...items]);
+      const saved = await persist([next, ...items]);
+      if (!saved) return;
       haptic.success();
       showNotice('Saved to your clipboard history');
     } catch {
