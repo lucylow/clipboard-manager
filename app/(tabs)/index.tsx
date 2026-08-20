@@ -271,20 +271,24 @@ export default function HistoryScreen() {
     } catch { haptic.error(); showNotice('Could not copy this item'); }
   };
 
-  const toggleFavorite = async (id: string) => {
+  const toggleFavorite = async (id: string): Promise<boolean> => {
     try {
       const saved = await persist(updateClipboardItem(items, id, (item) => ({ ...item, favorite: !item.favorite })));
       if (saved) haptic.light();
+      return saved;
     } catch {
       showNotice('Could not update favorite status');
+      return false;
     }
   };
-  const setCategory = async (id: string, category: Category) => {
+  const setCategory = async (id: string, category: Category): Promise<boolean> => {
     try {
       const saved = await persist(updateClipboardItem(items, id, (item) => ({ ...item, category })));
       if (saved) haptic.light();
+      return saved;
     } catch {
       showNotice('Could not update category');
+      return false;
     }
   };
   const toggleSelection = (id: string) => setSelectedIds((current) => current.includes(id) ? current.filter((selectedId) => selectedId !== id) : [...current, id]);
@@ -535,7 +539,7 @@ export default function HistoryScreen() {
       <Modal visible={selectedItem !== null} animationType="slide" transparent onRequestClose={() => setSelectedItem(null)}>
         <View style={styles.modalBackdrop}><View style={styles.modalCard}>
           <View style={styles.modalHeader}><Text style={styles.modalTitle}>Clipboard item</Text><Pressable onPress={() => setSelectedItem(null)}><IconSymbol name="xmark.circle.fill" size={24} color="#9AA3AA" /></Pressable></View>
-          {selectedItem ? <><Text style={styles.modalMeta}>{selectedItem.source || 'Clipboard'} · {formatTime(selectedItem.timestamp)}</Text><Text style={styles.modalContent}>{selectedItem.content}</Text>{selectedItem.ocrText ? <><Text style={styles.categoryLabel}>EXTRACTED TEXT</Text><Text style={styles.ocrText}>{selectedItem.ocrText}</Text></> : null}<Text style={styles.categoryLabel}>CATEGORY</Text><View style={styles.modalCategoryRow}>{(['Work', 'Personal'] as Category[]).map((category) => <Pressable key={category} onPress={() => { setCategory(selectedItem.id, category); setSelectedItem({ ...selectedItem, category }); showNotice(`${category} category saved`); }} style={[styles.modalCategory, selectedItem.category === category && styles.modalCategoryActive]}><Text style={[styles.modalCategoryText, selectedItem.category === category && styles.modalCategoryTextActive]}>{category}</Text></Pressable>)}</View><View style={styles.modalActions}><Pressable style={styles.modalPrimary} onPress={() => { copyItem(selectedItem); setSelectedItem(null); }}><IconSymbol name="doc.on.doc" size={17} color="#FFFFFF" /><Text style={styles.modalPrimaryText}>Copy to clipboard</Text></Pressable><Pressable style={styles.modalSecondary} onPress={() => { toggleFavorite(selectedItem.id); setSelectedItem({ ...selectedItem, favorite: !selectedItem.favorite }); showNotice(selectedItem.favorite ? 'Removed from favorites' : 'Added to favorites'); }}><IconSymbol name={selectedItem.favorite ? 'star.fill' : 'star'} size={17} color="#E76F51" /><Text style={styles.modalSecondaryText}>{selectedItem.favorite ? 'Unfavorite' : 'Favorite'}</Text></Pressable><Pressable style={styles.modalDanger} onPress={deleteSelected}><IconSymbol name="xmark" size={17} color="#C9553B" /><Text style={styles.modalDangerText}>Delete item</Text></Pressable></View></> : null}
+          {selectedItem ? <><Text style={styles.modalMeta}>{selectedItem.source || 'Clipboard'} · {formatTime(selectedItem.timestamp)}</Text><Text style={styles.modalContent}>{selectedItem.content}</Text>{selectedItem.ocrText ? <><Text style={styles.categoryLabel}>EXTRACTED TEXT</Text><Text style={styles.ocrText}>{selectedItem.ocrText}</Text></> : null}<Text style={styles.categoryLabel}>CATEGORY</Text><View style={styles.modalCategoryRow}>{(['Work', 'Personal'] as Category[]).map((category) => <Pressable key={category} onPress={() => { void (async () => { const saved = await setCategory(selectedItem.id, category); if (!saved) return; setSelectedItem({ ...selectedItem, category }); showNotice(`${category} category saved`); })(); }} style={[styles.modalCategory, selectedItem.category === category && styles.modalCategoryActive]}><Text style={[styles.modalCategoryText, selectedItem.category === category && styles.modalCategoryTextActive]}>{category}</Text></Pressable>)}</View><View style={styles.modalActions}><Pressable style={styles.modalPrimary} onPress={() => { copyItem(selectedItem); setSelectedItem(null); }}><IconSymbol name="doc.on.doc" size={17} color="#FFFFFF" /><Text style={styles.modalPrimaryText}>Copy to clipboard</Text></Pressable><Pressable style={styles.modalSecondary} onPress={() => { void (async () => { const saved = await toggleFavorite(selectedItem.id); if (!saved) return; setSelectedItem({ ...selectedItem, favorite: !selectedItem.favorite }); showNotice(selectedItem.favorite ? 'Removed from favorites' : 'Added to favorites'); })(); }}><IconSymbol name={selectedItem.favorite ? 'star.fill' : 'star'} size={17} color="#E76F51" /><Text style={styles.modalSecondaryText}>{selectedItem.favorite ? 'Unfavorite' : 'Favorite'}</Text></Pressable><Pressable style={styles.modalDanger} onPress={deleteSelected}><IconSymbol name="xmark" size={17} color="#C9553B" /><Text style={styles.modalDangerText}>Delete item</Text></Pressable></View></> : null}
         </View></View>
       </Modal>
       <Modal visible={lightboxVisibility.visible} animationType="fade" transparent onRequestClose={() => setLightboxItem(null)}>
