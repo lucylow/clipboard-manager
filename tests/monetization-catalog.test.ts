@@ -7,6 +7,7 @@ import {
   getEntitlementSummary,
   getMonetizationRecoveryModel,
   getProBenefitSummary,
+  getRestoreOutcomePresentation,
   getProUpgradePrompt,
   getStoreReadinessSummary,
   getUpgradePreviewModel,
@@ -104,6 +105,22 @@ describe('monetization catalog preview', () => {
     const free = resolveRestoreOutcome(false, { plan: 'pro', status: 'inactive', source: 'store', validation: 'validated' });
     expect(free.isActive).toBe(false);
     expect(free.message).toBe('No active purchase found · free plan remains available');
+  });
+
+  it('presents restore outcomes without overstating purchase validation', () => {
+    const validated = resolveRestoreOutcome(false, { plan: 'pro', status: 'active', source: 'store', validation: 'validated' });
+    expect(getRestoreOutcomePresentation(validated)).toEqual({
+      tone: 'success',
+      title: 'Clipboard Pro restored',
+      message: 'Store entitlement validated on this device.',
+      detail: 'Batch export and other Pro workflows are available.',
+    });
+    const preview = getRestoreOutcomePresentation(resolveRestoreOutcome(true, null));
+    expect(preview.title).toBe('Clipboard Pro preview restored');
+    expect(preview.detail).toContain('not proof of an active purchase');
+    const free = getRestoreOutcomePresentation(resolveRestoreOutcome(false, null));
+    expect(free.title).toBe('Free plan restored');
+    expect(free.message).toContain('core clipboard tools remain available');
   });
 
   it('records optional monetization signals only when local measurement is enabled', () => {

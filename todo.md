@@ -1127,3 +1127,8 @@
 - [x] Implement clearer monetization recovery and state messaging
 - [x] Add deterministic benefit-state regression coverage
 - [x] Run full validation and save the monetization-consistency checkpoint
+
+- [x] Audit current monetization UX and entitlement flow
+- [x] Improve entitlement status and restore-readiness UX
+- [x] Add deterministic entitlement and restore regression coverage
+- [x] Run validation and save the monetization UX checkpoint

@@ -35,6 +35,31 @@ export function resolveRestoreOutcome(legacyPro: boolean, storedEntitlement: Loc
   } as const;
 }
 
+export function getRestoreOutcomePresentation(outcome: ReturnType<typeof resolveRestoreOutcome>) {
+  if (!outcome.isActive) {
+    return {
+      tone: 'neutral',
+      title: 'Free plan restored',
+      message: 'No active purchase found · core clipboard tools remain available.',
+      detail: 'If you expected Pro access, connect store validation before relying on a purchase restore.',
+    } as const;
+  }
+  if (outcome.entitlement.source === 'store' && outcome.entitlement.validation === 'validated') {
+    return {
+      tone: 'success',
+      title: 'Clipboard Pro restored',
+      message: 'Store entitlement validated on this device.',
+      detail: 'Batch export and other Pro workflows are available.',
+    } as const;
+  }
+  return {
+    tone: 'neutral',
+    title: 'Clipboard Pro preview restored',
+    message: 'Your last known local Pro state is preserved.',
+    detail: 'Store validation is still pending, so this is not proof of an active purchase.',
+  } as const;
+}
+
 export function getEntitlementSummary(entitlement: LocalEntitlement) {
   const isActive = entitlement.plan === 'pro' && entitlement.status === 'active';
   return {
