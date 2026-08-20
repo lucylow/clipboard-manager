@@ -1092,3 +1092,8 @@
 - [x] Implement clearer local plan-state and restore/reset feedback
 - [x] Add deterministic entitlement and readiness regression coverage
 - [x] Run full validation and save the monetization-state checkpoint
+
+- [x] Audit conversion clarity and entitlement recovery UX
+- [x] Implement clearer upgrade-preview state and recovery actions
+- [x] Add deterministic conversion and recovery regression coverage
+- [x] Run full validation and save the monetization UX checkpoint

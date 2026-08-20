@@ -5,6 +5,7 @@ import {
   formatProductPreview,
   getCatalogReadiness,
   getEntitlementSummary,
+  getUpgradePreviewModel,
   parseEntitlementRecord,
 } from '../lib/monetization-catalog';
 
@@ -41,6 +42,28 @@ describe('monetization catalog preview', () => {
     });
     expect(parseEntitlementRecord(null)).toBeNull();
     expect(parseEntitlementRecord({ plan: 'trial' })).toBeNull();
+  });
+
+  it('keeps upgrade CTAs honest across entitlement and catalog states', () => {
+    expect(getUpgradePreviewModel({ isPremium: false, planInterestSaved: false, billingNoticeRequested: false, catalogReady: false })).toMatchObject({
+      primaryLabel: 'Review billing checklist',
+      statusLabel: 'Billing setup in progress',
+      purchaseEnabled: false,
+    });
+    expect(getUpgradePreviewModel({ isPremium: false, planInterestSaved: true, billingNoticeRequested: false, catalogReady: false })).toMatchObject({
+      primaryLabel: 'Billing setup requested',
+      statusLabel: 'We will keep your interest locally',
+      purchaseEnabled: false,
+    });
+    expect(getUpgradePreviewModel({ isPremium: false, planInterestSaved: false, billingNoticeRequested: false, catalogReady: true })).toMatchObject({
+      primaryLabel: 'Continue to purchase',
+      purchaseEnabled: true,
+    });
+    expect(getUpgradePreviewModel({ isPremium: true, planInterestSaved: false, billingNoticeRequested: false, catalogReady: true })).toMatchObject({
+      primaryLabel: 'Manage local preview',
+      statusLabel: 'Clipboard Pro active',
+      purchaseEnabled: false,
+    });
   });
 
   it('does not fabricate a price or renewal term in the preview', () => {

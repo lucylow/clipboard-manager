@@ -61,6 +61,38 @@ export const MOCK_PRODUCT_CATALOG: readonly MonetizationProductPreview[] = [
   },
 ];
 
+export type UpgradePreviewInput = {
+  isPremium: boolean;
+  planInterestSaved: boolean;
+  billingNoticeRequested: boolean;
+  catalogReady: boolean;
+};
+
+export function getUpgradePreviewModel(input: UpgradePreviewInput) {
+  if (input.isPremium) {
+    return {
+      title: 'Your Pro tools are ready',
+      primaryLabel: 'Manage local preview',
+      statusLabel: 'Clipboard Pro active',
+      purchaseEnabled: false,
+    } as const;
+  }
+  if (input.catalogReady) {
+    return {
+      title: 'Move faster with Clipboard Pro',
+      primaryLabel: 'Continue to purchase',
+      statusLabel: 'Store products ready',
+      purchaseEnabled: true,
+    } as const;
+  }
+  return {
+    title: 'Move faster with Clipboard Pro',
+    primaryLabel: input.planInterestSaved || input.billingNoticeRequested ? 'Billing setup requested' : 'Review billing checklist',
+    statusLabel: input.planInterestSaved || input.billingNoticeRequested ? 'We will keep your interest locally' : 'Billing setup in progress',
+    purchaseEnabled: false,
+  } as const;
+}
+
 export function getCatalogReadiness(products: readonly MonetizationProductPreview[]) {
   const hasProducts = products.length > 0;
   const hasPurchasableProduct = products.some((product) => product.purchasable);
