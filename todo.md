@@ -1034,3 +1034,7 @@
 - [x] Audit diagnostic callback error isolation and subscriber ordering
 - [x] Add deterministic callback-ordering regression coverage
 - [x] Re-run validation and save the callback-isolation checkpoint
+
+- [x] Audit no-op transition suppression and notification counts
+- [x] Add deterministic no-op regression coverage for all public actions
+- [x] Re-run validation and save the no-op suppression checkpoint

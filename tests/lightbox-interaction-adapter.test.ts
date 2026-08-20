@@ -1001,6 +1001,31 @@ describe('notification registration ordering', () => {
 
 
 describe('no-op transition stability', () => {
+  it('suppresses every closed-state action without sharing returned snapshots', () => {
+    const adapter = createLightboxInteractionAdapter();
+    let notifications = 0;
+    adapter.subscribe(() => { notifications += 1; });
+
+    const results = [adapter.close(), adapter.startAction(), adapter.succeed(), adapter.fail()];
+    const baseline = results.map((result) => ({ ...result }));
+    results[0].visible = true;
+    results[1].actionBusy = true;
+    results[2].retryAvailable = true;
+
+    expect(baseline).toEqual([
+      { visible: false, actionBusy: false, retryAvailable: false },
+      { visible: false, actionBusy: false, retryAvailable: false },
+      { visible: false, actionBusy: false, retryAvailable: false },
+      { visible: false, actionBusy: false, retryAvailable: false },
+    ]);
+    expect(results[0]).not.toBe(results[1]);
+    expect(adapter.getState()).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
+    expect(adapter.getDiagnostics()).toMatchObject({ pendingEventCount: 0, notifying: false, listenerCount: 1 });
+    expect(notifications).toBe(0);
+    adapter.release();
+  });
+
+
   it('does not notify or queue repeated state-incompatible actions', () => {
     const adapter = createLightboxInteractionAdapter();
     let notifications = 0;
