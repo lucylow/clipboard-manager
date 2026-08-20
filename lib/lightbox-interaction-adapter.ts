@@ -65,9 +65,10 @@ export function createLightboxInteractionAdapter(
     actionBusy: state.actionBusy,
     retryAvailable: state.retryAvailable,
   });
+  const getPendingEventCount = () => Math.max(0, pendingEvents.length - pendingEventHead);
   const readDiagnostics = (): LightboxInteractionDiagnostics => ({
     state: readState(),
-    pendingEventCount: pendingEvents.length - pendingEventHead,
+    pendingEventCount: getPendingEventCount(),
     listenerCount: listeners.size,
     notifying: isNotifying,
     released,
@@ -75,7 +76,7 @@ export function createLightboxInteractionAdapter(
 
   const dispatch = (event: LightboxInteractionEvent) => {
     if (released) return readState();
-    if (pendingEvents.length - pendingEventHead >= LIGHTBOX_MAX_PENDING_EVENTS) return readState();
+    if (getPendingEventCount() >= LIGHTBOX_MAX_PENDING_EVENTS) return readState();
     const lastPendingEvent = pendingEvents[pendingEvents.length - 1];
     if (isNotifying && lastPendingEvent?.type === event.type) return readState();
     pendingEvents.push(event);

@@ -1026,3 +1026,7 @@
 - [x] Audit post-release snapshots and callback rejection behavior
 - [x] Add deterministic post-release regression coverage
 - [x] Re-run validation and save the post-release checkpoint
+
+- [x] Audit diagnostics lifecycle transitions across active, notifying, and released states
+- [x] Add deterministic lifecycle transition regression coverage
+- [x] Re-run validation and save the diagnostics-lifecycle checkpoint
