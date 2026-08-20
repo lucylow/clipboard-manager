@@ -1107,3 +1107,8 @@
 - [x] Implement clearer restore outcome and entitlement-source presentation
 - [x] Add deterministic restore and handoff regression coverage
 - [x] Run full validation and save the restore-handoff checkpoint
+
+- [x] Audit store-readiness state and plan comparison clarity
+- [x] Implement purchase-state safeguards and clearer catalog status
+- [x] Add deterministic store-readiness regression coverage
+- [x] Run full validation and save the store-readiness checkpoint

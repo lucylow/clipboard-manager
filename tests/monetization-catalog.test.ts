@@ -5,6 +5,7 @@ import {
   formatProductPreview,
   getCatalogReadiness,
   getEntitlementSummary,
+  getStoreReadinessSummary,
   getUpgradePreviewModel,
   parseEntitlementRecord,
   resolveRestoreOutcome,
@@ -44,6 +45,19 @@ describe('monetization catalog preview', () => {
     });
     expect(parseEntitlementRecord(null)).toBeNull();
     expect(parseEntitlementRecord({ plan: 'trial' })).toBeNull();
+  });
+
+  it('summarizes store readiness without enabling preview purchases', () => {
+    expect(getStoreReadinessSummary(MOCK_PRODUCT_CATALOG)).toEqual({
+      statusLabel: 'Preview products loaded · prices unavailable',
+      nextStep: 'Configure product prices, renewal terms, and receipt validation',
+      purchaseEnabled: false,
+    });
+    expect(getStoreReadinessSummary([{ ...MOCK_PRODUCT_CATALOG[0], purchasable: true }])).toEqual({
+      statusLabel: 'Store products ready · purchase controls available',
+      nextStep: 'Review the selected plan before purchase',
+      purchaseEnabled: true,
+    });
   });
 
   it('resolves restore outcomes with explicit active and free-plan feedback', () => {

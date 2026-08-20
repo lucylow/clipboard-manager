@@ -115,6 +115,22 @@ export function getUpgradePreviewModel(input: UpgradePreviewInput) {
   } as const;
 }
 
+export function getStoreReadinessSummary(products: readonly MonetizationProductPreview[]) {
+  const readiness = getCatalogReadiness(products);
+  if (readiness.purchaseControlsEnabled) {
+    return {
+      statusLabel: 'Store products ready · purchase controls available',
+      nextStep: 'Review the selected plan before purchase',
+      purchaseEnabled: true,
+    } as const;
+  }
+  return {
+    statusLabel: readiness.hasProducts ? 'Preview products loaded · prices unavailable' : 'Store products unavailable',
+    nextStep: 'Configure product prices, renewal terms, and receipt validation',
+    purchaseEnabled: false,
+  } as const;
+}
+
 export function getCatalogReadiness(products: readonly MonetizationProductPreview[]) {
   const hasProducts = products.length > 0;
   const hasPurchasableProduct = products.some((product) => product.purchasable);
