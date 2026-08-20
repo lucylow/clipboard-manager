@@ -1087,3 +1087,8 @@
 - [x] Implement high-impact monetization UX and error-handling improvements
 - [x] Add deterministic monetization regression coverage
 - [x] Run full validation and save the monetization checkpoint
+
+- [x] Audit entitlement normalization and catalog-readiness state transitions
+- [x] Implement clearer local plan-state and restore/reset feedback
+- [x] Add deterministic entitlement and readiness regression coverage
+- [x] Run full validation and save the monetization-state checkpoint

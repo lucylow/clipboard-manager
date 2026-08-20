@@ -4,6 +4,8 @@ import {
   MOCK_PRODUCT_CATALOG,
   formatProductPreview,
   getCatalogReadiness,
+  getEntitlementSummary,
+  parseEntitlementRecord,
 } from '../lib/monetization-catalog';
 
 describe('monetization catalog preview', () => {
@@ -26,6 +28,19 @@ describe('monetization catalog preview', () => {
       hasPurchasableProduct: true,
       purchaseControlsEnabled: true,
     });
+  });
+
+  it('normalizes valid entitlements and rejects malformed records safely', () => {
+    const active = parseEntitlementRecord({ plan: 'pro', status: 'active', source: 'store', validation: 'validated', extra: 'ignored' });
+    expect(active).toEqual({ plan: 'pro', status: 'active', source: 'store', validation: 'validated' });
+    expect(getEntitlementSummary(active!)).toEqual({
+      isActive: true,
+      label: 'Clipboard Pro active',
+      sourceLabel: 'store entitlement',
+      validationLabel: 'validated',
+    });
+    expect(parseEntitlementRecord(null)).toBeNull();
+    expect(parseEntitlementRecord({ plan: 'trial' })).toBeNull();
   });
 
   it('does not fabricate a price or renewal term in the preview', () => {

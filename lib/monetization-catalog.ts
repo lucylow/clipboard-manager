@@ -1,5 +1,34 @@
 export type CatalogBillingPeriod = 'month' | 'year';
 
+export type LocalEntitlement = {
+  plan: 'free' | 'pro';
+  status: 'active' | 'inactive';
+  source: 'local-preview' | 'store';
+  validation: 'unverified' | 'validated';
+};
+
+export function parseEntitlementRecord(candidate: unknown): LocalEntitlement | null {
+  if (!candidate || typeof candidate !== 'object') return null;
+  const value = candidate as Partial<LocalEntitlement>;
+  if (value.plan !== 'free' && value.plan !== 'pro') return null;
+  return {
+    plan: value.plan,
+    status: value.status === 'active' ? 'active' : 'inactive',
+    source: value.source === 'store' ? 'store' : 'local-preview',
+    validation: value.validation === 'validated' ? 'validated' : 'unverified',
+  };
+}
+
+export function getEntitlementSummary(entitlement: LocalEntitlement) {
+  const isActive = entitlement.plan === 'pro' && entitlement.status === 'active';
+  return {
+    isActive,
+    label: isActive ? 'Clipboard Pro active' : 'Free plan · core tools included',
+    sourceLabel: entitlement.source === 'store' ? 'store entitlement' : 'local preview',
+    validationLabel: entitlement.validation === 'validated' ? 'validated' : 'validation pending',
+  } as const;
+}
+
 export type MonetizationProductPreview = {
   id: string;
   title: string;

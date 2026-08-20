@@ -5,7 +5,7 @@ import { ScreenContainer } from '@/components/screen-container';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { haptic } from '@/lib/haptics';
 import { createMonetizationOperationGuard } from '@/lib/monetization-operation-guard';
-import { MOCK_PRODUCT_CATALOG } from '@/lib/monetization-catalog';
+import { MOCK_PRODUCT_CATALOG, getEntitlementSummary, parseEntitlementRecord, type LocalEntitlement } from '@/lib/monetization-catalog';
 
 function SettingRow({ icon, title, subtitle, right }: { icon: 'gearshape.fill' | 'photo' | 'star.fill' | 'doc.on.clipboard'; title: string; subtitle?: string; right: React.ReactNode }) { return <View style={styles.row}><View style={styles.rowIcon}><IconSymbol name={icon} size={18} color="#E76F51" /></View><View style={styles.rowCopy}><Text style={styles.rowTitle}>{title}</Text>{subtitle ? <Text style={styles.rowSubtitle}>{subtitle}</Text> : null}</View>{right}</View>; }
 
@@ -24,7 +24,7 @@ const PRIVACY_ACK_KEY = 'clipboard-manager-privacy-preview-ack';
 
 type Settings = { autoSave: boolean; images: boolean; darkMode: boolean };
 type UsageState = { exportCount: number; ocrCount: number; periodStart: string };
-type EntitlementRecord = { plan: 'free' | 'pro'; status: 'active' | 'inactive'; source: 'local-preview' | 'store'; validation: 'unverified' | 'validated' };
+type EntitlementRecord = LocalEntitlement;
 type MonetizationEvent = { event: 'plan-interest' | 'billing-notice'; timestamp: string };
 
 export default function SettingsScreen() {
@@ -65,7 +65,7 @@ export default function SettingsScreen() {
     const hydrationRun = hydrationRunRef.current + 1;
     hydrationRunRef.current = hydrationRun;
     const markHydrationFailure = () => { if (!mountedRef.current || hydrationRun !== hydrationRunRef.current) return; setHydrationFailed(true); setHydrationRetrying(false); setRecoveryFailureCount((value) => value + 1); };
-    AsyncStorage.getItem(PREMIUM_KEY).then(async (saved) => { const legacyPro = saved === 'true'; const structured = await AsyncStorage.getItem(ENTITLEMENT_KEY); try { const parsed = structured ? JSON.parse(structured) as Partial<EntitlementRecord> : null; if (parsed?.plan === 'pro' || parsed?.plan === 'free') { const next = { plan: parsed.plan, status: parsed.status === 'active' ? 'active' : 'inactive', source: parsed.source === 'store' ? 'store' : 'local-preview', validation: parsed.validation === 'validated' ? 'validated' : 'unverified' } as EntitlementRecord; setEntitlement(next); setIsPremium(next.plan === 'pro' && next.status === 'active'); return; } } catch { markHydrationFailure(); } if (legacyPro) { const next: EntitlementRecord = { plan: 'pro', status: 'active', source: 'local-preview', validation: 'unverified' }; setEntitlement(next); setIsPremium(true); await AsyncStorage.setItem(ENTITLEMENT_KEY, JSON.stringify(next)); } }).catch(markHydrationFailure);
+    AsyncStorage.getItem(PREMIUM_KEY).then(async (saved) => { const legacyPro = saved === 'true'; const structured = await AsyncStorage.getItem(ENTITLEMENT_KEY); try { const parsed = structured ? JSON.parse(structured) as unknown : null; const normalized = parseEntitlementRecord(parsed); if (normalized) { setEntitlement(normalized); setIsPremium(getEntitlementSummary(normalized).isActive); return; } } catch { markHydrationFailure(); } if (legacyPro) { const next: EntitlementRecord = { plan: 'pro', status: 'active', source: 'local-preview', validation: 'unverified' }; setEntitlement(next); setIsPremium(true); await AsyncStorage.setItem(ENTITLEMENT_KEY, JSON.stringify(next)); } }).catch(markHydrationFailure);
     AsyncStorage.getItem(BILLING_NOTICE_KEY).then((saved) => setNotifyRequested(saved === 'true')).catch(markHydrationFailure);
     AsyncStorage.getItem(PLAN_INTEREST_KEY).then((saved) => setPlanInterest(saved === 'true')).catch(markHydrationFailure);
     AsyncStorage.getItem(TELEMETRY_KEY).then((saved) => setTelemetryEnabled(saved === 'true')).catch(markHydrationFailure);
