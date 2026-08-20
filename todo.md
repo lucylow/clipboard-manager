@@ -1046,3 +1046,7 @@
 - [x] Audit reducer handling of malformed runtime state inputs
 - [x] Add deterministic state-normalization regression coverage
 - [x] Re-run validation and save the reducer-boundary checkpoint
+
+- [x] Audit reducer identity preservation with malformed events and states
+- [x] Add deterministic identity regression coverage
+- [x] Re-run validation and save the reducer-identity checkpoint

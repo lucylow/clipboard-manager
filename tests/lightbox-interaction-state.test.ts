@@ -56,11 +56,18 @@ describe('reduceLightboxInteraction', () => {
     });
   });
 
-  it('keeps invalid runtime events as identity no-ops', () => {
-    const state = { visible: true, actionBusy: true, retryAvailable: false };
+  it('keeps invalid runtime events as identity no-ops across valid states', () => {
     const invalidEvent = { type: 'unexpected-event' } as unknown as Parameters<typeof reduceLightboxInteraction>[1];
+    const states = [
+      closed,
+      { visible: true, actionBusy: false, retryAvailable: false },
+      { visible: true, actionBusy: true, retryAvailable: false },
+      { visible: true, actionBusy: false, retryAvailable: true },
+    ];
 
-    expect(reduceLightboxInteraction(state, invalidEvent)).toBe(state);
+    states.forEach((state) => {
+      expect(reduceLightboxInteraction(state, invalidEvent)).toBe(state);
+    });
   });
 
   it('keeps repeated action events as identity no-ops when state cannot change', () => {
