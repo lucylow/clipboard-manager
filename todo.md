@@ -1082,3 +1082,8 @@
 - [x] Audit repeated malformed-input recovery and transition reuse
 - [x] Add deterministic repeated-recovery regression coverage
 - [x] Re-run validation and save the repeated-recovery checkpoint
+
+- [x] Audit product catalog, entitlement, pricing, and recovery flows
+- [x] Implement high-impact monetization UX and error-handling improvements
+- [x] Add deterministic monetization regression coverage
+- [x] Run full validation and save the monetization checkpoint
