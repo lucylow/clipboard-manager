@@ -37,21 +37,26 @@ export function getLightboxInteractionState(options: InteractionStateOptions): L
 }
 
 function normalizeInteractionState(candidate: unknown): LightboxInteractionState {
-  if (
-    candidate &&
-    typeof candidate === 'object' &&
-    typeof (candidate as LightboxInteractionState).visible === 'boolean' &&
-    typeof (candidate as LightboxInteractionState).actionBusy === 'boolean' &&
-    typeof (candidate as LightboxInteractionState).retryAvailable === 'boolean'
-  ) {
-    return candidate as LightboxInteractionState;
+  if (!candidate || typeof candidate !== 'object') {
+    return { visible: false, actionBusy: false, retryAvailable: false };
   }
-  const input = candidate && typeof candidate === 'object' ? (candidate as Partial<LightboxInteractionState>) : {};
-  return {
-    visible: input.visible === true,
-    actionBusy: input.actionBusy === true,
-    retryAvailable: input.retryAvailable === true,
-  };
+  try {
+    const input = candidate as Partial<LightboxInteractionState>;
+    if (
+      typeof input.visible === 'boolean' &&
+      typeof input.actionBusy === 'boolean' &&
+      typeof input.retryAvailable === 'boolean'
+    ) {
+      return candidate as LightboxInteractionState;
+    }
+    return {
+      visible: input.visible === true,
+      actionBusy: input.actionBusy === true,
+      retryAvailable: input.retryAvailable === true,
+    };
+  } catch {
+    return { visible: false, actionBusy: false, retryAvailable: false };
+  }
 }
 
 export function reduceLightboxInteraction(

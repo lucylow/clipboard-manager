@@ -1062,3 +1062,7 @@
 - [x] Audit derived-state option object handling for mutation or prototype edge cases
 - [x] Add deterministic transition-safety regression coverage
 - [x] Re-run validation and save the derived-object checkpoint
+
+- [x] Audit reducer normalization with null-prototype and inherited-property objects
+- [x] Add deterministic unusual-object-shape regression coverage
+- [x] Re-run validation and save the unusual-shape checkpoint

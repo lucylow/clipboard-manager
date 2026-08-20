@@ -109,6 +109,30 @@ describe('reduceLightboxInteraction', () => {
     });
   });
 
+  it('isolates throwing state getters and unusual object shapes', () => {
+    const hostile = {
+      get visible(): boolean { throw new Error('hostile visible'); },
+      actionBusy: true,
+      retryAvailable: true,
+    } as unknown as Parameters<typeof reduceLightboxInteraction>[0];
+    const nullPrototype = Object.create(null) as Record<string, unknown>;
+    nullPrototype.visible = true;
+    nullPrototype.actionBusy = false;
+    nullPrototype.retryAvailable = true;
+
+    expect(() => reduceLightboxInteraction(hostile, { type: 'close' })).not.toThrow();
+    expect(reduceLightboxInteraction(hostile, { type: 'close' })).toEqual({
+      visible: false,
+      actionBusy: false,
+      retryAvailable: false,
+    });
+    expect(reduceLightboxInteraction(nullPrototype as Parameters<typeof reduceLightboxInteraction>[0], { type: 'action-success' })).toEqual({
+      visible: true,
+      actionBusy: false,
+      retryAvailable: false,
+    });
+  });
+
   it('keeps invalid runtime events as identity no-ops across valid states', () => {
     const invalidEvent = { type: 'unexpected-event' } as unknown as Parameters<typeof reduceLightboxInteraction>[1];
     const states = [
