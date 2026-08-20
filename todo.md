@@ -1207,3 +1207,8 @@
 - [x] Implement focused React Native improvements
 - [x] Add deterministic lifecycle and UI-state coverage
 - [x] Validate and save the React Native checkpoint
+
+- [x] Audit async action lifecycle and UI state paths
+- [x] Implement focused lifecycle-safety improvements
+- [x] Add deterministic async-state coverage
+- [x] Validate and save React Native checkpoint

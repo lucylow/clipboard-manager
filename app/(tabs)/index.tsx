@@ -1,4 +1,5 @@
 import { readStorageValue, writeStorageValue } from '@/lib/safe-storage';
+import { createMediaOperationGuard } from '@/lib/media-operation-guard';
 import * as Clipboard from 'expo-clipboard';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -85,6 +86,7 @@ export default function HistoryScreen() {
   const [lightboxItem, setLightboxItem] = useState<Item | null>(null);
   const { sessionRef: lightboxSessionRef, canApplyFeedback: canApplyLightboxFeedback } = useLightboxSessionGuard(lightboxItem?.id ?? null);
   const [isSavingMedia, setIsSavingMedia] = useState(false);
+  const mediaOperationGuardRef = useRef(createMediaOperationGuard());
   const [ocrSaveFailures, setOcrSaveFailures] = useState<string[]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -161,13 +163,18 @@ export default function HistoryScreen() {
   }), [items, query, filter]);
 
   const saveImageWithOcr = async (imageData: string, imageSize?: { width: number; height: number }, source = 'Clipboard') => {
-    if (isSavingMedia || ocrMutation.isPending) return showNotice('Media processing is already in progress');
-    if (imageData.length > 4_500_000) return showNotice('This image is too large to save locally');
-    if (items.some((item) => item.type === 'image' && item.imageData === imageData)) return showNotice('That image is already in your history');
+    if (isSavingMedia || ocrMutation.isPending || !mediaOperationGuardRef.current.acquire()) return showNotice('Media processing is already in progress');
+    if (imageData.length > 4_500_000) { mediaOperationGuardRef.current.release(); return showNotice('This image is too large to save locally'); }
+    if (items.some((item) => item.type === 'image' && item.imageData === imageData)) { mediaOperationGuardRef.current.release(); return showNotice('That image is already in your history'); }
     setIsSavingMedia(true);
     const next: Item = { id: `${Date.now()}`, type: 'image', content: 'Image from clipboard', imageData, imageSize, timestamp: Date.now(), favorite: false, category: 'Personal', source };
-    const saved = await persist([next, ...items]);
-    if (!saved) { setIsSavingMedia(false); return; }
+    let saved = false;
+    try {
+      saved = await persist([next, ...items]);
+    } catch {
+      showNotice('Could not save this image locally. Try again.');
+    }
+    if (!saved) { setIsSavingMedia(false); mediaOperationGuardRef.current.release(); return; }
     haptic.success(); showNotice('Image saved · extracting text');
     try {
       const result = await ocrMutation.mutateAsync({ imageData });
@@ -182,7 +189,7 @@ export default function HistoryScreen() {
       void trackUsage('ocrCount');
       showNotice(result.text ? 'Image saved · text extracted' : 'Image saved · no text found');
     } catch { showNotice('Image saved · text extraction unavailable'); }
-    finally { setIsSavingMedia(false); }
+    finally { setIsSavingMedia(false); mediaOperationGuardRef.current.release(); }
   };
 
   const retryOcr = async (item: Item) => {
