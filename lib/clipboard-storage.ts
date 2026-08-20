@@ -49,7 +49,11 @@ export function queueClipboardWrite<T>(items: T[]): Promise<void> {
 }
 
 export function readClipboardStorage(): Promise<string | null> {
-  return AsyncStorage.getItem(CLIPBOARD_STORAGE_KEY);
+  return withTimeout(
+    AsyncStorage.getItem(CLIPBOARD_STORAGE_KEY),
+    5000,
+    'Clipboard storage read timed out',
+  );
 }
 
 export function updateClipboardStorage<T>(updater: (items: T[]) => T[]): Promise<void> {

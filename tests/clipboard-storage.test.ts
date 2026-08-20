@@ -8,7 +8,7 @@ vi.mock('@react-native-async-storage/async-storage', () => ({
 }));
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { parseStoredArray, queueClipboardWrite, repairStoredPayload } from '../lib/clipboard-storage';
+import { parseStoredArray, queueClipboardWrite, readClipboardStorage, repairStoredPayload } from '../lib/clipboard-storage';
 
 describe('parseStoredArray', () => {
   it('returns an empty list for missing storage', () => {
@@ -25,6 +25,18 @@ describe('parseStoredArray', () => {
 
   it('preserves valid array payloads', () => {
     expect(parseStoredArray<{ id: string }>(JSON.stringify([{ id: 'one' }]))).toEqual([{ id: 'one' }]);
+  });
+
+  it('rejects a stalled direct read with a recoverable timeout error', async () => {
+    vi.useFakeTimers();
+    const getItem = vi.mocked(AsyncStorage.getItem);
+    getItem.mockReset();
+    getItem.mockImplementationOnce(() => new Promise<string | null>(() => undefined));
+    const pending = readClipboardStorage();
+    const assertion = expect(pending).rejects.toThrow('Clipboard storage read timed out');
+    await vi.advanceTimersByTimeAsync(5000);
+    await assertion;
+    vi.useRealTimers();
   });
 
   it('repairs partially corrupted arrays without discarding valid items', () => {
