@@ -1,5 +1,6 @@
 import * as Api from "@/lib/_core/api";
 import * as Auth from "@/lib/_core/auth";
+import { getAuthError } from "@/lib/_core/auth-errors";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Platform } from "react-native";
 
@@ -113,8 +114,14 @@ export function useAuth(options?: UseAuthOptions) {
             setLoading(false);
           } else {
             // No cached user, check session token
-            fetchUser();
+            void fetchUser();
           }
+        }).catch((err) => {
+          const authError = getAuthError(err);
+          console.error('[useAuth] Native cached user check failed:', authError.message);
+          setError(authError);
+          setUser(null);
+          setLoading(false);
         });
       }
     } else {
