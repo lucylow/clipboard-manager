@@ -77,6 +77,23 @@ export const MOCK_PRODUCT_CATALOG: readonly MonetizationProductPreview[] = [
   },
 ];
 
+export type ProUpgradePrompt = {
+  label: string;
+  message: string;
+  destination: 'settings' | 'none';
+};
+
+export function getProUpgradePrompt(selectedCount: number, isPremium: boolean): ProUpgradePrompt | null {
+  if (isPremium) return null;
+  const count = Math.max(0, Math.floor(selectedCount));
+  if (count === 0) return { label: 'Explore Clipboard Pro', message: 'Select items to see how Clipboard Pro can help.', destination: 'settings' };
+  return {
+    label: 'Unlock batch export',
+    message: `Batch export for ${count} selected item${count === 1 ? '' : 's'} is available in Clipboard Pro.`,
+    destination: 'settings',
+  };
+}
+
 export type MonetizationSignal = 'plan-interest' | 'billing-notice';
 
 export function shouldRecordMonetizationSignal(signal: MonetizationSignal, telemetryEnabled: boolean): boolean {

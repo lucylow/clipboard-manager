@@ -5,6 +5,7 @@ import {
   formatProductPreview,
   getCatalogReadiness,
   getEntitlementSummary,
+  getProUpgradePrompt,
   getStoreReadinessSummary,
   getUpgradePreviewModel,
   parseEntitlementRecord,
@@ -45,6 +46,17 @@ describe('monetization catalog preview', () => {
     });
     expect(parseEntitlementRecord(null)).toBeNull();
     expect(parseEntitlementRecord({ plan: 'trial' })).toBeNull();
+  });
+
+  it('creates contextual Pro prompts for selected exports', () => {
+    expect(getProUpgradePrompt(1, false)).toEqual({
+      label: 'Unlock batch export',
+      message: 'Batch export for 1 selected item is available in Clipboard Pro.',
+      destination: 'settings',
+    });
+    expect(getProUpgradePrompt(3, false)?.message).toContain('3 selected items');
+    expect(getProUpgradePrompt(0, false)?.label).toBe('Explore Clipboard Pro');
+    expect(getProUpgradePrompt(3, true)).toBeNull();
   });
 
   it('summarizes store readiness without enabling preview purchases', () => {

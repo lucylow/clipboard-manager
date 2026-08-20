@@ -1112,3 +1112,8 @@
 - [x] Implement purchase-state safeguards and clearer catalog status
 - [x] Add deterministic store-readiness regression coverage
 - [x] Run full validation and save the store-readiness checkpoint
+
+- [x] Audit Pro value presentation and upgrade-entry discoverability
+- [x] Implement clearer Pro comparison and contextual upgrade entry
+- [x] Add deterministic value-presentation regression coverage
+- [x] Run full validation and save the Pro-value checkpoint
