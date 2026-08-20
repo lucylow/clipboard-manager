@@ -1142,3 +1142,8 @@
 - [x] Fix reproducible errors and strengthen defensive handling
 - [x] Add focused error-handling regression coverage
 - [x] Validate and save the recovery checkpoint
+
+- [x] Audit latest diagnostics and failure paths
+- [x] Implement additional defensive recovery handling
+- [x] Add regression coverage for new failure paths
+- [x] Validate and save the error-hardening checkpoint

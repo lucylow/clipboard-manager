@@ -1,6 +1,7 @@
 import { Platform } from "react-native";
 import { getApiBaseUrl } from "@/constants/oauth";
 import * as Auth from "./auth";
+import { getApiErrorMessage, parseApiTextPayload } from "@/lib/api-error-utils";
 
 type ApiResponse<T> = {
   data?: T;
@@ -79,13 +80,10 @@ export async function apiCall<T>(endpoint: string, options: RequestInit = {}): P
 
     const text = await response.text();
     console.log("[API] Text response received");
-    return (text ? JSON.parse(text) : {}) as T;
+    return parseApiTextPayload<T>(text, contentType);
   } catch (error) {
     console.error("[API] Request failed:", error);
-    if (error instanceof Error) {
-      throw error;
-    }
-    throw new Error("Unknown error occurred");
+    throw new Error(getApiErrorMessage(error));
   }
 }
 
