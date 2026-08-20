@@ -1050,3 +1050,7 @@
 - [x] Audit reducer identity preservation with malformed events and states
 - [x] Add deterministic identity regression coverage
 - [x] Re-run validation and save the reducer-identity checkpoint
+
+- [x] Audit reducer normalization invariants across every transition output
+- [x] Add deterministic transition-output regression coverage
+- [x] Re-run validation and save the normalization-invariant checkpoint

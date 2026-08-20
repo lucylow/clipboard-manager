@@ -1,9 +1,26 @@
 import { describe, expect, it } from 'vitest';
-import { reduceLightboxInteraction, type LightboxInteractionState } from '../lib/lightbox-interaction-state';
+import { getLightboxInteractionState, reduceLightboxInteraction, type LightboxInteractionState } from '../lib/lightbox-interaction-state';
 
 const closed: LightboxInteractionState = { visible: false, actionBusy: false, retryAvailable: false };
 
 describe('reduceLightboxInteraction', () => {
+  it('normalizes malformed derived-state options to strict booleans', () => {
+    const malformed = {
+      hasImage: 'yes',
+      isSharing: 1,
+      isOcrPending: 'pending',
+      hasShareFailure: true,
+      hasOcrSaveFailure: {},
+    } as unknown as Parameters<typeof getLightboxInteractionState>[0];
+
+    expect(getLightboxInteractionState(malformed)).toEqual({
+      visible: false,
+      actionBusy: false,
+      retryAvailable: false,
+    });
+  });
+
+
   it('opens with a clean action state', () => {
     expect(reduceLightboxInteraction(closed, { type: 'open' })).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
   });
