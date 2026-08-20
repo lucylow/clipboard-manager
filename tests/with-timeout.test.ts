@@ -15,6 +15,13 @@ describe('withTimeout', () => {
     await expect(withTimeout(Promise.reject(new Error('storage unavailable')), 1000)).rejects.toThrow('storage unavailable');
   });
 
+  it('resolves synchronous values and rejects throwing thenables safely', async () => {
+    await expect(withTimeout('ready', 1000)).resolves.toBe('ready');
+    const throwingThenable = { then: () => { throw new Error('thenable failed'); } };
+    await expect(withTimeout(throwingThenable, 1000)).rejects.toThrow('thenable failed');
+    await expect(withTimeout('fallback', Number.NaN)).resolves.toBe('fallback');
+  });
+
   it('rejects a stalled operation with the supplied message', async () => {
     vi.useFakeTimers();
     const result = withTimeout(new Promise<string>(() => undefined), 250, 'History read timed out');
