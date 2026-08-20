@@ -1078,3 +1078,7 @@
 - [x] Audit reducer recovery after malformed inputs and subsequent valid transitions
 - [x] Add deterministic malformed-input recovery regression coverage
 - [x] Re-run validation and save the malformed-recovery checkpoint
+
+- [x] Audit repeated malformed-input recovery and transition reuse
+- [x] Add deterministic repeated-recovery regression coverage
+- [x] Re-run validation and save the repeated-recovery checkpoint

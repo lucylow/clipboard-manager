@@ -144,6 +144,17 @@ describe('reduceLightboxInteraction', () => {
     });
   });
 
+  it('supports repeated recovery sequences after malformed inputs', () => {
+    const malformed = undefined as unknown as Parameters<typeof reduceLightboxInteraction>[0];
+    const firstOpen = reduceLightboxInteraction(malformed, { type: 'open' });
+    const firstClose = reduceLightboxInteraction(firstOpen, { type: 'close' });
+    const secondOpen = reduceLightboxInteraction(malformed, { type: 'open' });
+    const secondBusy = reduceLightboxInteraction(secondOpen, { type: 'action-start' });
+
+    expect(firstClose).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
+    expect(secondBusy).toEqual({ visible: true, actionBusy: true, retryAvailable: false });
+  });
+
   it('keeps normalized failure outputs detached across repeated calls', () => {
     const malformed = null as unknown as Parameters<typeof reduceLightboxInteraction>[0];
     const first = reduceLightboxInteraction(malformed, { type: 'action-success' });
