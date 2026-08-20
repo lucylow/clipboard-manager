@@ -133,6 +133,18 @@ describe('reduceLightboxInteraction', () => {
     });
   });
 
+  it('keeps normalized failure outputs detached across repeated calls', () => {
+    const malformed = null as unknown as Parameters<typeof reduceLightboxInteraction>[0];
+    const first = reduceLightboxInteraction(malformed, { type: 'action-success' });
+    first.visible = true;
+    first.actionBusy = true;
+    first.retryAvailable = true;
+
+    const second = reduceLightboxInteraction(malformed, { type: 'action-failure' });
+    expect(second).toEqual({ visible: false, actionBusy: false, retryAvailable: false });
+    expect(second).not.toBe(first);
+  });
+
   it('keeps invalid runtime events as identity no-ops across valid states', () => {
     const invalidEvent = { type: 'unexpected-event' } as unknown as Parameters<typeof reduceLightboxInteraction>[1];
     const states = [

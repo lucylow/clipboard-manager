@@ -1070,3 +1070,7 @@
 - [x] Audit reducer normalization failure paths and transition invariants
 - [x] Add deterministic failure-path regression coverage
 - [x] Re-run validation and save the reducer-failure checkpoint
+
+- [x] Audit failure-path output ownership and state invariants
+- [x] Add deterministic failure-output isolation regression coverage
+- [x] Re-run validation and save the failure-output checkpoint
