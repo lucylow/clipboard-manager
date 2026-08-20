@@ -21,6 +21,25 @@ describe('reduceLightboxInteraction', () => {
   });
 
 
+  it('returns detached derived-state snapshots across repeated reads', () => {
+    const options = {
+      hasImage: true,
+      isSharing: true,
+      isOcrPending: false,
+      hasShareFailure: false,
+      hasOcrSaveFailure: true,
+    };
+    const first = getLightboxInteractionState(options);
+    const second = getLightboxInteractionState(options);
+    first.visible = false;
+    first.actionBusy = false;
+    first.retryAvailable = false;
+
+    expect(second).toEqual({ visible: true, actionBusy: true, retryAvailable: true });
+    expect(second).not.toBe(first);
+    expect(getLightboxInteractionState(options)).toEqual(second);
+  });
+
   it('opens with a clean action state', () => {
     expect(reduceLightboxInteraction(closed, { type: 'open' })).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
   });

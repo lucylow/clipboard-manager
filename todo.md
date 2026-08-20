@@ -1054,3 +1054,7 @@
 - [x] Audit reducer normalization invariants across every transition output
 - [x] Add deterministic transition-output regression coverage
 - [x] Re-run validation and save the normalization-invariant checkpoint
+
+- [x] Audit derived-state option boundaries and output ownership
+- [x] Add deterministic immutable derived-state regression coverage
+- [x] Re-run validation and save the derived-state checkpoint
