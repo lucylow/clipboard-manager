@@ -1122,3 +1122,8 @@
 - [x] Implement clearer Pro benefits and recovery CTA states
 - [x] Add deterministic upgrade-message regression coverage
 - [x] Run full validation and save the monetization-message checkpoint
+
+- [x] Audit benefit-state consistency and upgrade recovery
+- [x] Implement clearer monetization recovery and state messaging
+- [x] Add deterministic benefit-state regression coverage
+- [x] Run full validation and save the monetization-consistency checkpoint

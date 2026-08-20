@@ -77,6 +77,24 @@ export const MOCK_PRODUCT_CATALOG: readonly MonetizationProductPreview[] = [
   },
 ];
 
+export function getMonetizationRecoveryModel(input: { hydrationFailed: boolean; recoveryFailureCount: number; isPremium: boolean }) {
+  if (!input.hydrationFailed) {
+    return {
+      visible: false,
+      title: 'Monetization state ready',
+      message: input.isPremium ? 'Clipboard Pro remains active on this device.' : 'The free plan remains available while billing is not connected.',
+      actionLabel: 'Retry',
+    } as const;
+  }
+  const attempts = Math.max(0, Math.floor(input.recoveryFailureCount));
+  return {
+    visible: true,
+    title: attempts > 1 ? 'Local monetization state still needs attention' : 'Some local monetization settings could not be loaded',
+    message: input.isPremium ? 'Your last known Pro state is preserved. Retry to reload local details or reset safely.' : 'The free plan remains safe. Retry to reload local details or reset safely.',
+    actionLabel: 'Retry',
+  } as const;
+}
+
 export function getProBenefitSummary(isPremium: boolean) {
   return isPremium
     ? {

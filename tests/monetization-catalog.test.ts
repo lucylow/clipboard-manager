@@ -5,6 +5,7 @@ import {
   formatProductPreview,
   getCatalogReadiness,
   getEntitlementSummary,
+  getMonetizationRecoveryModel,
   getProBenefitSummary,
   getProUpgradePrompt,
   getStoreReadinessSummary,
@@ -47,6 +48,12 @@ describe('monetization catalog preview', () => {
     });
     expect(parseEntitlementRecord(null)).toBeNull();
     expect(parseEntitlementRecord({ plan: 'trial' })).toBeNull();
+  });
+
+  it('keeps monetization recovery messaging safe across healthy and failed states', () => {
+    expect(getMonetizationRecoveryModel({ hydrationFailed: false, recoveryFailureCount: 0, isPremium: false })).toMatchObject({ visible: false, message: 'The free plan remains available while billing is not connected.' });
+    expect(getMonetizationRecoveryModel({ hydrationFailed: true, recoveryFailureCount: 1, isPremium: false })).toMatchObject({ visible: true, message: 'The free plan remains safe. Retry to reload local details or reset safely.' });
+    expect(getMonetizationRecoveryModel({ hydrationFailed: true, recoveryFailureCount: 2, isPremium: true })).toMatchObject({ visible: true, title: 'Local monetization state still needs attention', message: 'Your last known Pro state is preserved. Retry to reload local details or reset safely.' });
   });
 
   it('keeps the Pro benefit hierarchy clear for free and active plans', () => {
