@@ -133,6 +133,17 @@ describe('reduceLightboxInteraction', () => {
     });
   });
 
+  it('recovers to normal transitions after malformed-state input', () => {
+    const malformed = null as unknown as Parameters<typeof reduceLightboxInteraction>[0];
+    const recovered = reduceLightboxInteraction(malformed, { type: 'open' });
+    expect(recovered).toEqual({ visible: true, actionBusy: false, retryAvailable: false });
+    expect(reduceLightboxInteraction(recovered, { type: 'action-start' })).toEqual({
+      visible: true,
+      actionBusy: true,
+      retryAvailable: false,
+    });
+  });
+
   it('keeps normalized failure outputs detached across repeated calls', () => {
     const malformed = null as unknown as Parameters<typeof reduceLightboxInteraction>[0];
     const first = reduceLightboxInteraction(malformed, { type: 'action-success' });

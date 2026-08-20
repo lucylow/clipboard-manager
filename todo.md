@@ -1074,3 +1074,7 @@
 - [x] Audit failure-path output ownership and state invariants
 - [x] Add deterministic failure-output isolation regression coverage
 - [x] Re-run validation and save the failure-output checkpoint
+
+- [x] Audit reducer recovery after malformed inputs and subsequent valid transitions
+- [x] Add deterministic malformed-input recovery regression coverage
+- [x] Re-run validation and save the malformed-recovery checkpoint
