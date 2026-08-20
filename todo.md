@@ -1042,3 +1042,7 @@
 - [x] Audit public action boundary for invalid or stale dispatch attempts
 - [x] Add deterministic invalid-dispatch regression coverage
 - [x] Re-run validation and save the public-boundary checkpoint
+
+- [x] Audit reducer handling of malformed runtime state inputs
+- [x] Add deterministic state-normalization regression coverage
+- [x] Re-run validation and save the reducer-boundary checkpoint

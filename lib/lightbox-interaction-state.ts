@@ -26,28 +26,47 @@ export function getLightboxInteractionState(options: {
   };
 }
 
+function normalizeInteractionState(candidate: unknown): LightboxInteractionState {
+  if (
+    candidate &&
+    typeof candidate === 'object' &&
+    typeof (candidate as LightboxInteractionState).visible === 'boolean' &&
+    typeof (candidate as LightboxInteractionState).actionBusy === 'boolean' &&
+    typeof (candidate as LightboxInteractionState).retryAvailable === 'boolean'
+  ) {
+    return candidate as LightboxInteractionState;
+  }
+  const input = candidate && typeof candidate === 'object' ? (candidate as Partial<LightboxInteractionState>) : {};
+  return {
+    visible: input.visible === true,
+    actionBusy: input.actionBusy === true,
+    retryAvailable: input.retryAvailable === true,
+  };
+}
+
 export function reduceLightboxInteraction(
   state: LightboxInteractionState,
   event: LightboxInteractionEvent,
 ): LightboxInteractionState {
+  const normalizedState = normalizeInteractionState(state);
   switch (event.type) {
     case 'open':
       return { visible: true, actionBusy: false, retryAvailable: false };
     case 'close':
-      return state.visible ? { visible: false, actionBusy: false, retryAvailable: false } : state;
+      return normalizedState.visible ? { visible: false, actionBusy: false, retryAvailable: false } : normalizedState;
     case 'action-start':
-      return !state.visible || state.actionBusy
-        ? state
-        : { ...state, actionBusy: true, retryAvailable: false };
+      return !normalizedState.visible || normalizedState.actionBusy
+        ? normalizedState
+        : { ...normalizedState, actionBusy: true, retryAvailable: false };
     case 'action-success':
-      return !state.visible || (!state.actionBusy && !state.retryAvailable)
-        ? state
-        : { ...state, actionBusy: false, retryAvailable: false };
+      return !normalizedState.visible || (!normalizedState.actionBusy && !normalizedState.retryAvailable)
+        ? normalizedState
+        : { ...normalizedState, actionBusy: false, retryAvailable: false };
     case 'action-failure':
-      return !state.visible || (!state.actionBusy && state.retryAvailable)
-        ? state
-        : { ...state, actionBusy: false, retryAvailable: true };
+      return !normalizedState.visible || (!normalizedState.actionBusy && normalizedState.retryAvailable)
+        ? normalizedState
+        : { ...normalizedState, actionBusy: false, retryAvailable: true };
     default:
-      return state;
+      return normalizedState;
   }
 }

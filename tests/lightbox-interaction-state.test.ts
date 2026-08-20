@@ -35,6 +35,27 @@ describe('reduceLightboxInteraction', () => {
     expect(reduceLightboxInteraction(closed, { type: 'action-success' })).toBe(closed);
   });
 
+  it('normalizes malformed runtime states without leaking extra fields', () => {
+    const malformed = {
+      visible: 'yes',
+      actionBusy: 1,
+      retryAvailable: true,
+      unexpected: 'discard-me',
+    } as unknown as Parameters<typeof reduceLightboxInteraction>[0];
+    const invalid = null as unknown as Parameters<typeof reduceLightboxInteraction>[0];
+
+    expect(reduceLightboxInteraction(malformed, { type: 'close' })).toEqual({
+      visible: false,
+      actionBusy: false,
+      retryAvailable: true,
+    });
+    expect(reduceLightboxInteraction(invalid, { type: 'action-success' })).toEqual({
+      visible: false,
+      actionBusy: false,
+      retryAvailable: false,
+    });
+  });
+
   it('keeps invalid runtime events as identity no-ops', () => {
     const state = { visible: true, actionBusy: true, retryAvailable: false };
     const invalidEvent = { type: 'unexpected-event' } as unknown as Parameters<typeof reduceLightboxInteraction>[1];
