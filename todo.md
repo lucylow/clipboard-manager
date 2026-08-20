@@ -1022,3 +1022,7 @@
 - [x] Audit adapter release behavior during queued callback overlap
 - [x] Add deterministic release-overlap regression coverage
 - [x] Re-run validation and save the release-overlap checkpoint
+
+- [x] Audit post-release snapshots and callback rejection behavior
+- [x] Add deterministic post-release regression coverage
+- [x] Re-run validation and save the post-release checkpoint
