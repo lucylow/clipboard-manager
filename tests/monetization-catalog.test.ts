@@ -5,6 +5,7 @@ import {
   formatProductPreview,
   getCatalogReadiness,
   getEntitlementSummary,
+  getEntitlementLifecycleModel,
   getMonetizationRecoveryModel,
   getProBenefitSummary,
   getRestoreOutcomePresentation,
@@ -49,6 +50,18 @@ describe('monetization catalog preview', () => {
     });
     expect(parseEntitlementRecord(null)).toBeNull();
     expect(parseEntitlementRecord({ plan: 'trial' })).toBeNull();
+  });
+
+  it('normalizes entitlement lifecycle messaging without overstating access', () => {
+    expect(getEntitlementLifecycleModel({ plan: 'pro', status: 'active', source: 'store', validation: 'validated' })).toEqual({
+      key: 'validated-active', title: 'Clipboard Pro active', badge: 'VALIDATED', detail: 'Store entitlement validated on this device.',
+    });
+    expect(getEntitlementLifecycleModel({ plan: 'pro', status: 'active', source: 'local-preview', validation: 'unverified' })).toMatchObject({
+      key: 'preview-active', badge: 'PREVIEW',
+    });
+    expect(getEntitlementLifecycleModel({ plan: 'free', status: 'inactive', source: 'local-preview', validation: 'unverified' })).toMatchObject({
+      key: 'free-fallback', title: 'Free plan active', badge: 'FREE',
+    });
   });
 
   it('keeps monetization recovery messaging safe across healthy and failed states', () => {

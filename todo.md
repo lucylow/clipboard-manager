@@ -1132,3 +1132,8 @@
 - [x] Improve entitlement status and restore-readiness UX
 - [x] Add deterministic entitlement and restore regression coverage
 - [x] Run validation and save the monetization UX checkpoint
+
+- [x] Audit entitlement lifecycle and restore transparency
+- [x] Implement lifecycle-aware monetization UX
+- [x] Add deterministic lifecycle and recovery tests
+- [x] Validate and save the monetization lifecycle checkpoint

@@ -35,6 +35,31 @@ export function resolveRestoreOutcome(legacyPro: boolean, storedEntitlement: Loc
   } as const;
 }
 
+export function getEntitlementLifecycleModel(entitlement: LocalEntitlement) {
+  if (entitlement.plan === 'pro' && entitlement.status === 'active' && entitlement.source === 'store' && entitlement.validation === 'validated') {
+    return {
+      key: 'validated-active',
+      title: 'Clipboard Pro active',
+      badge: 'VALIDATED',
+      detail: 'Store entitlement validated on this device.',
+    } as const;
+  }
+  if (entitlement.plan === 'pro' && entitlement.status === 'active') {
+    return {
+      key: 'preview-active',
+      title: 'Clipboard Pro preview active',
+      badge: 'PREVIEW',
+      detail: 'Local Pro access is preserved while store validation is pending.',
+    } as const;
+  }
+  return {
+    key: 'free-fallback',
+    title: 'Free plan active',
+    badge: 'FREE',
+    detail: 'Core clipboard tools remain available without an active purchase.',
+  } as const;
+}
+
 export function getRestoreOutcomePresentation(outcome: ReturnType<typeof resolveRestoreOutcome>) {
   if (!outcome.isActive) {
     return {
