@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { readStorageValue, writeStorageValue } from '@/lib/safe-storage';
 import * as Clipboard from 'expo-clipboard';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -44,13 +44,13 @@ type UsageState = { exportCount: number; ocrCount: number; periodStart: string }
 
 async function trackUsage(kind: 'exportCount' | 'ocrCount') {
   try {
-    const telemetryEnabled = await AsyncStorage.getItem(TELEMETRY_KEY);
+    const telemetryEnabled = await readStorageValue(TELEMETRY_KEY);
     if (telemetryEnabled !== 'true') return;
-    const saved = await AsyncStorage.getItem(USAGE_KEY);
+    const saved = await readStorageValue(USAGE_KEY);
     const parsed = saved ? JSON.parse(saved) as Partial<UsageState> : {};
     const next: UsageState = { exportCount: typeof parsed.exportCount === 'number' ? parsed.exportCount : 0, ocrCount: typeof parsed.ocrCount === 'number' ? parsed.ocrCount : 0, periodStart: typeof parsed.periodStart === 'string' ? parsed.periodStart : new Date().toISOString() };
     next[kind] += 1;
-    await AsyncStorage.setItem(USAGE_KEY, JSON.stringify(next));
+    await writeStorageValue(USAGE_KEY, JSON.stringify(next));
   } catch { /* usage tracking is informational and must never block clipboard work */ }
 }
 
@@ -101,7 +101,7 @@ export default function HistoryScreen() {
   if (!noticeControllerRef.current) noticeControllerRef.current = createNoticeController(setNotice);
   useEffect(() => {
     let active = true;
-    AsyncStorage.getItem(PREMIUM_KEY)
+    readStorageValue(PREMIUM_KEY)
       .then((saved) => { if (active) setIsPremium(saved === 'true'); })
       .catch(() => { if (active) setIsPremium(false); });
     return () => { active = false; };
