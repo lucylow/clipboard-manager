@@ -11,18 +11,28 @@ export type LightboxInteractionEvent =
   | { type: 'action-success' }
   | { type: 'action-failure' };
 
-export function getLightboxInteractionState(options: {
+type InteractionStateOptions = {
   hasImage: boolean;
   isSharing: boolean;
   isOcrPending: boolean;
   hasShareFailure: boolean;
   hasOcrSaveFailure: boolean;
-}): LightboxInteractionState {
-  const visible = options.hasImage === true;
+};
+
+function readStrictBoolean(options: InteractionStateOptions, key: keyof InteractionStateOptions): boolean {
+  try {
+    return options[key] === true;
+  } catch {
+    return false;
+  }
+}
+
+export function getLightboxInteractionState(options: InteractionStateOptions): LightboxInteractionState {
+  const visible = readStrictBoolean(options, 'hasImage');
   return {
     visible,
-    actionBusy: visible && (options.isSharing === true || options.isOcrPending === true),
-    retryAvailable: visible && (options.hasShareFailure === true || options.hasOcrSaveFailure === true),
+    actionBusy: visible && (readStrictBoolean(options, 'isSharing') || readStrictBoolean(options, 'isOcrPending')),
+    retryAvailable: visible && (readStrictBoolean(options, 'hasShareFailure') || readStrictBoolean(options, 'hasOcrSaveFailure')),
   };
 }
 

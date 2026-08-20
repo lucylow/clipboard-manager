@@ -21,6 +21,23 @@ describe('reduceLightboxInteraction', () => {
   });
 
 
+  it('isolates throwing derived-state option accessors', () => {
+    const hostile = {
+      get hasImage(): boolean { throw new Error('hostile hasImage'); },
+      get isSharing(): boolean { throw new Error('hostile isSharing'); },
+      isOcrPending: true,
+      hasShareFailure: true,
+      hasOcrSaveFailure: false,
+    };
+
+    expect(() => getLightboxInteractionState(hostile)).not.toThrow();
+    expect(getLightboxInteractionState(hostile)).toEqual({
+      visible: false,
+      actionBusy: false,
+      retryAvailable: false,
+    });
+  });
+
   it('returns detached derived-state snapshots across repeated reads', () => {
     const options = {
       hasImage: true,

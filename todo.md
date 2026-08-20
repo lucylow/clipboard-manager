@@ -1058,3 +1058,7 @@
 - [x] Audit derived-state option boundaries and output ownership
 - [x] Add deterministic immutable derived-state regression coverage
 - [x] Re-run validation and save the derived-state checkpoint
+
+- [x] Audit derived-state option object handling for mutation or prototype edge cases
+- [x] Add deterministic transition-safety regression coverage
+- [x] Re-run validation and save the derived-object checkpoint
