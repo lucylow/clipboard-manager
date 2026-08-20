@@ -7,6 +7,7 @@ import { registerOAuthRoutes } from "./oauth";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
+import { getSafeServerErrorMessage, PUBLIC_SERVER_ERROR } from "./error-response";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise((resolve) => {
@@ -70,6 +71,16 @@ async function startServer() {
     }),
   );
 
+  app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    console.error('[api] request failure:', getSafeServerErrorMessage(error));
+    if (res.headersSent) return;
+    res.status(500).json({ error: PUBLIC_SERVER_ERROR });
+  });
+
+  server.on('error', (error) => {
+    console.error('[api] server failure:', getSafeServerErrorMessage(error));
+  });
+
   const preferredPort = parseInt(process.env.PORT || "3000");
   const port = await findAvailablePort(preferredPort);
 
@@ -82,4 +93,7 @@ async function startServer() {
   });
 }
 
-startServer().catch(console.error);
+startServer().catch((error) => {
+  console.error('[api] startup failure:', getSafeServerErrorMessage(error));
+  process.exitCode = 1;
+});
