@@ -7,6 +7,7 @@ import {
   getEntitlementSummary,
   getUpgradePreviewModel,
   parseEntitlementRecord,
+  shouldRecordMonetizationSignal,
 } from '../lib/monetization-catalog';
 
 describe('monetization catalog preview', () => {
@@ -42,6 +43,13 @@ describe('monetization catalog preview', () => {
     });
     expect(parseEntitlementRecord(null)).toBeNull();
     expect(parseEntitlementRecord({ plan: 'trial' })).toBeNull();
+  });
+
+  it('records optional monetization signals only when local measurement is enabled', () => {
+    expect(shouldRecordMonetizationSignal('plan-interest', false)).toBe(false);
+    expect(shouldRecordMonetizationSignal('billing-notice', false)).toBe(false);
+    expect(shouldRecordMonetizationSignal('plan-interest', true)).toBe(true);
+    expect(shouldRecordMonetizationSignal('billing-notice', true)).toBe(true);
   });
 
   it('keeps upgrade CTAs honest across entitlement and catalog states', () => {

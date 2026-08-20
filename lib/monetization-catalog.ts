@@ -61,6 +61,12 @@ export const MOCK_PRODUCT_CATALOG: readonly MonetizationProductPreview[] = [
   },
 ];
 
+export type MonetizationSignal = 'plan-interest' | 'billing-notice';
+
+export function shouldRecordMonetizationSignal(signal: MonetizationSignal, telemetryEnabled: boolean): boolean {
+  return telemetryEnabled && (signal === 'plan-interest' || signal === 'billing-notice');
+}
+
 export type UpgradePreviewInput = {
   isPremium: boolean;
   planInterestSaved: boolean;

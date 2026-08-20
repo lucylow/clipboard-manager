@@ -1097,3 +1097,8 @@
 - [x] Implement clearer upgrade-preview state and recovery actions
 - [x] Add deterministic conversion and recovery regression coverage
 - [x] Run full validation and save the monetization UX checkpoint
+
+- [x] Audit upgrade funnel and privacy-safe local conversion signals
+- [x] Implement clearer Pro discovery and interest-state feedback
+- [x] Add deterministic funnel and signal regression coverage
+- [x] Run full validation and save the monetization-funnel checkpoint
