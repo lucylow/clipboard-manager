@@ -10,7 +10,7 @@ The release check is available through:
 pnpm release:check
 ```
 
-The current validation baseline is TypeScript, Expo lint, the release check, and the deterministic Vitest suite. The latest run passed all available tests, with one pre-existing authentication test skipped by design.
+The current validation baseline is TypeScript, Expo lint, the release check, and the deterministic Vitest suite. The latest run passed all available tests, with one pre-existing authentication test skipped by design. Client authentication, OAuth callback, and API helpers no longer emit credentials, profile data, URLs, or response bodies to the console; a regression test and the release gate protect that behavior.
 
 ## Required Apple Developer and App Store Connect work
 
@@ -24,6 +24,7 @@ The current validation baseline is TypeScript, Expo lint, the release check, and
 | Screenshots | Capture current-device screenshots for the required iPhone display sizes and any iPad sizes retained by the configuration. |
 | Monetization | Provide the final App Store product identifiers, prices, renewal terms, and receipt-validation service before enabling real purchase controls. |
 | Review notes | Explain that clipboard history is stored locally, that OCR is optional, and that billing controls remain unavailable until store products are configured. |
+| Native runtime configuration | Set a stable HTTPS `EXPO_PUBLIC_API_BASE_URL` and production OAuth values before building. The native client now fails clearly instead of silently using a relative API URL when this endpoint is missing; temporary `manus.computer` preview URLs must not be shipped. |
 | Build and submit | Run the authenticated EAS production build with a current Apple-supported SDK image, install the resulting IPA on a physical iOS device or TestFlight, complete smoke testing, then submit through App Store Connect. Apple’s current submission guidance specifies the minimum SDK requirement for uploads, so the actual EAS build log must be checked before submission [2]. |
 
 ## Release gates before submission

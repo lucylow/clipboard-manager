@@ -5,6 +5,11 @@ const root = process.cwd();
 const appConfig = fs.readFileSync(path.join(root, "app.config.ts"), "utf8");
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 const eas = JSON.parse(fs.readFileSync(path.join(root, "eas.json"), "utf8"));
+const sensitiveClientFiles = [
+  "lib/_core/auth.ts",
+  "lib/_core/api.ts",
+  "app/oauth/callback.tsx",
+].map((file) => fs.readFileSync(path.join(root, file), "utf8"));
 
 const requiredFiles = [
   "assets/images/icon.png",
@@ -21,6 +26,7 @@ const checks = [
   ["Encryption declaration is present", /ITSAppUsesNonExemptEncryption:\s*false/.test(appConfig)],
   ["FileTimestamp privacy reason is declared", /NSPrivacyAccessedAPICategoryFileTimestamp/.test(appConfig) && /C617\.1/.test(appConfig)],
   ["Tracking is explicitly disabled", /NSPrivacyTracking:\s*false/.test(appConfig)],
+  ["Sensitive client auth/API logging is absent", sensitiveClientFiles.every((source) => !/console\.(log|warn|error|debug)\s*\(/.test(source))],
   ["Expo SDK dependencies are aligned", packageJson.dependencies?.expo === "~54.0.37"],
   ["Expo Router is SDK-aligned", packageJson.dependencies?.["expo-router"] === "~6.0.24"],
   ["Sharing module is SDK-aligned", packageJson.dependencies?.["expo-sharing"] === "^14.0.8"],

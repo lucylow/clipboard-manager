@@ -1265,3 +1265,8 @@
 - [x] Validate the hardened dependency graph and save the updated iOS release checkpoint
 - [x] Add the managed Expo iOS privacy manifest declaration for local persistence APIs
 - [x] Document the privacy-manifest reason and final IPA audit requirement
+
+- [x] Remove sensitive authentication and response-body logging from the production client
+- [x] Add deterministic regression coverage for privacy-safe client diagnostics
+- [x] Extend release checks to reject sensitive client logging patterns
+- [ ] Configure stable production API and OAuth environment values before the authenticated EAS build
