@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenContainer } from '@/components/screen-container';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { haptic } from '@/lib/haptics';
-import { updateClipboardStorage } from '@/lib/clipboard-storage';
+import { repairStoredPayload, updateClipboardStorage } from '@/lib/clipboard-storage';
 import { readStorageValue, writeStorageValue } from '@/lib/safe-storage';
 import { createNoticeController } from '@/lib/notice-controller';
 import { cleanupTemporaryFile } from '@/lib/temporary-file-cleanup';
@@ -39,7 +39,7 @@ export default function FavoritesScreen() {
   const noticeControllerRef = useRef(createNoticeController(setNotice));
   const { sessionRef: lightboxSessionRef, canApplyFeedback: canApplyLightboxFeedback } = useLightboxSessionGuard(lightboxItem?.id ?? null);
   const insets = useSafeAreaInsets();
-  const loadItems = useCallback(async () => { try { const saved = await readStorageValue(STORAGE_KEY, 5000); if (!saved) { await writeStorageValue(STORAGE_KEY, JSON.stringify(seedFavorites), 5000); setItems(seedFavorites); return; } const parsed = JSON.parse(saved); const all = Array.isArray(parsed) ? parsed as Item[] : []; const normalized = all.filter((item) => item && typeof item.id === 'string' && (item.type === 'text' || item.type === 'image')).map((item) => item.category ? item : { ...item, category: item.id === '1' || item.id === '2' ? 'Work' as const : item.id === '4' || item.id === '5' ? 'Personal' as const : undefined }); await writeStorageValue(STORAGE_KEY, JSON.stringify(normalized), 5000); setItems(normalized.filter((item) => item.favorite)); } catch { setItems(seedFavorites); noticeControllerRef.current.show('Favorites were restored from the local fallback'); } }, []);
+  const loadItems = useCallback(async () => { try { const saved = await readStorageValue(STORAGE_KEY, 5000); if (!saved) { await writeStorageValue(STORAGE_KEY, JSON.stringify(seedFavorites), 5000); setItems(seedFavorites); return; } const repaired = repairStoredPayload<Item>(saved, (item): item is Item => Boolean(item && typeof item === 'object' && 'id' in item && typeof item.id === 'string' && 'type' in item && (item.type === 'text' || item.type === 'image'))); const normalized = repaired.items.map((item) => item.category ? item : { ...item, category: item.id === '1' || item.id === '2' ? 'Work' as const : item.id === '4' || item.id === '5' ? 'Personal' as const : undefined }); await writeStorageValue(STORAGE_KEY, JSON.stringify(normalized), 5000); setItems(normalized.filter((item) => item.favorite)); if (repaired.repaired) noticeControllerRef.current.show('Favorites were repaired: invalid entries were removed'); } catch { setItems(seedFavorites); noticeControllerRef.current.show('Favorites were restored from the local fallback'); } }, []);
   useFocusEffect(useCallback(() => { void loadItems(); }, [loadItems]));
   useEffect(() => () => noticeControllerRef.current.dispose(), []);
   const showNotice = (message: string) => { noticeControllerRef.current.show(message); };

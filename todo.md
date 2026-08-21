@@ -1248,3 +1248,8 @@
 - [x] Implement focused production code improvements
 - [x] Add deterministic regression coverage
 - [x] Validate and save React Native checkpoint
+
+- [x] Audit duplicated persistence and async lifecycle paths
+- [x] Implement focused shared persistence improvements
+- [x] Add deterministic persistence and lifecycle coverage
+- [x] Validate and save React Native checkpoint
