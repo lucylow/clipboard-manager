@@ -9,6 +9,7 @@ const sensitiveClientFiles = [
   "app/oauth/callback.tsx",
   "hooks/use-auth.ts",
   "components/app-error-boundary.tsx",
+  "lib/_core/manus-runtime.ts",
 ];
 
 describe("privacy-safe client diagnostics", () => {

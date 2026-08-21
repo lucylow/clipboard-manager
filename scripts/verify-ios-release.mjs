@@ -11,6 +11,7 @@ const sensitiveClientFiles = [
   "app/oauth/callback.tsx",
   "hooks/use-auth.ts",
   "components/app-error-boundary.tsx",
+  "lib/_core/manus-runtime.ts",
 ].map((file) => fs.readFileSync(path.join(root, file), "utf8"));
 
 const requiredFiles = [

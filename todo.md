@@ -1276,3 +1276,5 @@
 - [x] Update release documentation with the complete client logging audit
 - [x] Remove production stack logging from the client error boundary
 - [x] Extend privacy-safe diagnostics coverage to the error boundary
+- [x] Disable Manus preview runtime diagnostics in production builds
+- [x] Extend privacy-safe diagnostics coverage to the runtime bridge
