@@ -10,7 +10,7 @@ The release check is available through:
 pnpm release:check
 ```
 
-The current validation baseline is TypeScript, Expo lint, the release check, and the deterministic Vitest suite. The latest run passed all available tests, with one pre-existing authentication test skipped by design. Client authentication, OAuth callback, and API helpers no longer emit credentials, profile data, URLs, or response bodies to the console; a regression test and the release gate protect that behavior.
+The current validation baseline is TypeScript, Expo lint, the release check, and the deterministic Vitest suite. The latest run passed all available tests, with one pre-existing authentication test skipped by design. Client authentication, OAuth callback, authentication-hook, API helpers, and the render error boundary no longer emit credentials, profile data, URLs, response bodies, or component stacks to the console; a regression test and the release gate protect that behavior.
 
 ## Required Apple Developer and App Store Connect work
 

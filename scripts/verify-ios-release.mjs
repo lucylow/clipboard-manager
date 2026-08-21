@@ -9,6 +9,8 @@ const sensitiveClientFiles = [
   "lib/_core/auth.ts",
   "lib/_core/api.ts",
   "app/oauth/callback.tsx",
+  "hooks/use-auth.ts",
+  "components/app-error-boundary.tsx",
 ].map((file) => fs.readFileSync(path.join(root, file), "utf8"));
 
 const requiredFiles = [

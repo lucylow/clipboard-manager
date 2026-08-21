@@ -7,6 +7,8 @@ const sensitiveClientFiles = [
   "lib/_core/auth.ts",
   "lib/_core/api.ts",
   "app/oauth/callback.tsx",
+  "hooks/use-auth.ts",
+  "components/app-error-boundary.tsx",
 ];
 
 describe("privacy-safe client diagnostics", () => {

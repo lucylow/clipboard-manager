@@ -1270,3 +1270,9 @@
 - [x] Add deterministic regression coverage for privacy-safe client diagnostics
 - [x] Extend release checks to reject sensitive client logging patterns
 - [ ] Configure stable production API and OAuth environment values before the authenticated EAS build
+
+- [x] Remove cached-user and API-response logging from the authentication hook
+- [x] Add regression coverage for privacy-safe authentication state diagnostics
+- [x] Update release documentation with the complete client logging audit
+- [x] Remove production stack logging from the client error boundary
+- [x] Extend privacy-safe diagnostics coverage to the error boundary

@@ -1,6 +1,5 @@
-import React, { Component, type ErrorInfo, type ReactNode } from 'react';
+import React, { Component, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { getAppErrorMessage } from '@/lib/app-error-message';
 
 type Props = { children: ReactNode };
 type State = { hasError: boolean };
@@ -10,12 +9,6 @@ export class AppErrorBoundary extends Component<Props, State> {
 
   static getDerivedStateFromError(): State {
     return { hasError: true };
-  }
-
-  componentDidCatch(error: unknown, info: ErrorInfo) {
-    if (typeof console !== 'undefined' && typeof console.error === 'function') {
-      console.error('[Clipboard Manager] render boundary caught an error', getAppErrorMessage(error), info.componentStack);
-    }
   }
 
   handleRetry = () => {
