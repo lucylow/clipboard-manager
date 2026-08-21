@@ -1237,3 +1237,9 @@
 - [x] Implement focused React Native improvements
 - [x] Add deterministic async-state coverage
 - [x] Validate and save the React Native checkpoint
+
+- [x] Audit App Store readiness and current release configuration
+- [x] Harden production React Native and native configuration
+- [x] Add release checks and deterministic coverage
+- [x] Validate build readiness and save App Store checkpoint
+- [x] Document remaining Apple Developer and App Store Connect steps
