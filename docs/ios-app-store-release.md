@@ -2,7 +2,7 @@
 
 ## Validated in the project
 
-The project has a production-oriented Expo configuration with the display name `Clipboard Manager`, the bundle identifier `com.app.clipboardmanager`, iOS build number `1`, the app icon and splash assets, an explicit encryption declaration, and an EAS production profile configured for store distribution with automatic version increments. Expo SDK dependencies are aligned with the installed SDK compatibility set, and unused microphone/video config plugins are not enabled.
+The project has a production-oriented Expo configuration with the display name `Clipboard Manager`, the bundle identifier `com.app.clipboardmanager`, iOS build number `1`, the app icon and splash assets, an explicit encryption declaration, and an EAS production profile configured for store distribution with automatic version increments. Expo SDK dependencies are aligned with the installed SDK compatibility set, unused microphone/video config plugins and packages are not enabled, and the managed privacy manifest declares the FileTimestamp reason used by the installed AsyncStorage dependency (`C617.1`).
 
 The release check is available through:
 
@@ -20,7 +20,7 @@ The current validation baseline is TypeScript, Expo lint, the release check, and
 | Signing | Let EAS manage distribution credentials, or provide an existing distribution certificate and provisioning profile through the authenticated EAS account. |
 | App Store Connect app | Create the app record with the exact bundle identifier, display name, primary language, SKU, and availability. |
 | Store metadata | Supply the final subtitle, description, keywords, support URL, marketing URL if used, category, age rating answers, and copyright information. |
-| Privacy | Publish a privacy policy URL and complete App Store Connect privacy nutrition-label declarations. Review clipboard, locally stored content, OCR processing, diagnostics, and any optional monetization measurement disclosures. Audit the final IPA and bundled SDKs for required-reason API declarations in `PrivacyInfo.xcprivacy`; Apple states that missing required-reason declarations can block App Store Connect acceptance [1]. |
+| Privacy | Publish a privacy policy URL and complete App Store Connect privacy nutrition-label declarations. Review clipboard, locally stored content, OCR processing, diagnostics, and any optional monetization measurement disclosures. Audit the final IPA and bundled SDKs for required-reason API declarations in `PrivacyInfo.xcprivacy`; the app-level declaration covers AsyncStorage’s FileTimestamp usage with reason `C617.1`, but the final IPA must still be checked for newly introduced SDK requirements because Apple states that missing declarations can block App Store Connect acceptance [1]. |
 | Screenshots | Capture current-device screenshots for the required iPhone display sizes and any iPad sizes retained by the configuration. |
 | Monetization | Provide the final App Store product identifiers, prices, renewal terms, and receipt-validation service before enabling real purchase controls. |
 | Review notes | Explain that clipboard history is stored locally, that OCR is optional, and that billing controls remain unavailable until store products are configured. |

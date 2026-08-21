@@ -1259,3 +1259,9 @@
 - [x] Add deterministic App Store readiness checks
 - [x] Validate native readiness and save iOS checkpoint
 - [x] Document remaining Apple Developer and App Store Connect actions
+
+- [x] Remove unused audio/video Expo dependencies from the production mobile bundle
+- [x] Extend iOS release checks to reject unused native capability dependencies and stale store configuration
+- [x] Validate the hardened dependency graph and save the updated iOS release checkpoint
+- [x] Add the managed Expo iOS privacy manifest declaration for local persistence APIs
+- [x] Document the privacy-manifest reason and final IPA audit requirement
