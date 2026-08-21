@@ -1253,3 +1253,9 @@
 - [x] Implement focused shared persistence improvements
 - [x] Add deterministic persistence and lifecycle coverage
 - [x] Validate and save React Native checkpoint
+
+- [x] Audit resolved iOS configuration and release gaps
+- [x] Harden iOS production configuration and release automation
+- [x] Add deterministic App Store readiness checks
+- [x] Validate native readiness and save iOS checkpoint
+- [x] Document remaining Apple Developer and App Store Connect actions
