@@ -1243,3 +1243,8 @@
 - [x] Add release checks and deterministic coverage
 - [x] Validate build readiness and save App Store checkpoint
 - [x] Document remaining Apple Developer and App Store Connect steps
+
+- [x] Audit production React Native paths and lifecycle safety
+- [x] Implement focused production code improvements
+- [x] Add deterministic regression coverage
+- [x] Validate and save React Native checkpoint
