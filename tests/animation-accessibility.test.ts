@@ -59,4 +59,14 @@ describe("accessible motion", () => {
     expect(history).toContain("<AnimatedStateIcon active reducedMotion={reducedMotion}");
     expect(favorites).toContain("<AnimatedStateIcon active reducedMotion={reducedMotion}");
   });
+
+  it("keeps media progress and lightbox motion accessible", () => {
+    const history = read("app/(tabs)/index.tsx");
+    const progress = read("components/animated-progress-pulse.tsx");
+    expect(history).toContain("<AnimatedProgressPulse reducedMotion={reducedMotion}");
+    expect(history).toContain("<AnimatedEntrance reducedMotion={reducedMotion} distance={14}");
+    expect(progress).toContain("reducedMotion");
+    expect(progress).toContain("Animated.loop");
+    expect(progress).toContain("useNativeDriver: true");
+  });
 });

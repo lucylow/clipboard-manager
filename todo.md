@@ -1294,3 +1294,8 @@
 - [x] Add subtle success animations for paste, copy, OCR, and export completion
 - [x] Preserve reduced-motion behavior across removal and completion feedback
 - [x] Extend deterministic animation regression coverage and run full validation
+
+- [x] Add animated lightbox open and close content transitions
+- [x] Add subtle animated OCR and image-saving progress feedback
+- [x] Preserve reduced-motion and async-operation safety during media animations
+- [x] Extend deterministic animation regression coverage and run full validation
