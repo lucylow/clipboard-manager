@@ -1334,3 +1334,8 @@
 - [x] Verify temporary share-file cleanup remains safe after cancellation
 - [x] Add deterministic interrupted-operation regression coverage
 - [x] Run the full validation suite and save a resilience checkpoint
+
+- [x] Audit shared async operation guards for invalid inputs and repeated release
+- [x] Harden async guard behavior without changing active UI flows
+- [x] Add deterministic regression coverage for repeated and invalid guard operations
+- [x] Run the full validation suite and save a hardening checkpoint

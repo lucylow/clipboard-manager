@@ -4,14 +4,19 @@ export type LightboxOperation = 'ocr' | 'share';
 export function createLightboxOperationGuard() {
   let activeOperation: LightboxOperation | null = null;
 
+  const isValidOperation = (operation: unknown): operation is LightboxOperation =>
+    operation === 'ocr' || operation === 'share';
+
   return {
     acquire(operation: LightboxOperation) {
-      if (activeOperation !== null) return false;
+      if (!isValidOperation(operation) || activeOperation !== null) return false;
       activeOperation = operation;
       return true;
     },
     release(operation: LightboxOperation) {
-      if (activeOperation === operation) activeOperation = null;
+      if (!isValidOperation(operation) || activeOperation !== operation) return false;
+      activeOperation = null;
+      return true;
     },
     get active() {
       return activeOperation;
@@ -20,4 +25,3 @@ export function createLightboxOperationGuard() {
 }
 
 export type LightboxOperationGuard = ReturnType<typeof createLightboxOperationGuard>;
-
