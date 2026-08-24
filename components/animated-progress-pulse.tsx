@@ -1,13 +1,19 @@
 import { useEffect, useRef } from "react";
-import { Animated, Easing, type ViewStyle } from "react-native";
+import { Animated, Easing, type StyleProp, type ViewStyle } from "react-native";
 
 type Props = {
   reducedMotion: boolean;
   color?: string;
-  style?: ViewStyle;
+  label?: string;
+  style?: StyleProp<ViewStyle>;
 };
 
-export function AnimatedProgressPulse({ reducedMotion, color = "#FFFFFF", style }: Props) {
+export function AnimatedProgressPulse({
+  reducedMotion,
+  color = "#FFFFFF",
+  label = "In progress",
+  style,
+}: Props) {
   const opacity = useRef(new Animated.Value(reducedMotion ? 1 : 0.35)).current;
 
   useEffect(() => {
@@ -19,15 +25,33 @@ export function AnimatedProgressPulse({ reducedMotion, color = "#FFFFFF", style 
 
     const animation = Animated.loop(
       Animated.sequence([
-        Animated.timing(opacity, { toValue: 1, duration: 420, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 0.35, duration: 420, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 420,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 0.35,
+          duration: 420,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
       ]),
     );
     animation.start();
     return () => animation.stop();
   }, [opacity, reducedMotion]);
 
-  return <Animated.View accessibilityLabel="In progress" style={[styles.pulse, { backgroundColor: color, opacity }, style]} />;
+  return (
+    <Animated.View
+      accessible
+      accessibilityRole="progressbar"
+      accessibilityLabel={label}
+      accessibilityState={{ busy: true }}
+      style={[styles.pulse, { backgroundColor: color, opacity }, style]}
+    />
+  );
 }
 
 const styles = {

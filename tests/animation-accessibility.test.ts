@@ -68,5 +68,8 @@ describe("accessible motion", () => {
     expect(progress).toContain("reducedMotion");
     expect(progress).toContain("Animated.loop");
     expect(progress).toContain("useNativeDriver: true");
+    expect(progress).toContain('accessibilityRole="progressbar"');
+    expect(progress).toContain('accessibilityState={{ busy: true }}');
+    expect(progress).toContain("return () => animation.stop()");
   });
 });

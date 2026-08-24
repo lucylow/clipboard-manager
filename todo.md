@@ -1299,3 +1299,8 @@
 - [x] Add subtle animated OCR and image-saving progress feedback
 - [x] Preserve reduced-motion and async-operation safety during media animations
 - [x] Extend deterministic animation regression coverage and run full validation
+
+- [x] Harden animation cleanup and avoid stale callbacks after unmount
+- [x] Improve media progress accessibility semantics and component reuse
+- [x] Add deterministic lifecycle regression coverage
+- [x] Run the full validation suite and save a code-quality checkpoint
