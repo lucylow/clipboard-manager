@@ -52,3 +52,63 @@ describe('temporary cache cleanup', () => {
     }
   });
 });
+
+
+  it('ignores malformed directory results and unsafe path-like filenames', async () => {
+    const deleteFile = vi.fn(async () => undefined);
+    const count = await cleanupManagedTemporaryFiles(
+      'cache://files',
+      async () => [
+        null,
+        42,
+        'clipboard-image-../secret.png',
+        'clipboard-image-42\\secret.png',
+        'clipboard-image-42.png',
+      ],
+      deleteFile,
+    );
+
+    expect(count).toBe(1);
+    expect(deleteFile).toHaveBeenCalledWith('cache://files/clipboard-image-42.png');
+  });
+
+  it('returns zero for a non-array directory response or an empty file budget', async () => {
+    const deleteFile = vi.fn(async () => undefined);
+
+    await expect(
+      cleanupManagedTemporaryFiles('cache://', async () => ({ malformed: true }), deleteFile),
+    ).resolves.toBe(0);
+    await expect(
+      cleanupManagedTemporaryFiles(
+        'cache://',
+        async () => ['clipboard-export.txt'],
+        deleteFile,
+        { maxFiles: -1 },
+      ),
+    ).resolves.toBe(0);
+
+    expect(deleteFile).not.toHaveBeenCalled();
+  });
+
+  it('continues cleanup after an interrupted deletion times out', async () => {
+    vi.useFakeTimers();
+    try {
+      const deleteFile = vi.fn((uri: string) =>
+        uri.endsWith('clipboard-export.txt')
+          ? new Promise<void>(() => {})
+          : Promise.resolve(),
+      );
+      const cleanup = cleanupManagedTemporaryFiles(
+        'cache://',
+        async () => ['clipboard-export.txt', 'clipboard-image-2.png'],
+        deleteFile,
+        { timeoutMs: 20 },
+      );
+
+      await vi.advanceTimersByTimeAsync(20);
+      await expect(cleanup).resolves.toBe(1);
+      expect(deleteFile).toHaveBeenCalledWith('cache://clipboard-image-2.png');
+    } finally {
+      vi.useRealTimers();
+    }
+  });

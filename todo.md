@@ -1329,3 +1329,8 @@
 - [x] Ensure async media cleanup completes before releasing operation guards
 - [x] Add deterministic cancellation and stale-feedback regression coverage
 - [x] Run the full validation suite and save a stability checkpoint
+
+- [x] Add direct unit coverage for synchronous lightbox session invalidation
+- [x] Verify temporary share-file cleanup remains safe after cancellation
+- [x] Add deterministic interrupted-operation regression coverage
+- [x] Run the full validation suite and save a resilience checkpoint

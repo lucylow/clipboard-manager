@@ -83,7 +83,8 @@ describe("accessible motion", () => {
     expect(modal).toContain("reducedMotion");
     const sessionGuard = read("hooks/use-lightbox-session-guard.ts");
     expect(sessionGuard).toContain("const invalidateSession = useCallback");
-    expect(sessionGuard).toContain("sessionRef.current += 1");
+    expect(sessionGuard).toContain("controller.invalidate()");
+    expect(sessionGuard).toContain("sessionRef.current = controller.getState().sessionToken");
     expect(history).toContain("AnimatedModalContent");
     expect(favorites).toContain("AnimatedModalContent");
   });
