@@ -1284,3 +1284,8 @@
 - [x] Respect reduced-motion accessibility preferences
 - [x] Add deterministic animation-state regression coverage
 - [x] Validate animations with the full mobile test and release suite
+
+- [x] Animate favorite and selection state changes without changing persistence semantics
+- [x] Animate filter transitions and empty-state presentation
+- [x] Extend deterministic animation accessibility coverage
+- [x] Run the full validation suite and save a motion enhancement checkpoint

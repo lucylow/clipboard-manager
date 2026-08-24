@@ -26,5 +26,17 @@ describe("accessible motion", () => {
     const source = read("app/(tabs)/index.tsx");
     expect(source).toContain("const reducedMotion = useReducedMotion()");
     expect(source).toContain("Math.min(index * 35, 180)");
+    expect(source).toContain("key={`${filter}-${query.trim()}`}");
+    expect(source).toContain("AnimatedStateIcon");
+  });
+
+  it("animates Favorites and state changes without bypassing reduced motion", () => {
+    const favorites = read("app/(tabs)/favorites.tsx");
+    const stateIcon = read("components/animated-state-icon.tsx");
+    expect(favorites).toContain("Math.min(index * 35, 180)");
+    expect(favorites).toContain("useReducedMotion");
+    expect(stateIcon).toContain("active");
+    expect(stateIcon).toContain("reducedMotion");
+    expect(stateIcon).toContain("useNativeDriver: true");
   });
 });
