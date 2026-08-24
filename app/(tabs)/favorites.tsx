@@ -40,6 +40,7 @@ export default function FavoritesScreen() {
   const [isSharing, setIsSharing] = useState(false);
   const [shareFailed, setShareFailed] = useState(false);
   const [removingIds, setRemovingIds] = useState<string[]>([]);
+  const favoriteActionIdsRef = useRef(new Set<string>());
   const lightboxOperationGuardRef = useRef(createLightboxOperationGuard());
   const noticeControllerRef = useRef(createNoticeController(setNotice));
   const { sessionRef: lightboxSessionRef, canApplyFeedback: canApplyLightboxFeedback } = useLightboxSessionGuard(lightboxItem?.id ?? null);
@@ -50,7 +51,7 @@ export default function FavoritesScreen() {
   useEffect(() => () => noticeControllerRef.current.dispose(), []);
   const showNotice = (message: string) => { noticeControllerRef.current.show(message); };
   const copyItem = async (item: Item) => { try { if (item.type === 'text') await Clipboard.setStringAsync(item.content); else if (item.imageData) await Clipboard.setImageAsync(item.imageData); else return showNotice('This image is no longer available'); haptic.success(); showNotice(item.type === 'image' ? 'Image copied to clipboard' : 'Copied to clipboard'); } catch { haptic.error(); showNotice('Could not copy this item'); } };
-  const toggleFavorite = async (id: string) => { setRemovingIds((current) => current.includes(id) ? current : [...current, id]); try { await updateClipboardStorage<Item>((all) => all.map((item) => item.id === id ? { ...item, favorite: false } : item)); haptic.light(); await loadItems(); showNotice('Removed from favorites'); } catch { showNotice('Could not update this favorite'); } finally { setRemovingIds((current) => current.filter((removingId) => removingId !== id)); } };
+  const toggleFavorite = async (id: string) => { if (favoriteActionIdsRef.current.has(id)) return; favoriteActionIdsRef.current.add(id); setRemovingIds((current) => current.includes(id) ? current : [...current, id]); try { await updateClipboardStorage<Item>((all) => all.map((item) => item.id === id ? { ...item, favorite: false } : item)); haptic.light(); await loadItems(); showNotice('Removed from favorites'); } catch { showNotice('Could not update this favorite'); } finally { favoriteActionIdsRef.current.delete(id); setRemovingIds((current) => current.filter((removingId) => removingId !== id)); } };
   const shareImageItem = async (item: Item) => {
     if (!item.imageData) return showNotice('This image is no longer available');
     if (!lightboxOperationGuardRef.current.acquire('share')) {

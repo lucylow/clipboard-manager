@@ -1304,3 +1304,8 @@
 - [x] Improve media progress accessibility semantics and component reuse
 - [x] Add deterministic lifecycle regression coverage
 - [x] Run the full validation suite and save a code-quality checkpoint
+
+- [x] Extract shared animated modal content behavior for History and Favorites
+- [x] Guard rapid repeated media actions against duplicate feedback or stale animation state
+- [x] Add deterministic lifecycle and rapid-action regression coverage
+- [x] Run the full validation suite and save a code-quality checkpoint

@@ -92,6 +92,7 @@ export default function HistoryScreen() {
   const { sessionRef: lightboxSessionRef, canApplyFeedback: canApplyLightboxFeedback } = useLightboxSessionGuard(lightboxItem?.id ?? null);
   const [isSavingMedia, setIsSavingMedia] = useState(false);
   const mediaOperationGuardRef = useRef(createMediaOperationGuard());
+  const favoriteActionIdsRef = useRef(new Set<string>());
   const [ocrSaveFailures, setOcrSaveFailures] = useState<string[]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -279,6 +280,8 @@ export default function HistoryScreen() {
   };
 
   const toggleFavorite = async (id: string): Promise<boolean> => {
+    if (favoriteActionIdsRef.current.has(id)) return false;
+    favoriteActionIdsRef.current.add(id);
     try {
       const saved = await persist(updateClipboardItem(items, id, (item) => ({ ...item, favorite: !item.favorite })));
       if (saved) haptic.light();
@@ -286,6 +289,8 @@ export default function HistoryScreen() {
     } catch {
       showNotice('Could not update favorite status');
       return false;
+    } finally {
+      favoriteActionIdsRef.current.delete(id);
     }
   };
   const setCategory = async (id: string, category: Category): Promise<boolean> => {

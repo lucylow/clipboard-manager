@@ -49,8 +49,10 @@ describe("accessible motion", () => {
     expect(removal).toContain("useNativeDriver: true");
     expect(history).toContain("setRemovingIds");
     expect(history).toContain("idsToRemove");
+    expect(history).toContain("favoriteActionIdsRef.current.has(id)");
     expect(history).toContain("finally");
     expect(favorites).toContain("setRemovingIds");
+    expect(favorites).toContain("favoriteActionIdsRef.current.has(id)");
   });
 
   it("animates completion feedback for clipboard actions", () => {
