@@ -1289,3 +1289,8 @@
 - [x] Animate filter transitions and empty-state presentation
 - [x] Extend deterministic animation accessibility coverage
 - [x] Run the full validation suite and save a motion enhancement checkpoint
+
+- [x] Add layout-safe animated removal for delete and unfavorite actions
+- [x] Add subtle success animations for paste, copy, OCR, and export completion
+- [x] Preserve reduced-motion behavior across removal and completion feedback
+- [x] Extend deterministic animation regression coverage and run full validation

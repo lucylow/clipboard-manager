@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, AppState, FlatList, Image, Modal, Platform, Pressable, RefreshControl, StyleSheet, Text, TextInput, View, type AppStateStatus } from 'react-native';
 import { AnimatedEntrance } from '@/components/animated-entrance';
 import { AnimatedStateIcon } from '@/components/animated-state-icon';
+import { AnimatedRemoval } from '@/components/animated-removal';
 import { useReducedMotion } from '@/hooks/use-reduced-motion';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
@@ -93,6 +94,7 @@ export default function HistoryScreen() {
   const [ocrSaveFailures, setOcrSaveFailures] = useState<string[]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [removingIds, setRemovingIds] = useState<string[]>([]);
   const [isExporting, setIsExporting] = useState(false);
   const [failedImageShareId, setFailedImageShareId] = useState<string | null>(null);
   const lightboxOperationGuardRef = useRef(createLightboxOperationGuard());
@@ -417,6 +419,7 @@ export default function HistoryScreen() {
       { text: 'Cancel', style: 'cancel' },
       { text: 'Delete', style: 'destructive', onPress: () => {
         void (async () => {
+          setRemovingIds((current) => [...new Set([...current, ...selectedIds])]);
           try {
             const saved = await persist(removeClipboardItems(items, new Set(selectedIds)));
             if (!saved) return;
@@ -425,6 +428,8 @@ export default function HistoryScreen() {
             exitSelectionMode();
           } catch {
             showNotice('Could not delete the selected items');
+          } finally {
+            setRemovingIds((current) => current.filter((id) => !selectedIds.includes(id)));
           }
         })();
       } },
@@ -433,20 +438,25 @@ export default function HistoryScreen() {
   const clearAll = () => Alert.alert('Clear all history?', 'Every saved clipboard item will be removed.', [
     { text: 'Cancel', style: 'cancel' },
     { text: 'Clear all', style: 'destructive', onPress: () => {
-      void (async () => {
-        try {
-          const saved = await persist([]);
-          if (!saved) return;
-          setSelectedItem(null);
-          haptic.medium();
-          showNotice('History cleared');
-        } catch {
-          showNotice('Could not clear history');
-        }
-      })();
+        void (async () => {
+          const idsToRemove = items.map((item) => item.id);
+          setRemovingIds(idsToRemove);
+          try {
+            const saved = await persist([]);
+            if (!saved) return;
+            setSelectedItem(null);
+            haptic.medium();
+            showNotice('History cleared');
+          } catch {
+            showNotice('Could not clear history');
+          } finally {
+            setRemovingIds((current) => current.filter((id) => !idsToRemove.includes(id)));
+          }
+        })();
     } },
   ]);
   const deleteItem = async (id: string) => {
+    setRemovingIds((current) => current.includes(id) ? current : [...current, id]);
     try {
       const saved = await persist(removeClipboardItems(items, new Set([id])));
       if (saved) haptic.medium();
@@ -454,6 +464,8 @@ export default function HistoryScreen() {
     } catch {
       showNotice('Could not delete this item');
       return false;
+    } finally {
+      setRemovingIds((current) => current.filter((removingId) => removingId !== id));
     }
   };
   const deleteSelected = () => {
@@ -524,15 +536,15 @@ export default function HistoryScreen() {
 
       <AnimatedEntrance key={`${filter}-${query.trim()}`} reducedMotion={reducedMotion} delay={120}>
         <View style={styles.chipsRow}>{(['All', 'Text', 'Images', 'Favorites'] as Filter[]).map((chip) => <Pressable key={chip} accessibilityRole="button" accessibilityState={{ selected: filter === chip }} accessibilityLabel={`Filter by ${chip}`} onPress={() => setFilter(chip)} style={({ pressed }) => [styles.chip, filter === chip && styles.chipActive, pressed && styles.chipPressed]}><Text style={[styles.chipText, filter === chip && styles.chipTextActive]}>{chip}</Text></Pressable>)}</View><View style={styles.categoryRow}>{(['Work', 'Personal'] as Category[]).map((chip) => <Pressable key={chip} accessibilityRole="button" accessibilityState={{ selected: filter === chip }} onPress={() => setFilter(chip)} style={({ pressed }) => [styles.categoryChip, filter === chip && styles.categoryChipActive, pressed && styles.chipPressed]}><Text style={[styles.categoryText, filter === chip && styles.categoryTextActive]}>{chip}</Text></Pressable>)}</View><Pressable accessibilityRole="button" accessibilityLabel="Open filters" accessibilityHint="Choose a clipboard type or category" style={({ pressed }) => [styles.filterSheetTrigger, pressed && styles.chipPressed]} onPress={() => setFilterSheetVisible(true)}><IconSymbol name="slider.horizontal.3" size={16} color="#C9553B" /><Text style={styles.filterSheetTriggerText}>{filter === 'All' ? 'More filters' : `Filter: ${filter}`}</Text><IconSymbol name="chevron.right" size={14} color="#C9553B" /></Pressable>{(query.trim() || filter !== 'All') ? <View style={styles.activeFilterSummary}><View style={styles.activeFilterDot} /><Text style={styles.activeFilterText}>{query.trim() ? `Searching “${query.trim()}”` : `${filter} items`} · {visibleItems.length} result{visibleItems.length === 1 ? '' : 's'}</Text><Pressable accessibilityRole="button" accessibilityLabel="Clear active filters" onPress={() => { setQuery(''); setFilter('All'); }}><Text style={styles.activeFilterClear}>Clear</Text></Pressable></View> : null}
-      {notice ? <View accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.notice}><IconSymbol name="checkmark.circle.fill" size={17} color="#287A4B" /><Text style={styles.noticeText}>{notice}</Text></View> : null}
+      {notice ? <View accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.notice}><AnimatedStateIcon active reducedMotion={reducedMotion}><IconSymbol name="checkmark.circle.fill" size={17} color="#287A4B" /></AnimatedStateIcon><Text style={styles.noticeText}>{notice}</Text></View> : null}
       </AnimatedEntrance>
       {refreshError ? <View accessibilityRole="alert" style={styles.refreshError}><View style={styles.refreshErrorCopy}><IconSymbol name="exclamationmark.triangle.fill" size={16} color="#B4771F" /><Text style={styles.refreshErrorText}>History could not be refreshed.</Text></View><Pressable accessibilityRole="button" accessibilityLabel="Retry history refresh" onPress={() => void onRefresh()} disabled={refreshing}><Text style={styles.refreshRetryText}>{refreshing ? 'Retrying…' : 'Retry'}</Text></Pressable></View> : null}
 
       <View style={styles.listHeader}><View><Text style={styles.sectionTitle}>{selectionMode ? `${selectedIds.length} selected` : filter === 'All' ? 'Recent items' : filter}</Text>{lastRefreshedAt ? <Text style={styles.refreshMeta}>Updated {formatTime(lastRefreshedAt)}</Text> : null}</View><View style={styles.listHeaderRight}>{selectionMode ? <><Pressable accessibilityRole="button" accessibilityLabel="Favorite selected items" onPress={batchFavorite}><Text style={styles.clearText}>Favorite</Text></Pressable><Pressable accessibilityRole="button" accessibilityLabel="Assign category to selected items" onPress={batchCategory}><Text style={styles.countText}>Category</Text></Pressable><Pressable accessibilityRole="button" accessibilityLabel={isExporting ? 'Exporting selected items' : 'Export selected items'} accessibilityState={{ busy: isExporting, disabled: isExporting }} disabled={isExporting} onPress={() => void exportSelected}><Text style={styles.countText}>{isExporting ? 'Exporting…' : isPremium ? 'Share' : getProUpgradePrompt(selectedIds.length, false)?.label ?? 'Explore Clipboard Pro'}</Text></Pressable><Pressable accessibilityRole="button" accessibilityLabel="Delete selected items" onPress={batchDelete}><Text style={styles.deleteText}>Delete</Text></Pressable><Pressable accessibilityRole="button" accessibilityLabel="Cancel selection" onPress={exitSelectionMode}><Text style={styles.countText}>Cancel</Text></Pressable></> : <><Text style={styles.countText}>{visibleItems.length} {visibleItems.length === 1 ? 'item' : 'items'}</Text>{items.length > 0 ? <Pressable accessibilityRole="button" accessibilityLabel="Select clipboard items" onPress={() => setSelectionMode(true)}><Text style={styles.countText}>Select</Text></Pressable> : null}{items.length > 0 ? <Pressable accessibilityRole="button" accessibilityLabel="Clear all clipboard history" onPress={clearAll}><Text style={styles.clearText}>Clear all</Text></Pressable> : null}</>}</View></View>
-      <FlatList style={styles.listFlex} data={visibleItems} keyExtractor={(item) => item.id} showsVerticalScrollIndicator={false} contentContainerStyle={styles.listContent} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#E76F51" />} ListEmptyComponent={<AnimatedEntrance reducedMotion={reducedMotion} distance={8}><View style={styles.empty}><View style={styles.emptyIcon}><IconSymbol name={query.trim() || filter !== 'All' ? 'magnifyingglass' : 'doc.on.clipboard'} size={30} color="#E76F51" /></View><Text style={styles.emptyTitle}>{query.trim() || filter !== 'All' ? 'No matching items' : 'Nothing here yet'}</Text><Text style={styles.emptyCopy}>{query.trim() || filter !== 'All' ? 'Try a different search or filter to find another saved item.' : 'Paste something from your clipboard and it will appear in your history.'}</Text>{query.trim() || filter !== 'All' ? <Pressable style={styles.resetButton} onPress={() => { setQuery(''); setFilter('All'); }}><Text style={styles.resetText}>Reset search</Text></Pressable> : null}</View></AnimatedEntrance>} renderItem={({ item, index }) =>         <AnimatedEntrance reducedMotion={reducedMotion} delay={Math.min(index * 35, 180)} distance={8}><Pressable accessibilityRole="button" accessibilityState={{ selected: selectedIds.includes(item.id) }} accessibilityHint={selectionMode ? 'Toggles item selection' : item.type === 'image' ? 'Opens a full-screen image preview' : 'Opens item details'} style={({ pressed }) => [styles.card, selectedIds.includes(item.id) && styles.cardSelected, pressed && styles.cardPressed]} onPress={() => selectionMode ? toggleSelection(item.id) : item.type === 'image' && item.imageData ? setLightboxItem(item) : setSelectedItem(item)}>
+      <FlatList style={styles.listFlex} data={visibleItems} keyExtractor={(item) => item.id} showsVerticalScrollIndicator={false} contentContainerStyle={styles.listContent} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#E76F51" />} ListEmptyComponent={<AnimatedEntrance reducedMotion={reducedMotion} distance={8}><View style={styles.empty}><View style={styles.emptyIcon}><IconSymbol name={query.trim() || filter !== 'All' ? 'magnifyingglass' : 'doc.on.clipboard'} size={30} color="#E76F51" /></View><Text style={styles.emptyTitle}>{query.trim() || filter !== 'All' ? 'No matching items' : 'Nothing here yet'}</Text><Text style={styles.emptyCopy}>{query.trim() || filter !== 'All' ? 'Try a different search or filter to find another saved item.' : 'Paste something from your clipboard and it will appear in your history.'}</Text>{query.trim() || filter !== 'All' ? <Pressable style={styles.resetButton} onPress={() => { setQuery(''); setFilter('All'); }}><Text style={styles.resetText}>Reset search</Text></Pressable> : null}</View></AnimatedEntrance>} renderItem={({ item, index }) =>         <AnimatedEntrance reducedMotion={reducedMotion} delay={Math.min(index * 35, 180)} distance={8}><AnimatedRemoval removing={removingIds.includes(item.id)} reducedMotion={reducedMotion}><Pressable disabled={removingIds.includes(item.id)} accessibilityRole="button" accessibilityState={{ selected: selectedIds.includes(item.id) }} accessibilityHint={selectionMode ? 'Toggles item selection' : item.type === 'image' ? 'Opens a full-screen image preview' : 'Opens item details'} style={({ pressed }) => [styles.card, selectedIds.includes(item.id) && styles.cardSelected, pressed && styles.cardPressed]} onPress={() => selectionMode ? toggleSelection(item.id) : item.type === 'image' && item.imageData ? setLightboxItem(item) : setSelectedItem(item)}>
         <View style={styles.cardLeft}>{selectionMode ? <AnimatedStateIcon active={selectedIds.includes(item.id)} reducedMotion={reducedMotion}><View style={[styles.selectionCircle, selectedIds.includes(item.id) && styles.selectionCircleActive]}><Text style={styles.selectionMark}>{selectedIds.includes(item.id) ? '✓' : ''}</Text></View></AnimatedStateIcon> : <View style={[styles.typeIcon, item.type === 'image' && styles.imageIcon]}><IconSymbol name={item.type === 'image' ? 'photo' : 'doc.text'} size={20} color={item.type === 'image' ? '#8063A6' : '#E76F51'} /></View>}</View>
         <View style={styles.cardBody}><View style={styles.metaRow}><View style={styles.metaContent}><Text style={styles.meta}>{item.source || 'Clipboard'} · {formatTime(item.timestamp)}</Text>{item.category ? <View style={[styles.categoryBadge, item.category === 'Work' ? styles.workBadge : styles.personalBadge]}><Text style={[styles.categoryBadgeText, item.category === 'Work' ? styles.workText : styles.personalText]}>{item.category}</Text></View> : null}</View><Pressable accessibilityRole="button" accessibilityLabel={item.favorite ? 'Remove from favorites' : 'Add to favorites'} accessibilityState={{ selected: item.favorite }} onPress={() => toggleFavorite(item.id)} hitSlop={8}><AnimatedStateIcon active={item.favorite} reducedMotion={reducedMotion}><IconSymbol name={item.favorite ? 'star.fill' : 'star'} size={19} color={item.favorite ? '#E9A23B' : '#AEB5B9'} /></AnimatedStateIcon></Pressable></View><Text numberOfLines={3} style={styles.content}>{item.type === 'image' && item.ocrText ? item.ocrText : item.content}</Text>{item.type === 'image' ? <Text style={styles.imageHint}>{item.ocrText ? 'Extracted text · tap to preview' : ocrSaveFailures.includes(item.id) ? 'Text ready · tap to retry saving OCR' : 'Tap to preview image · text not extracted yet'}</Text> : null}<View style={styles.cardActions}><Pressable accessibilityRole="button" accessibilityLabel={item.type === 'image' ? 'Copy image to clipboard' : 'Copy text to clipboard'} style={({ pressed }) => [styles.copyAction, pressed && styles.actionPressed]} onPress={() => copyItem(item)}><IconSymbol name="doc.on.doc" size={15} color="#E76F51" /><Text style={styles.copyText}>Copy</Text></Pressable><Pressable accessibilityRole="button" accessibilityLabel="Delete clipboard item" style={({ pressed }) => [styles.deleteAction, pressed && styles.actionPressed]} onPress={() => Alert.alert('Delete item?', 'This will remove it from your history.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: () => { void deleteItem(item.id); } }])}><Text style={styles.deleteText}>Delete</Text></Pressable></View></View>
-      </Pressable></AnimatedEntrance>} />
+      </Pressable></AnimatedRemoval></AnimatedEntrance>} />
       <Modal visible={filterSheetVisible} animationType="slide" transparent onRequestClose={() => setFilterSheetVisible(false)}>
         <View style={styles.filterSheetBackdrop}><View style={styles.filterSheetCard}>
           <View style={styles.filterSheetHeader}><Text style={styles.filterSheetTitle}>Filter history</Text><Pressable accessibilityRole="button" accessibilityLabel="Close filters" onPress={() => setFilterSheetVisible(false)}><IconSymbol name="xmark.circle.fill" size={24} color="#9AA3AA" /></Pressable></View>

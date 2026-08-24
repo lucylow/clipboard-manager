@@ -39,4 +39,24 @@ describe("accessible motion", () => {
     expect(stateIcon).toContain("reducedMotion");
     expect(stateIcon).toContain("useNativeDriver: true");
   });
+
+  it("keeps removal transitions reversible and persistence-aware", () => {
+    const removal = read("components/animated-removal.tsx");
+    const history = read("app/(tabs)/index.tsx");
+    const favorites = read("app/(tabs)/favorites.tsx");
+    expect(removal).toContain("duration: 180");
+    expect(removal).toContain("reducedMotion");
+    expect(removal).toContain("useNativeDriver: true");
+    expect(history).toContain("setRemovingIds");
+    expect(history).toContain("idsToRemove");
+    expect(history).toContain("finally");
+    expect(favorites).toContain("setRemovingIds");
+  });
+
+  it("animates completion feedback for clipboard actions", () => {
+    const history = read("app/(tabs)/index.tsx");
+    const favorites = read("app/(tabs)/favorites.tsx");
+    expect(history).toContain("<AnimatedStateIcon active reducedMotion={reducedMotion}");
+    expect(favorites).toContain("<AnimatedStateIcon active reducedMotion={reducedMotion}");
+  });
 });
