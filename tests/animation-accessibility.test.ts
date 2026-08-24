@@ -84,4 +84,13 @@ describe("accessible motion", () => {
     expect(history).toContain("AnimatedModalContent");
     expect(favorites).toContain("AnimatedModalContent");
   });
+
+  it("centralizes accessible media-action feedback", () => {
+    const mediaAction = read("components/animated-media-action.tsx");
+    const history = read("app/(tabs)/index.tsx");
+    expect(mediaAction).toContain("accessibilityState={{ busy, disabled }}");
+    expect(mediaAction).toContain("AnimatedProgressPulse");
+    expect(mediaAction).toContain("reducedMotion");
+    expect(history).toContain("AnimatedMediaAction");
+  });
 });

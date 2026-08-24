@@ -1314,3 +1314,8 @@
 - [x] Harden modal close and async media cancellation paths
 - [x] Add deterministic modal lifecycle regression coverage
 - [x] Run the full validation suite and save a maintainability checkpoint
+
+- [x] Extract a shared animated media-action button for lightbox share and OCR actions
+- [x] Harden modal close behavior while async media actions are active
+- [x] Add deterministic media-action and cancellation regression coverage
+- [x] Run the full validation suite and save a refactor checkpoint
