@@ -1278,3 +1278,9 @@
 - [x] Extend privacy-safe diagnostics coverage to the error boundary
 - [x] Disable Manus preview runtime diagnostics in production builds
 - [x] Extend privacy-safe diagnostics coverage to the runtime bridge
+
+- [x] Add subtle animated screen entry and list-item motion
+- [x] Add animated press feedback and action confirmation states
+- [x] Respect reduced-motion accessibility preferences
+- [x] Add deterministic animation-state regression coverage
+- [x] Validate animations with the full mobile test and release suite
