@@ -91,7 +91,7 @@ export default function HistoryScreen() {
   const noticeControllerRef = useRef<NoticeController | null>(null);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [lightboxItem, setLightboxItem] = useState<Item | null>(null);
-  const { sessionRef: lightboxSessionRef, canApplyFeedback: canApplyLightboxFeedback } = useLightboxSessionGuard(lightboxItem?.id ?? null);
+  const { sessionRef: lightboxSessionRef, canApplyFeedback: canApplyLightboxFeedback, invalidateSession: invalidateLightboxSession } = useLightboxSessionGuard(lightboxItem?.id ?? null);
   const [isSavingMedia, setIsSavingMedia] = useState(false);
   const mediaOperationGuardRef = useRef(createMediaOperationGuard());
   const favoriteActionIdsRef = useRef(new Set<string>());
@@ -123,8 +123,9 @@ export default function HistoryScreen() {
     noticeControllerRef.current?.show(message);
   }, []);
   const closeLightbox = useCallback(() => {
+    invalidateLightboxSession();
     setLightboxItem(null);
-  }, []);
+  }, [invalidateLightboxSession]);
 
   const { items, loadItems, persist } = useHistoryPersistence<Item>({
     storageKey: STORAGE_KEY,

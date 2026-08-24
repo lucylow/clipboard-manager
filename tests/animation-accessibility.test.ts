@@ -81,6 +81,9 @@ describe("accessible motion", () => {
     const favorites = read("app/(tabs)/favorites.tsx");
     expect(modal).toContain("AnimatedEntrance");
     expect(modal).toContain("reducedMotion");
+    const sessionGuard = read("hooks/use-lightbox-session-guard.ts");
+    expect(sessionGuard).toContain("const invalidateSession = useCallback");
+    expect(sessionGuard).toContain("sessionRef.current += 1");
     expect(history).toContain("AnimatedModalContent");
     expect(favorites).toContain("AnimatedModalContent");
   });
@@ -94,7 +97,9 @@ describe("accessible motion", () => {
     expect(mediaAction).toContain("reducedMotion");
     expect(history).toContain("AnimatedMediaAction");
     expect(history).toContain("const closeLightbox = useCallback");
+    expect(history).toContain("invalidateLightboxSession();");
     expect(favorites).toContain("AnimatedMediaAction");
     expect(favorites).toContain("const closeLightbox = ()");
+    expect(favorites).toContain("invalidateLightboxSession();");
   });
 });

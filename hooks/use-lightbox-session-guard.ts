@@ -10,6 +10,11 @@ export function useLightboxSessionGuard(itemId: string | null) {
     sessionRef.current += 1;
   }, [itemId]);
 
+  const invalidateSession = useCallback(() => {
+    itemIdRef.current = null;
+    sessionRef.current += 1;
+  }, []);
+
   const canApplyFeedback = useCallback((actionItemId: string, actionToken: number) => {
     return canApplyLightboxFeedback({
       activeItemId: itemIdRef.current,
@@ -18,5 +23,5 @@ export function useLightboxSessionGuard(itemId: string | null) {
     }, actionItemId, actionToken);
   }, []);
 
-  return { sessionRef, canApplyFeedback };
+  return { sessionRef, canApplyFeedback, invalidateSession };
 }

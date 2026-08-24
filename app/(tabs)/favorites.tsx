@@ -45,14 +45,14 @@ export default function FavoritesScreen() {
   const favoriteActionIdsRef = useRef(new Set<string>());
   const lightboxOperationGuardRef = useRef(createLightboxOperationGuard());
   const noticeControllerRef = useRef(createNoticeController(setNotice));
-  const { sessionRef: lightboxSessionRef, canApplyFeedback: canApplyLightboxFeedback } = useLightboxSessionGuard(lightboxItem?.id ?? null);
+  const { sessionRef: lightboxSessionRef, canApplyFeedback: canApplyLightboxFeedback, invalidateSession: invalidateLightboxSession } = useLightboxSessionGuard(lightboxItem?.id ?? null);
   const insets = useSafeAreaInsets();
   const reducedMotion = useReducedMotion();
   const loadItems = useCallback(async () => { try { const saved = await readStorageValue(STORAGE_KEY, 5000); if (!saved) { await writeStorageValue(STORAGE_KEY, JSON.stringify(seedFavorites), 5000); setItems(seedFavorites); return; } const repaired = repairStoredPayload<Item>(saved, (item): item is Item => Boolean(item && typeof item === 'object' && 'id' in item && typeof item.id === 'string' && 'type' in item && (item.type === 'text' || item.type === 'image'))); const normalized = repaired.items.map((item) => item.category ? item : { ...item, category: item.id === '1' || item.id === '2' ? 'Work' as const : item.id === '4' || item.id === '5' ? 'Personal' as const : undefined }); await writeStorageValue(STORAGE_KEY, JSON.stringify(normalized), 5000); setItems(normalized.filter((item) => item.favorite)); if (repaired.repaired) noticeControllerRef.current.show('Favorites were repaired: invalid entries were removed'); } catch { setItems(seedFavorites); noticeControllerRef.current.show('Favorites were restored from the local fallback'); } }, []);
   useFocusEffect(useCallback(() => { void loadItems(); }, [loadItems]));
   useEffect(() => () => noticeControllerRef.current.dispose(), []);
   const showNotice = (message: string) => { noticeControllerRef.current.show(message); };
-  const closeLightbox = () => { setShareFailed(false); setLightboxItem(null); };
+  const closeLightbox = () => { invalidateLightboxSession(); setShareFailed(false); setLightboxItem(null); };
   const copyItem = async (item: Item) => { try { if (item.type === 'text') await Clipboard.setStringAsync(item.content); else if (item.imageData) await Clipboard.setImageAsync(item.imageData); else return showNotice('This image is no longer available'); haptic.success(); showNotice(item.type === 'image' ? 'Image copied to clipboard' : 'Copied to clipboard'); } catch { haptic.error(); showNotice('Could not copy this item'); } };
   const toggleFavorite = async (id: string) => { if (favoriteActionIdsRef.current.has(id)) return; favoriteActionIdsRef.current.add(id); setRemovingIds((current) => current.includes(id) ? current : [...current, id]); try { await updateClipboardStorage<Item>((all) => all.map((item) => item.id === id ? { ...item, favorite: false } : item)); haptic.light(); await loadItems(); showNotice('Removed from favorites'); } catch { showNotice('Could not update this favorite'); } finally { favoriteActionIdsRef.current.delete(id); setRemovingIds((current) => current.filter((removingId) => removingId !== id)); } };
   const shareImageItem = async (item: Item) => {

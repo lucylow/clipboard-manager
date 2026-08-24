@@ -1324,3 +1324,8 @@
 - [x] Add deterministic cancellation coverage for active share and OCR modal operations
 - [x] Verify closed lightboxes cannot receive stale async feedback
 - [x] Run the full validation suite and save an image-action hardening checkpoint
+
+- [x] Formalize modal cancellation ownership for active share and OCR operations
+- [x] Ensure async media cleanup completes before releasing operation guards
+- [x] Add deterministic cancellation and stale-feedback regression coverage
+- [x] Run the full validation suite and save a stability checkpoint
