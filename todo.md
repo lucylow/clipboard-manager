@@ -1319,3 +1319,8 @@
 - [x] Harden modal close behavior while async media actions are active
 - [x] Add deterministic media-action and cancellation regression coverage
 - [x] Run the full validation suite and save a refactor checkpoint
+
+- [x] Reuse the shared animated media-action component for image copy and save actions
+- [x] Add deterministic cancellation coverage for active share and OCR modal operations
+- [x] Verify closed lightboxes cannot receive stale async feedback
+- [x] Run the full validation suite and save an image-action hardening checkpoint

@@ -88,9 +88,13 @@ describe("accessible motion", () => {
   it("centralizes accessible media-action feedback", () => {
     const mediaAction = read("components/animated-media-action.tsx");
     const history = read("app/(tabs)/index.tsx");
+    const favorites = read("app/(tabs)/favorites.tsx");
     expect(mediaAction).toContain("accessibilityState={{ busy, disabled }}");
     expect(mediaAction).toContain("AnimatedProgressPulse");
     expect(mediaAction).toContain("reducedMotion");
     expect(history).toContain("AnimatedMediaAction");
+    expect(history).toContain("const closeLightbox = useCallback");
+    expect(favorites).toContain("AnimatedMediaAction");
+    expect(favorites).toContain("const closeLightbox = ()");
   });
 });
