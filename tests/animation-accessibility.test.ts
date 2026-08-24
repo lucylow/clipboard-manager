@@ -66,12 +66,22 @@ describe("accessible motion", () => {
     const history = read("app/(tabs)/index.tsx");
     const progress = read("components/animated-progress-pulse.tsx");
     expect(history).toContain("<AnimatedProgressPulse reducedMotion={reducedMotion}");
-    expect(history).toContain("<AnimatedEntrance reducedMotion={reducedMotion} distance={14}");
+    expect(history).toContain("<AnimatedModalContent reducedMotion={reducedMotion}");
     expect(progress).toContain("reducedMotion");
     expect(progress).toContain("Animated.loop");
     expect(progress).toContain("useNativeDriver: true");
     expect(progress).toContain('accessibilityRole="progressbar"');
     expect(progress).toContain('accessibilityState={{ busy: true }}');
     expect(progress).toContain("return () => animation.stop()");
+  });
+
+  it("reuses the shared modal motion wrapper across collection screens", () => {
+    const modal = read("components/animated-modal-content.tsx");
+    const history = read("app/(tabs)/index.tsx");
+    const favorites = read("app/(tabs)/favorites.tsx");
+    expect(modal).toContain("AnimatedEntrance");
+    expect(modal).toContain("reducedMotion");
+    expect(history).toContain("AnimatedModalContent");
+    expect(favorites).toContain("AnimatedModalContent");
   });
 });

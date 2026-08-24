@@ -1309,3 +1309,8 @@
 - [x] Guard rapid repeated media actions against duplicate feedback or stale animation state
 - [x] Add deterministic lifecycle and rapid-action regression coverage
 - [x] Run the full validation suite and save a code-quality checkpoint
+
+- [x] Add a shared animated modal content wrapper for History and Favorites
+- [x] Harden modal close and async media cancellation paths
+- [x] Add deterministic modal lifecycle regression coverage
+- [x] Run the full validation suite and save a maintainability checkpoint
