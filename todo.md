@@ -1355,3 +1355,8 @@
 - [x] Add safe fallback data for unavailable runtime state
 - [x] Improve user-visible recovery for partial failures
 - [x] Add regression coverage and rerun the full validation suite
+
+- [x] Audit remaining malformed-input and unavailable-state boundaries
+- [x] Add safe fallback mock data for the next identified failure path
+- [x] Improve user-visible recovery without masking real failures
+- [x] Add regression coverage and rerun the complete validation suite

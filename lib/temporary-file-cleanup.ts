@@ -7,7 +7,7 @@ export async function cleanupTemporaryFile(
   deleteFile: TemporaryFileDeleter,
   timeoutMs = 1500,
 ): Promise<boolean> {
-  if (!uri) return true;
+  if (typeof uri !== 'string' || uri.trim().length === 0) return true;
   try {
     await withTimeout(deleteFile(uri), timeoutMs, 'Temporary-file cleanup timed out');
     return true;

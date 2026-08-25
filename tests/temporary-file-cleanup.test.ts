@@ -34,3 +34,12 @@ describe('cleanupTemporaryFile', () => {
     expect(deleteFile).not.toHaveBeenCalled();
   });
 });
+
+
+  it('ignores malformed or blank runtime URIs safely', async () => {
+    const deleteFile = vi.fn(async () => undefined);
+
+    await expect(cleanupTemporaryFile('   ', deleteFile)).resolves.toBe(true);
+    await expect(cleanupTemporaryFile(42 as unknown as string, deleteFile)).resolves.toBe(true);
+    expect(deleteFile).not.toHaveBeenCalled();
+  });
