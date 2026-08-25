@@ -1350,3 +1350,8 @@
 - [x] Add safe fallback data for malformed local usage and event records
 - [x] Add defensive error handling for partial hydration failures
 - [x] Add regression coverage and rerun the full release validation
+
+- [x] Audit remaining runtime and persistence failure boundaries
+- [x] Add safe fallback data for unavailable runtime state
+- [x] Improve user-visible recovery for partial failures
+- [x] Add regression coverage and rerun the full validation suite

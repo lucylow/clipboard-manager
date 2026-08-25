@@ -30,7 +30,7 @@ import { createRecoveryFailureCounter } from '@/lib/recovery-failure-counter';
 import { getLightboxPresentationState } from '@/lib/lightbox-presentation-state';
 import { createLightboxOperationGuard } from '@/lib/lightbox-operation-guard';
 import { useLightboxSessionGuard } from '@/hooks/use-lightbox-session-guard';
-import { getProUpgradePrompt } from '@/lib/monetization-catalog';
+import { getProUpgradePrompt, parseLocalUsageState } from '@/lib/monetization-catalog';
 
 type Filter = 'All' | 'Text' | 'Images' | 'Favorites' | 'Work' | 'Personal';
 type Category = 'Work' | 'Personal';
@@ -54,9 +54,9 @@ async function trackUsage(kind: 'exportCount' | 'ocrCount') {
   try {
     const telemetryEnabled = await readStorageValue(TELEMETRY_KEY);
     if (telemetryEnabled !== 'true') return;
+    const fallbackPeriodStart = new Date().toISOString();
     const saved = await readStorageValue(USAGE_KEY);
-    const parsed = saved ? JSON.parse(saved) as Partial<UsageState> : {};
-    const next: UsageState = { exportCount: typeof parsed.exportCount === 'number' ? parsed.exportCount : 0, ocrCount: typeof parsed.ocrCount === 'number' ? parsed.ocrCount : 0, periodStart: typeof parsed.periodStart === 'string' ? parsed.periodStart : new Date().toISOString() };
+    const next: UsageState = parseLocalUsageState(saved ? JSON.parse(saved) as unknown : null, fallbackPeriodStart);
     next[kind] += 1;
     await writeStorageValue(USAGE_KEY, JSON.stringify(next));
   } catch { /* usage tracking is informational and must never block clipboard work */ }
