@@ -5,7 +5,7 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { haptic } from '@/lib/haptics';
 import { readStorageValue, removeStorageValues, writeStorageValue } from '@/lib/safe-storage';
 import { createMonetizationOperationGuard } from '@/lib/monetization-operation-guard';
-import { resolveProductCatalog, getEntitlementSummary, getEntitlementLifecycleModel, getMonetizationRecoveryModel, getProBenefitSummary, getRestoreOutcomePresentation, getStoreReadinessSummary, getUpgradePreviewModel, parseEntitlementRecord, resolveRestoreOutcome, shouldRecordMonetizationSignal, type LocalEntitlement } from '@/lib/monetization-catalog';
+import { resolveProductCatalog, getEntitlementSummary, getEntitlementLifecycleModel, getMonetizationRecoveryModel, getProBenefitSummary, getRestoreOutcomePresentation, getStoreReadinessSummary, getUpgradePreviewModel, parseEntitlementRecord, parseLocalMonetizationEvents, parseLocalUsageState, resolveRestoreOutcome, shouldRecordMonetizationSignal, type LocalEntitlement } from '@/lib/monetization-catalog';
 
 function SettingRow({ icon, title, subtitle, right }: { icon: 'gearshape.fill' | 'photo' | 'star.fill' | 'doc.on.clipboard'; title: string; subtitle?: string; right: React.ReactNode }) { return <View style={styles.row}><View style={styles.rowIcon}><IconSymbol name={icon} size={18} color="#E76F51" /></View><View style={styles.rowCopy}><Text style={styles.rowTitle}>{title}</Text>{subtitle ? <Text style={styles.rowSubtitle}>{subtitle}</Text> : null}</View>{right}</View>; }
 
@@ -77,8 +77,8 @@ export default function SettingsScreen() {
     readStorageValue(TELEMETRY_KEY).then((saved) => setTelemetryEnabled(saved === 'true')).catch(markHydrationFailure);
     readStorageValue(MONETIZATION_CLEARED_KEY).then((saved) => setLastClearedAt(saved)).catch(markHydrationFailure);
     readStorageValue(PRIVACY_ACK_KEY).then((saved) => setPrivacyAcknowledged(saved === 'true')).catch(markHydrationFailure);
-    readStorageValue(MONETIZATION_EVENTS_KEY).then((saved) => { try { const events = saved ? JSON.parse(saved) as MonetizationEvent[] : []; const interest = events.find((event) => event.event === 'plan-interest'); if (interest) setInterestSavedAt(interest.timestamp); } catch { markHydrationFailure(); } }).catch(markHydrationFailure);
-    readStorageValue(USAGE_KEY).then((saved) => { if (!saved) return; try { const parsed = JSON.parse(saved) as Partial<UsageState>; setUsage({ exportCount: typeof parsed.exportCount === 'number' && Number.isFinite(parsed.exportCount) && parsed.exportCount >= 0 ? Math.floor(parsed.exportCount) : 0, ocrCount: typeof parsed.ocrCount === 'number' && Number.isFinite(parsed.ocrCount) && parsed.ocrCount >= 0 ? Math.floor(parsed.ocrCount) : 0, periodStart: typeof parsed.periodStart === 'string' && !Number.isNaN(new Date(parsed.periodStart).getTime()) ? parsed.periodStart : new Date().toISOString() }); } catch { markHydrationFailure(); } }).catch(markHydrationFailure);
+    readStorageValue(MONETIZATION_EVENTS_KEY).then((saved) => { try { const events = parseLocalMonetizationEvents(saved ? JSON.parse(saved) as unknown : null); const interest = events.find((event) => event.event === 'plan-interest'); if (interest) setInterestSavedAt(interest.timestamp); } catch { markHydrationFailure(); } }).catch(markHydrationFailure);
+    readStorageValue(USAGE_KEY).then((saved) => { if (!saved) return; try { const fallbackPeriodStart = new Date().toISOString(); setUsage(parseLocalUsageState(JSON.parse(saved) as unknown, fallbackPeriodStart)); } catch { markHydrationFailure(); } }).catch(markHydrationFailure);
     setHydrationRetrying(hydrationAttempt > 0);
     readStorageValue(SETTINGS_KEY).then((saved) => {
       if (!saved) return;

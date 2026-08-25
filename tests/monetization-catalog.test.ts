@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import {
   MOCK_PRODUCT_CATALOG,
+  parseLocalMonetizationEvents,
+  parseLocalUsageState,
   resolveProductCatalog,
   formatProductPreview,
   getCatalogReadiness,
@@ -61,6 +63,25 @@ describe('monetization catalog preview', () => {
       hasPurchasableProduct: true,
       purchaseControlsEnabled: true,
     });
+  });
+
+  it('falls back safely for malformed local usage and filters invalid events', () => {
+    expect(parseLocalUsageState({ exportCount: -4, ocrCount: 2.8, periodStart: 'bad-date' }, '2026-08-24T00:00:00.000Z')).toEqual({
+      exportCount: 0,
+      ocrCount: 2,
+      periodStart: '2026-08-24T00:00:00.000Z',
+    });
+    expect(parseLocalUsageState(null, '2026-08-24T00:00:00.000Z')).toEqual({
+      exportCount: 0,
+      ocrCount: 0,
+      periodStart: '2026-08-24T00:00:00.000Z',
+    });
+    expect(parseLocalMonetizationEvents([
+      { event: 'plan-interest', timestamp: '2026-08-24T00:00:00.000Z' },
+      { event: 'unknown', timestamp: '2026-08-24T00:00:00.000Z' },
+      { event: 'billing-notice', timestamp: 'bad-date' },
+      null,
+    ])).toEqual([{ event: 'plan-interest', timestamp: '2026-08-24T00:00:00.000Z' }]);
   });
 
   it('normalizes valid entitlements and rejects malformed records safely', () => {

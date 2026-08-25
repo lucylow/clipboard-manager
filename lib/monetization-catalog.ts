@@ -210,6 +210,44 @@ export function getProUpgradePrompt(selectedCount: number, isPremium: boolean): 
 
 export type MonetizationSignal = 'plan-interest' | 'billing-notice';
 
+export type LocalUsageState = {
+  exportCount: number;
+  ocrCount: number;
+  periodStart: string;
+};
+
+export type LocalMonetizationEvent = {
+  event: MonetizationSignal;
+  timestamp: string;
+};
+
+export function parseLocalUsageState(candidate: unknown, fallbackPeriodStart: string): LocalUsageState {
+  if (!candidate || typeof candidate !== 'object') {
+    return { exportCount: 0, ocrCount: 0, periodStart: fallbackPeriodStart };
+  }
+  const value = candidate as Partial<LocalUsageState>;
+  const count = (input: unknown) =>
+    typeof input === 'number' && Number.isFinite(input) && input >= 0 ? Math.floor(input) : 0;
+  const periodStart =
+    typeof value.periodStart === 'string' && !Number.isNaN(new Date(value.periodStart).getTime())
+      ? value.periodStart
+      : fallbackPeriodStart;
+  return { exportCount: count(value.exportCount), ocrCount: count(value.ocrCount), periodStart };
+}
+
+export function parseLocalMonetizationEvents(candidate: unknown): LocalMonetizationEvent[] {
+  if (!Array.isArray(candidate)) return [];
+  return candidate.filter((entry): entry is LocalMonetizationEvent => {
+    if (!entry || typeof entry !== 'object') return false;
+    const value = entry as Partial<LocalMonetizationEvent>;
+    return (
+      (value.event === 'plan-interest' || value.event === 'billing-notice') &&
+      typeof value.timestamp === 'string' &&
+      !Number.isNaN(new Date(value.timestamp).getTime())
+    );
+  });
+}
+
 export function shouldRecordMonetizationSignal(signal: MonetizationSignal, telemetryEnabled: boolean): boolean {
   return telemetryEnabled && (signal === 'plan-interest' || signal === 'billing-notice');
 }

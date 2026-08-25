@@ -1345,3 +1345,8 @@
 - [x] Add clearly labeled local mock fallback data without implying live state
 - [x] Add regression coverage for failures and fallback selection
 - [x] Run the full validation suite and save a checkpoint
+
+- [x] Audit remaining local hydration and recovery edge cases
+- [x] Add safe fallback data for malformed local usage and event records
+- [x] Add defensive error handling for partial hydration failures
+- [x] Add regression coverage and rerun the full release validation
