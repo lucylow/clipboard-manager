@@ -1339,3 +1339,9 @@
 - [x] Harden async guard behavior without changing active UI flows
 - [x] Add deterministic regression coverage for repeated and invalid guard operations
 - [x] Run the full validation suite and save a hardening checkpoint
+
+- [x] Audit current error paths and identify safe fallback-data boundaries
+- [x] Add defensive recovery for the identified failure paths
+- [x] Add clearly labeled local mock fallback data without implying live state
+- [x] Add regression coverage for failures and fallback selection
+- [x] Run the full validation suite and save a checkpoint

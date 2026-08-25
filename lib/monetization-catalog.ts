@@ -127,6 +127,36 @@ export const MOCK_PRODUCT_CATALOG: readonly MonetizationProductPreview[] = [
   },
 ];
 
+export function resolveProductCatalog(candidate: unknown): {
+  products: readonly MonetizationProductPreview[];
+  source: 'live' | 'mock-fallback';
+  isFallback: boolean;
+} {
+  if (!Array.isArray(candidate)) {
+    return { products: MOCK_PRODUCT_CATALOG, source: 'mock-fallback', isFallback: true };
+  }
+
+  const products = candidate.filter((product): product is MonetizationProductPreview => {
+    if (!product || typeof product !== 'object') return false;
+    const value = product as Partial<MonetizationProductPreview>;
+    return (
+      typeof value.id === 'string' &&
+      value.id.length > 0 &&
+      typeof value.title === 'string' &&
+      typeof value.billingPeriod === 'string' &&
+      (value.billingPeriod === 'month' || value.billingPeriod === 'year') &&
+      typeof value.priceLabel === 'string' &&
+      typeof value.renewalLabel === 'string' &&
+      typeof value.purchasable === 'boolean'
+    );
+  });
+
+  if (products.length === 0) {
+    return { products: MOCK_PRODUCT_CATALOG, source: 'mock-fallback', isFallback: true };
+  }
+  return { products, source: 'live', isFallback: false };
+}
+
 export function getMonetizationRecoveryModel(input: { hydrationFailed: boolean; recoveryFailureCount: number; isPremium: boolean }) {
   if (!input.hydrationFailed) {
     return {

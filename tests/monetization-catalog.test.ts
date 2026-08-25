@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   MOCK_PRODUCT_CATALOG,
+  resolveProductCatalog,
   formatProductPreview,
   getCatalogReadiness,
   getEntitlementSummary,
@@ -24,6 +25,29 @@ describe('monetization catalog preview', () => {
       'clipboard.pro.annual',
     ]);
     expect(MOCK_PRODUCT_CATALOG.map((product) => product.billingPeriod)).toEqual(['month', 'year']);
+  });
+
+  it('falls back to clearly non-purchasable mock products for malformed catalog data', () => {
+    expect(resolveProductCatalog(null)).toMatchObject({
+      products: MOCK_PRODUCT_CATALOG,
+      source: 'mock-fallback',
+      isFallback: true,
+    });
+    expect(resolveProductCatalog([{}])).toMatchObject({
+      products: MOCK_PRODUCT_CATALOG,
+      source: 'mock-fallback',
+      isFallback: true,
+    });
+    expect(resolveProductCatalog(null).products.every((product) => product.purchasable === false)).toBe(true);
+  });
+
+  it('accepts a complete catalog and preserves its live source state', () => {
+    const liveProduct = { ...MOCK_PRODUCT_CATALOG[0], priceLabel: '$2.99', purchasable: true };
+    expect(resolveProductCatalog([liveProduct])).toEqual({
+      products: [liveProduct],
+      source: 'live',
+      isFallback: false,
+    });
   });
 
   it('keeps purchase controls disabled until a real purchasable product exists', () => {
